@@ -6,7 +6,7 @@ import { ref, computed, watchEffect } from 'vue';
 // import mockData from '@/assets/MockData.json';
 import CustomTooltip from '../charts/CustomTooltip.vue';
 import { determineScaleAndLabels } from '../../assets/utilityFunctions/determineScaleAndLabels';
-import {calculateAverage, calculateMedian} from '@/assets/assets/utilityFunctions/calculateAverage'; 
+import {calculateAverage, calculateMedian} from '../../assets/utilityFunctions/determineScaleAndLabels'; 
 
 
 const props = defineProps([

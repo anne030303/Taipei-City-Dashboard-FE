@@ -2,36 +2,65 @@
 <!-- TODO: 將上 Dashboard-->
 
 <script setup>
-import { ref, computed, watchEffect } from 'vue';
-// import mockData from '@/assets/MockData.json';
+import { ref, computed, watchEffect, onMounted, onUnmounted } from 'vue';
+import mockData from '../../../public/chartData/149.json';
 import CustomTooltip from '../charts/CustomTooltip.vue';
 import { determineScaleAndLabels } from '../../assets/utilityFunctions/determineScaleAndLabels';
-import {calculateAverage, calculateMedian} from '@/assets/assets/utilityFunctions/calculateAverage'; 
-
+import {calculateAverage} from '../../assets/utilityFunctions/calculateAverage'; 
+import {calculateMedian} from '../../assets/utilityFunctions/calculateMedian'; 
 
 const props = defineProps([
 	"chart_config",
 	"activeChart",
 	"series",
 	"map_config",
+	"layout",
 ]);
 
-// const [activeChart] = props
-
-// console.log('props');
-
 // 定義 X 軸和 Y 軸的標籤值, 邊界值
-const xAxisWidth = 60;
-const yAxisHeight = 50;
+const xAxisWidth = 50;
+const yAxisHeight = 40;
 
 // x, y軸的預留間隔
-const safeDistance = 20;
+const safeDistance = 15;
 
-const dataPoints = ref(props.series);
+const xAxisWidthSafteDistance = 10;
+const yAxisHeightSafteDistance = 85;
+
+// 假設 SVG 的尺寸如下
+const svgWidth = ref(380);
+const svgHeight = ref(300);
+
+// {
+// 	overAllDashboard: {
+// 		svgWidth: 400,
+// 		svgHeight: 320,
+// 		xAxisWidth: 50,
+// 		yAxisHeight: 40,
+// 		xAxisWidthSafteDistance: 75,
+// 		yAxisHeightSafteDistance: 15,
+// 		safeDistance: 15,
+// 	},
+// 	mapDashboard: {
+// 		svgWidth: 400,
+// 		svgHeight: 320,
+// 		xAxisWidth: 50,
+// 		yAxisHeight: 40,
+// 		xAxisWidthSafteDistance: 10,
+// 		yAxisHeightSafteDistance: 85,
+// 		safeDistance: 15,
+// 	},
+// 	popOutView: {
+
+// 	}
+// }
+
+const dataPoints = ref(mockData.data[0].data);
+
 // 老人人口數
-const xLabels = computed(() => determineScaleAndLabels(dataPoints.value, 'x'));
+const xLabels = computed(() => determineScaleAndLabels(dataPoints.value, 'x', 'mapDashboard'));
 // 老房人口數
-const yLabels = computed(() => determineScaleAndLabels(dataPoints.value, 'y'));
+const yLabels = computed(() => determineScaleAndLabels(dataPoints.value, 'y', 'mapDashboard'));
 
 const maxZ = computed(() => Math.max(...dataPoints.value.map(point => point.z)));
 const currentDataPoints = ref([]);
@@ -52,20 +81,19 @@ const activeCountries = computed(() => {
 		return activeStatus.value.map(item => item?.country)
 	}
 	return []
-})
+})	
+
+const containerRef = ref(null);
+
 
 // 定義初始年份
 const currentYear = ref(1890);
-const isPlaying = ref(false);
-let intervalId = null;
-
-// 假設 SVG 的尺寸如下
-const svgWidth = 900;
-const svgHeight = 500;
+// const isPlaying = ref(false);
+// let intervalId = null;
 
 
 function scaleX(value) {
-	const plotWidth = svgWidth - 2 * (xAxisWidth + safeDistance)
+	const plotWidth = svgWidth.value - 2 * (xAxisWidth + safeDistance)
 	const labelValues = xLabels.value.labels.map((label) => translateLabelToNum(label));
 	const intervalWidth = plotWidth / (labelValues.length - 1);
 
@@ -81,9 +109,9 @@ function scaleY(value) {
 	// 假設 SVG 高度為 400px，且留有 50px 邊界
 	const maxValue =  translateLabelToNum(yLabels.value.labels[yLabels.value.labels.length - 1]);// yLabels 最大值
 	const minValue =  translateLabelToNum(yLabels.value.labels[0]);
-	const scaledValue = svgHeight - yAxisHeight - safeDistance - ((value - minValue)/ (maxValue - minValue)) * (svgHeight - (yAxisHeight + safeDistance) * 2);
-	return scaledValue > svgHeight - yAxisHeight 
-		? svgHeight - yAxisHeight 
+	const scaledValue = svgHeight.value - yAxisHeight - safeDistance - ((value - minValue)/ (maxValue - minValue)) * (svgHeight.value - (yAxisHeight + safeDistance) * 2);
+	return scaledValue > svgHeight.value - yAxisHeight 
+		? svgHeight.value - yAxisHeight 
 		: scaledValue < yAxisHeight 
 			? yAxisHeight 
 			: scaledValue; 
@@ -196,7 +224,7 @@ const toggleBubble = (point) => {
 const mouseOverBubble = (point) => {
 	currentHoverPoint.value = {
 		...point,
-		xLine: { x1: point.x, y1: svgHeight - yAxisHeight, x2: point.x, y2: point.y + point.z }, // Line from bubble to x-axis
+		xLine: { x1: point.x, y1: svgHeight.value - yAxisHeight, x2: point.x, y2: point.y + point.z }, // Line from bubble to x-axis
 		yLine: { x1: xAxisWidth, y1: point.y, x2: point.x - point.z, y2: point.y } // Line from bubble to y-axis
 	}
 };
@@ -241,28 +269,28 @@ const isShowTooltip = (point) =>{
 
 
 // 開始播放
-const startPlaying = () => {
-	if (!isPlaying.value) {
-		isPlaying.value = true;
-		intervalId = setInterval(() => {
-			const nextYear = currentYear.value + 1;
-			const lastYear = Math.max(...dataPoints.value.map(p => p.year));
-			if (nextYear > lastYear) {
-				stopPlaying(); // 如果超出了数据范围，则停止播放
-			} else {
-				currentYear.value = nextYear;
-			}
-		}, 200);
-	}
-};
+// const startPlaying = () => {
+// 	if (!isPlaying.value) {
+// 		isPlaying.value = true;
+// 		intervalId = setInterval(() => {
+// 			const nextYear = currentYear.value + 1;
+// 			const lastYear = Math.max(...dataPoints.value.map(p => p.year));
+// 			if (nextYear > lastYear) {
+// 				stopPlaying(); // 如果超出了数据范围，则停止播放
+// 			} else {
+// 				currentYear.value = nextYear;
+// 			}
+// 		}, 200);
+// 	}
+// };
 
 // 停止播放
-const stopPlaying = () => {
-	if (isPlaying.value) {
-		clearInterval(intervalId);
-		isPlaying.value = false;
-	}
-};
+// const stopPlaying = () => {
+// 	if (isPlaying.value) {
+// 		clearInterval(intervalId);
+// 		isPlaying.value = false;
+// 	}
+// };
 
 
 const callineLengthBetweenTwoBubbles = (point1, point2) => {
@@ -291,18 +319,19 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 </script>
 
 <template>
-	<div v-if="activeChart === 'CustomBubbleChart'" :key="updateTrigger" :id="abc">
+	<div v-if="activeChart === 'CustomBubbleChart'" :key="updateTrigger" ref="containerRef">
 		<svg :width="svgWidth" :height="svgHeight">
+			<rect width="100%" height="100%" fill="#333"/>
 	<!-- X軸 -->
-	<line :x1="xAxisWidth" :y1="svgHeight - yAxisHeight" :x2="svgWidth - xAxisWidth" :y2="svgHeight - yAxisHeight"  stroke="#363e40" />
+	<line :x1="xAxisWidth" :y1="svgHeight - yAxisHeight" :x2="svgWidth - xAxisWidth" :y2="svgHeight - yAxisHeight"  stroke="#ccc" />
 	<!-- Y軸 -->
-	<line :x1="xAxisWidth" :y1="svgHeight - yAxisHeight" :x2="xAxisWidth" :y2="yAxisHeight" stroke="#363e40"/>
+	<line :x1="xAxisWidth" :y1="svgHeight - yAxisHeight" :x2="xAxisWidth" :y2="yAxisHeight" stroke="#ccc"/>
 	<!-- X軸標籤 -->
-	<text :y="svgHeight - 30" text-anchor="middle" v-for="(label, i) in xLabels.labels" :key="'xlabel'+i" :id="'xlabel'+i" :x="xAxisWidth + safeDistance + (i) * (svgWidth - (xAxisWidth + safeDistance) * 2)/(xLabels.labels.length - 1)" :opacity="isOverlap(i, 'x') ? 0 : 1">
+	<text :y="svgHeight - 30" text-anchor="middle" v-for="(label, i) in xLabels.labels" :key="'xlabel'+i" :id="'xlabel'+i" :x="xAxisWidth + safeDistance + (i) * (svgWidth - (xAxisWidth + safeDistance) * 2)/(xLabels.labels.length - 1)" :opacity="isOverlap(i, 'x') ? 0 : 1" fill="#fff">
 		{{ label }}
 	</text>
 	<!-- Y軸標籤 -->
-	<text :x="xAxisWidth - 15" text-anchor="middle" v-for="(label, i) in yLabels.labels" :key="'ylabel'+i" :id="'ylabel'+i" :y="svgHeight - yAxisHeight - safeDistance - ((i) * (svgHeight - (yAxisHeight + safeDistance) * 2)/(yLabels.labels.length - 1)) + 5" :opacity="isOverlap(i, 'y') ? 0 : 1">
+	<text :x="xAxisWidth - 15" text-anchor="middle" v-for="(label, i) in yLabels.labels" :key="'ylabel'+i" :id="'ylabel'+i" :y="svgHeight - yAxisHeight - safeDistance - ((i) * (svgHeight - (yAxisHeight + safeDistance) * 2)/(yLabels.labels.length - 1)) + 5" :opacity="isOverlap(i, 'y') ? 0 : 1" fill="#fff">
 		{{ label }}
 	</text>
 	<!-- 網格線 (X軸) -->
@@ -314,10 +343,12 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 		<line v-for="i in (xLabels.labels.length)" :key="'y'+i" :id="'x'+i" :x1="xAxisWidth + safeDistance + (i - 1) * (svgWidth - (xAxisWidth + safeDistance) * 2) / (xLabels.labels.length - 1)" :y1="svgHeight - yAxisHeight" :x2="xAxisWidth + safeDistance + (i - 1) * (svgWidth - (xAxisWidth + safeDistance) * 2) / (xLabels.labels.length - 1)" :y2="yAxisHeight" stroke="#F1EFEF"/>
 	</g>
 	<!-- 軸標籤 -->
-	<text :x="svgWidth / 2" :y="svgHeight - 10" text-anchor="middle">Income</text>
-	<text :y="svgHeight / 2 - xAxisWidth" text-anchor="middle" transform="rotate(-90 20,200)">Life expectancy</text>
+	<text fill="#fff" :x="svgWidth / 2" :y="svgHeight - xAxisWidthSafteDistance" text-anchor="middle">Income</text>
+	<text fill="#fff" :y="svgHeight / 2 - yAxisHeight  + yAxisHeightSafteDistance" text-anchor="start" transform="rotate(-90 20,200)">Life expectancy</text>
 	<!-- 中央年份 -->
-	<text :x="svgWidth / 2" :y="svgHeight / 2" text-anchor="middle" font-size="120" fill="lightgrey" opacity="0.5">{{currentYear}}</text>
+	<text class="central-text" fill="#fff" :x="svgWidth / 2" :y="svgHeight / 1.8" text-anchor="middle" 
+	:style="{fontSize: svgWidth < 600 ? '5rem' : '8rem'}"
+	opacity="0.5">{{currentYear}}</text>
 
 	<!-- X 軸平均值線 -->
 	<line :x1="averageX" :y1="yAxisHeight" :x2="averageX" :y2="svgHeight - yAxisHeight" stroke="#FF0000" stroke-dasharray="5,5"/>
@@ -369,8 +400,8 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 			<line :x1="currentHoverPoint.yLine.x1" :y1="currentHoverPoint.yLine.y1" :x2="currentHoverPoint.yLine.x2" :y2="currentHoverPoint.yLine.y2" stroke-dasharray="5,5" stroke="black" />
 			
 			<!-- Text for x and y-axis values for the hovered bubble -->
-			<text ref="currentHoverPointXLabelBox" :x="currentHoverPoint.x" :y="svgHeight - 30" text-anchor="middle">{{ currentHoverPoint.originalX }}</text>
-			<text ref="currentHoverPointYLabelBox" :x="xAxisWidth - 5" :y="currentHoverPoint.y" text-anchor="end">{{ currentHoverPoint.originalY }}</text>
+			<text fill="#fff" ref="currentHoverPointXLabelBox" :x="currentHoverPoint.x" :y="svgHeight - 30" text-anchor="middle">{{ currentHoverPoint.originalX }}</text>
+			<text fill="#fff" ref="currentHoverPointYLabelBox" :x="xAxisWidth - 5" :y="currentHoverPoint.y" text-anchor="end">{{ currentHoverPoint.originalY }}</text>
 		</g>
 
 		<!-- Tooltip -->
@@ -392,6 +423,11 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 </template>
 
 <style scoped>
+
+	text{
+		font-size: 0.72rem;
+	}
+	
     .glow {
         filter: blur(2px);
     }

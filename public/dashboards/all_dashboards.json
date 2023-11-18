@@ -4,7 +4,8 @@
 			"name": "測試",
 			"index": "test",
 			"components": [
-				"148"
+				"148",
+				"149"
 			],
 			"icon": "castle"
 		},

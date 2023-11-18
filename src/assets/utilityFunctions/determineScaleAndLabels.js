@@ -1,8 +1,10 @@
 // Online Javascript Editor for free
 // Write, Edit and Run your Javascript code using JS Online Compiler
 
-export function determineScaleAndLabels(dataPoints, axis) {
 
+export function determineScaleAndLabels(dataPoints, axis, type) {
+
+	// 記得移除
 	const values = axis === 'x' ? dataPoints.map(point => point[axis]).filter(value => value <= 256000)
 		: dataPoints.map(point => point[axis]).filter(value => value <= 100)
 
@@ -26,9 +28,9 @@ export function determineScaleAndLabels(dataPoints, axis) {
 	// 根據比率和標準差來決定是否使用對數尺度
 	if (ratio > 1000 || standardDeviation > 0.5 * range) {
 		useMultipleScale = true;
-		numLabels = Math.min(10, Math.ceil(Math.log2((max / (min)))));
+		numLabels = Math.min(type !==  'mapDashboard' ? 10 : 8, Math.ceil(Math.log2((max / (min)))));
 	} else {
-		numLabels = Math.min(10, range); // 如果資料跨度小，標籤數量減少
+		numLabels = Math.min(type !==  'mapDashboard' ? 10 : 8, range); // 如果資料跨度小，標籤數量減少
 	}
 	// 計算標籤
 	let labels = calculateLabels(max, min, niceMin, niceMax, numLabels, useMultipleScale);
