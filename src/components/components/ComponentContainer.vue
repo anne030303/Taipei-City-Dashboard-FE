@@ -9,6 +9,7 @@ import { useDialogStore } from "../../store/dialogStore";
 import { useContentStore } from "../../store/contentStore";
 
 import ComponentTag from "../utilities/ComponentTag.vue";
+import ShowChart from '../dialogs/ShowChart.vue';
 import { chartTypes } from "../../assets/configs/apexcharts/chartTypes";
 
 const dialogStore = useDialogStore();
@@ -20,6 +21,8 @@ const props = defineProps({
 	notMoreInfo: { type: Boolean, default: true },
 	isMapLayer: { type: Boolean, default: false },
 });
+
+console.log(props.content);
 
 // The default active chart is the first one in the list defined in the dashboard component
 const activeChart = ref(props.content.chart_config.types[0]);
@@ -109,8 +112,8 @@ function toggleFavorite() {
 				>
 					<span>flag</span>
 				</button>
-				<!-- deleteComponent is currently a dummy function to demonstrate what adding components may look like
-                     Connect a backend to actually implement the function or remove altogether -->
+				<!-- deleteComponent is currently a dummy function to demonstrate what adding components may look like 
+					Connect a backend to actually implement the function or remove altogether -->
 				<button
 					v-if="!isMapLayer"
 					@click="contentStore.deleteComponent(content.id)"
@@ -127,6 +130,16 @@ function toggleFavorite() {
 					class="isUnfavorite"
 				>
 					<span>delete</span>
+				</button>
+				<button
+					v-if="!isMapLayer"
+					@click="dialogStore.showDialog('showChart')"
+					class="isShowChart"
+				>
+					<span>
+						visibility
+					</span>
+					<ShowChart :content="props.content"/>
 				</button>
 			</div>
 		</div>

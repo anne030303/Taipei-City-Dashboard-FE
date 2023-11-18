@@ -1,5 +1,6 @@
 <!-- TODO: 將通用的function 移植出去 -->
 <!-- TODO: 將上 Dashboard-->
+<!-- TODO: 記得把detetminScaleAndLabels 的東西去掉 -->
 
 <script setup>
 import { ref, watch, computed, watchEffect } from 'vue';
@@ -13,7 +14,8 @@ const props = defineProps([
 	"chart_config",
 	"activeChart",
 	"series",
-	"map_config"
+	"map_config",
+	"isDialog"
 ]);
 
 const setting =  {
@@ -66,14 +68,18 @@ const layout = ref("mapview");
 
 const route = useRoute();
 
-const newSettings = computed(() => 
-	setting[layout.value]);
-
+const newSettings = computed(() => {
+	if(props.isDialog) {
+		return setting['popoutwindow']
+	}else{
+		return setting[layout.value]
+	}
+}
+);
 
 const {svgWidth, svgHeight, xAxisWidth
 	,yAxisHeight, xAxisWidthSafteDistance, yAxisHeightSafteDistance, safeDistance} = newSettings.value
 
-console.log(safeDistance);
 
 
 watch(route, (newRoute) => {
