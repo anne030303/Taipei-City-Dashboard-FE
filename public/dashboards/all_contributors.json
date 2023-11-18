@@ -4,6 +4,11 @@
 			"id": "tuic",
 			"name": "臺北大數據中心",
 			"link": "https://tuic.gov.taipei/zh"
+		},
+		"Wee Win": {
+			"id": "weewin",
+			"name": "Wee Win",
+			"link": ""
 		}
 	}
 }

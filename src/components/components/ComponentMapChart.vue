@@ -4,7 +4,8 @@
 <!-- The different modes are controlled by the prop "isMapLayer" (default false) -->
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
+import dayjs from "dayjs";
 import { useMapStore } from "../../store/mapStore";
 import { useDialogStore } from "../../store/dialogStore";
 
@@ -23,6 +24,21 @@ const props = defineProps({
 const activeChart = ref(props.content.chart_config.types[0]);
 // Stores whether the component is toggled on or not
 const checked = ref(false);
+// 讓component可以重新render
+const updateTrigger = ref(0);
+
+const animateChart = ref(null);
+
+watch(
+	[() => mapStore.currentIndex, () => animateChart.value],
+	([currentIndex, animateChartValue]) => {
+		if (props.content.index === animateChartValue) {
+			mapStore.setMapLayerSource(
+				`${props.content.map_config[0].index}-${props.content.map_config[0].type}-source`
+			);
+		}
+	}
+);
 
 // Parses time data into display format
 const dataTime = computed(() => {
@@ -76,6 +92,19 @@ function changeActiveChart(chartName) {
 	mapStore.clearLayerFilter(
 		`${props.content.map_config[0].index}-${props.content.map_config[0].type}`
 	);
+}
+
+function getMapLayerConfig(index) {
+	const mapConfig = props.content.map_config.find(
+		(mapLayer) =>
+			mapLayer.index === props.content.chart_config.animate.label
+	);
+	return mapConfig?.property.find((item) => item.key === mapConfig.animate)
+		.data[index];
+}
+
+function setCurrentIndex(e) {
+	animateChart.value = e;
 }
 </script>
 
@@ -160,12 +189,34 @@ function changeActiveChart(chartName) {
 			class="componentmapchart-chart"
 			v-if="checked && content.chart_data"
 		>
+			<!-- 有開啟多選選項才會開啟refresh功能 -->
+			<button
+				class="refresh"
+				v-if="
+					content.chart_config.map_filter?.length === 3 &&
+					content.chart_config.map_filter[2]?.allowMultipleDataPointsSelection.includes(
+						activeChart
+					)
+				"
+				@click="
+					content.map_config.forEach((mapLayer) => {
+						mapStore.clearLayerFilter(
+							`${mapLayer.index}-${mapLayer.type}`,
+							mapLayer
+						);
+					});
+					updateTrigger = dayjs().unix();
+				"
+			>
+				<p>Refresh</p>
+				<span>refresh</span>
+			</button>
 			<!-- The components referenced here can be edited in /components/charts -->
 			<component
 				v-for="item in content.chart_config.types"
 				:activeChart="activeChart"
 				:is="item"
-				:key="`${props.content.index}-${item}-mapchart`"
+				:key="`${props.content.index}-${item}-mapchart-${updateTrigger}`"
 				:chart_config="content.chart_config"
 				:series="content.chart_data"
 				:map_config="content.map_config"
@@ -180,6 +231,32 @@ function changeActiveChart(chartName) {
 				<p>組件資訊</p>
 				<span>arrow_circle_right</span>
 			</button>
+		<div
+			class="componentmapchart-timebar hide-if-mobile"
+			v-if="checked && content.chart_data && content.chart_config.animate"
+		>
+			<button
+				@click="
+					mapStore.setMapAnimate(content.index, [
+						content.chart_config.animate.min,
+						content.chart_config.animate.max,
+					]);
+					animateChart = content.index;
+				"
+			>
+				<span v-if="mapStore.ifAnimate === content.index"
+					>stop_circle</span
+				>
+				<span v-else>play_circle</span>
+				<div>{{ getMapLayerConfig(mapStore.currentIndex) }}</div>
+			</button>
+			<input
+				v-model="mapStore.currentIndex"
+				type="range"
+				:min="content.chart_config.animate.min"
+				:max="content.chart_config.animate.max"
+				@input="setCurrentIndex(content.index)"
+			/>
 		</div>
 	</div>
 </template>
@@ -276,6 +353,68 @@ function changeActiveChart(chartName) {
 			color: var(--color-border);
 		}
 	}
+	.refresh {
+		position: absolute;
+		display: flex;
+		align-items: center;
+		transition: opacity 0.2s;
+		top: 10px;
+		right: 0;
+		z-index: 1;
+		&:hover {
+			opacity: 0.8;
+		}
+
+		@media (max-width: 760px) {
+			display: none !important;
+		}
+
+		span {
+			margin-left: 4px;
+			color: var(--color-highlight);
+			font-family: var(--font-icon);
+			user-select: none;
+		}
+
+		p {
+			max-height: 1.2rem;
+			color: var(--color-highlight);
+			user-select: none;
+		}
+	}
+
+	&-timebar {
+		display: flex;
+		width: 100%;
+
+		button {
+			display: flex;
+			align-items: center;
+
+			span {
+				color: var(--color-complement-text);
+				transition: color 0.2s;
+				margin-right: 4px;
+				font-family: var(--font-icon);
+				font-size: calc(var(--font-m) * var(--font-to-icon));
+			}
+
+			div {
+				padding-right: 5px;
+			}
+
+			&:hover span {
+				color: var(--color-highlight);
+			}
+		}
+
+		input[type="range"] {
+			display: flex;
+			flex: 1;
+			padding: 0;
+			border: none;
+		}
+	}
 
 	&-loading {
 		display: flex;
@@ -336,5 +475,8 @@ function changeActiveChart(chartName) {
 	height: 200px;
 	max-height: 200px;
 	padding-bottom: 0;
+	.componentmapchart-timebar {
+		padding-bottom: var(--font-m);
+	}
 }
 </style>
