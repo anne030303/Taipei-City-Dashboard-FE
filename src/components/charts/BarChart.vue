@@ -109,7 +109,6 @@ function handleDataSelection(e, chartContext, config) {
 	if (!props.chart_config.map_filter) {
 		return;
 	}
-	console.log(config.dataPointIndex, selectedIndex.value);
 	// 多選
 	if (allowMultipleDataPointsSelection.value) {
 		mapStore.addLayerMultiFilter(
@@ -124,7 +123,6 @@ function handleDataSelection(e, chartContext, config) {
 		);
 		// 單選
 	} else if (config.dataPointIndex !== selectedIndex.value) {
-		console.log(props.chart_config.map_filter);
 		mapStore.addLayerFilter(
 			`${props.map_config[0].index}-${props.map_config[0].type}`,
 			props.chart_config.map_filter[0],
@@ -134,7 +132,8 @@ function handleDataSelection(e, chartContext, config) {
 		selectedIndex.value = config.dataPointIndex;
 	} else {
 		mapStore.clearLayerFilter(
-			`${props.map_config[0].index}-${props.map_config[0].type}`
+			`${props.map_config[0].index}-${props.map_config[0].type}`,
+			props.map_config[0]
 		);
 		selectedIndex.value = null;
 	}

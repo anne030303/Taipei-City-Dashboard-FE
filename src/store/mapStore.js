@@ -220,6 +220,50 @@ export const useMapStore = defineStore("map", {
 			}
 		},
 
+		processScaleFeatures(mapLayerId, features, startIndex) {
+			const endIndex = Math.min(startIndex + 40, features.length);
+			for (let index = startIndex; index < endIndex; index++) {
+				const feature = features[index];
+				const tb =
+					this.tubes[
+						`${mapLayerId}-${feature.properties.FULL}-${feature.properties.cat_age_index}`
+					];
+
+				console.log(
+					this.currentFieldName,
+					feature.properties[this.currentFieldName]
+				);
+				tb.set({
+					scale: {
+						x:
+							feature.properties[this.currentFieldName] *
+							this.currentMapConfig.paint[
+								"stacked-circle-weight"
+							],
+						y:
+							feature.properties[this.currentFieldName] *
+							this.currentMapConfig.paint[
+								"stacked-circle-weight"
+							],
+						z: 1,
+					},
+					duration: 600,
+				});
+				// window.tb.update();
+			}
+
+			if (endIndex < features.length) {
+				setTimeout(() => {
+					this.processScaleFeatures(mapLayerId, features, endIndex);
+				}, 800);
+
+				setTimeout(() => {
+					window.tb.update();
+					this.map.triggerRepaint();
+				}, 1400);
+			}
+		},
+
 		setMapLayerSource(mapLayerId) {
 			const fieldName =
 				this.currentMapConfig[
@@ -233,30 +277,38 @@ export const useMapStore = defineStore("map", {
 
 			this.currentFieldName = fieldName;
 
-			this.stackedCircleData.features.forEach((feature, index) => {
-				const tb =
-					this.tubes[
-						`${mapLayerId}-${feature.properties.FULL}-${feature.properties.cat_age_index}`
-					];
+			this.processScaleFeatures(
+				mapLayerId,
+				this.stackedCircleData.features,
+				0
+			);
+			// console.log("clear");
+			// window.tb.dispose();
 
-				tb.set({
-					scale: {
-						x: feature.properties[this.currentFieldName] * 30,
-						y: feature.properties[this.currentFieldName] * 30,
-						z: 1,
-					},
-					duration: 800,
-				});
-				// tb.hidden = true;
-			});
+			// this.stackedCircleData.features.forEach((feature, index) => {
+			// 	const tb =
+			// 		this.tubes[
+			// 			`${mapLayerId}-${feature.properties.FULL}-${feature.properties.cat_age_index}`
+			// 		];
 
-			let count = 0;
-			const render = setInterval(() => {
-				window.tb.update();
-				this.map.triggerRepaint();
-				count++;
-				if (count > 100) clearInterval(render);
-			}, 300);
+			// 	tb.set({
+			// 		scale: {
+			// 			x: feature.properties[this.currentFieldName] * 30,
+			// 			y: feature.properties[this.currentFieldName] * 30,
+			// 			z: 1,
+			// 		},
+			// 		duration: 1000,
+			// 	});
+			// 	// tb.hidden = true;
+			// });
+
+			// let count = 0;
+			// const render = setInterval(() => {
+			// 	window.tb.update();
+			// 	this.map.triggerRepaint();
+			// 	count++;
+			// 	if (count > 100) clearInterval(render);
+			// }, 300);
 		},
 		// 4-1. Using the mapbox source and map config, create a new layer
 		// The styles and configs can be edited in /assets/configs/mapbox/mapConfig.js
@@ -458,17 +510,21 @@ export const useMapStore = defineStore("map", {
 					onAdd: function () {
 						data.features.forEach((feature) => {
 							const point1 = [
-								// 121.548806,
-								// 25.037882,
 								...feature.geometry.coordinates,
-								20 * (feature.properties.cat_age_index - 1),
+								map_config.paint["stacked-circle-height"] *
+									(feature.properties.cat_age_index - 1) +
+									map_config.paint[
+										"stacked-circle-baseHeight"
+									],
 							];
 							const point2 = [
-								// 121.548806,
-								// 25.037882,
 								...feature.geometry.coordinates,
-								20 * (feature.properties.cat_age_index - 1) +
-									0.5,
+								map_config.paint["stacked-circle-height"] *
+									(feature.properties.cat_age_index - 1) +
+									map_config.paint[
+										"stacked-circle-baseHeight"
+									] +
+									1,
 							];
 							let options = {
 								geometry: [point1, point2],
@@ -495,28 +551,64 @@ export const useMapStore = defineStore("map", {
 								`${map_config.layerId}-source-${feature.properties.FULL}-${feature.properties.cat_age_index}`
 							] = tubeMesh;
 							// lineMesh.geometry.setColors(gradientSteps);
-							// console.log(tubeMesh);
 							tubeMesh.set({
 								scale: {
-									x: feature.properties.values_ratio * 30,
-									y: feature.properties.values_ratio * 30,
+									x:
+										feature.properties.values_ratio *
+										map_config.paint[
+											"stacked-circle-weight"
+										],
+									y:
+										feature.properties.values_ratio *
+										map_config.paint[
+											"stacked-circle-weight"
+										],
 									z: 1,
 								},
 								duration: 500,
 							});
 
+							// tubeMesh.addEventListener(
+							// 	"SelectedChange",
+							// 	_this.onSelectedFeatureChange,
+							// 	false
+							// );
+
 							tubeMesh.addEventListener(
 								"SelectedChange",
-								_this.onSelectedFeatureChange,
+								_this.onSelectedChange,
 								false
 							);
+							tubeMesh.addEventListener(
+								"Wireframed",
+								_this.onWireframed,
+								false
+							);
+							tubeMesh.addEventListener(
+								"IsPlayingChanged",
+								_this.onIsPlayingChanged,
+								false
+							);
+							tubeMesh.addEventListener(
+								"ObjectDragged",
+								_this.onDraggedObject,
+								false
+							);
+							tubeMesh.addEventListener(
+								"ObjectMouseOver",
+								_this.onObjectMouseOver,
+								false
+							);
+							tubeMesh.addEventListener(
+								"ObjectMouseOut",
+								_this.onObjectMouseOut,
+								false
+							);
+
 							tubeMesh.bbox = true;
 							// tubeMesh.tooltip = true;
 
-							tb.add(
-								tubeMesh,
-								`${map_config.layerId}-${feature.properties.FULL}-${feature.properties.cat_age_index}`
-							);
+							tb.add(tubeMesh, "123");
 						});
 					},
 					render: function () {
@@ -531,13 +623,13 @@ export const useMapStore = defineStore("map", {
 					(el) => el !== map_config.layerId
 				);
 
-				this.map.easeTo({
-					center: [121.51074515649827, 25.118658575739076],
-					zoom: 14.519401462316386,
-					duration: 2000,
-					pitch: 66.86273534685878,
-					bearing: -30.341798474040615,
-				});
+				// this.map.easeTo({
+				// 	center: [121.51074515649827, 25.118658575739076],
+				// 	zoom: 14.519401462316386,
+				// 	duration: 2000,
+				// 	pitch: 66.86273534685878,
+				// 	bearing: -30.341798474040615,
+				// });
 
 				if (!isVisible) {
 					tb?.setLayoutProperty(
@@ -548,7 +640,7 @@ export const useMapStore = defineStore("map", {
 				} else {
 					this.currentVisibleLayers.push(map_config.layerId);
 				}
-				if (this.ifAutoNavigate && isFilter) {
+				if (this.ifAutoNavigate) {
 					setTimeout(() => {
 						this.easeToLayer(map_config.layerId, null, true);
 					}, 500);
@@ -557,6 +649,24 @@ export const useMapStore = defineStore("map", {
 		},
 		onSelectedFeatureChange(e) {
 			console.log(e);
+		},
+		onSelectedChange(e) {
+			console.log("onSelectedChange", e);
+		},
+		onWireframed(e) {
+			console.log("onWireframed", e);
+		},
+		onIsPlayingChanged(e) {
+			console.log("onIsPlayingChanged", e);
+		},
+		onDraggedObject(e) {
+			console.log("onDraggedObject", e);
+		},
+		onObjectMouseOver(e) {
+			console.log("onObjectMouseOver", e);
+		},
+		onObjectMouseOut(e) {
+			console.log("onObjectMouseOut", e);
 		},
 		//  5. Turn on the visibility for a exisiting map layer
 		turnOnMapLayerVisibility(mapLayerId) {
@@ -567,7 +677,10 @@ export const useMapStore = defineStore("map", {
 					this.easeToLayer(
 						mapLayerId,
 						null,
-						mapLayerId.slice(-3) === "arc" ? true : false
+						mapLayerId.slice(-3) === "arc" ||
+							mapLayerId.slice(-14) === "stacked-circle"
+							? true
+							: false
 					);
 				}, 500);
 			}
@@ -600,10 +713,10 @@ export const useMapStore = defineStore("map", {
 
 		handleAutoNavigate(checked) {
 			this.ifAutoNavigate = checked;
-			console.log(this.map.getCenter());
-			console.log(this.map.getZoom());
-			console.log(this.map.getPitch());
-			console.log(this.map.getBearing());
+			// console.log(this.map.getCenter());
+			// console.log(this.map.getZoom());
+			// console.log(this.map.getPitch());
+			// console.log(this.map.getBearing());
 			// console.log(this.map.getStyle().layers);
 			// if (checked) {
 			// 	this.map.setPaintProperty(
@@ -735,7 +848,7 @@ export const useMapStore = defineStore("map", {
 				[121.6998231749096, 25.21179993640203], // Northeast coordinates
 			];
 			let bbox = [
-				[122, 25],
+				[122, 26],
 				[121, 24],
 			];
 			const targetSource = this.map.getSource(`${mapLayerId}-source`);
@@ -808,11 +921,13 @@ export const useMapStore = defineStore("map", {
 						}
 					}
 				});
+				console.log("if3D", if3D);
 				this.map.fitBounds(bbox, {
 					linear: true,
 					duration: 2000,
 					padding: { top: 10, bottom: 25, left: 5, right: 5 },
-					pitch: if3D ? 50 : 0,
+					pitch: if3D ? 60 : 0,
+					maxZoom: 16,
 				});
 			}
 		},
@@ -867,6 +982,11 @@ export const useMapStore = defineStore("map", {
 				});
 				window.tb.update();
 				this.map.triggerRepaint();
+				if (this.ifAutoNavigate) {
+					setTimeout(() => {
+						this.easeToLayer(layer_id, [[property], [[key]]], true);
+					}, 500);
+				}
 				return;
 			}
 			const filter = ["==", ["get", property], key];
@@ -953,6 +1073,14 @@ export const useMapStore = defineStore("map", {
 					isVisible
 				);
 				return;
+			} else if (map_config && map_config.type === "stacked-circle") {
+				this.stackedCircleData.features.forEach((feature) => {
+					const tube =
+						this.tubes[
+							`${map_config.index}-${map_config.type}-source-${feature.properties.FULL}-${feature.properties.cat_age_index}`
+						];
+					tube.hidden = false;
+				});
 			}
 			this.map.setFilter(layer_id, null);
 		},
