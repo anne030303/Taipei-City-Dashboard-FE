@@ -5670,14 +5670,71 @@
 			"contributors": [
 				"Wee Win"
 			]
-		},"157": {
+		},
+		"157": {
 			"id": 157,
 			"index": "custom_bubble_chart",
 			"map_config": null,
 			"history_data": false,
+			"map_config": [
+				{
+					"index": "",
+					"property": [
+						{
+							"key": "year",
+							"name": "年份",
+							"data": [
+								"2022",
+								"2023",
+								"2024",
+								"2025",
+								"2026",
+								"2027",
+								"2028",
+								"2029",
+								"2030",
+								"2031",
+								"2032",
+								"2033",
+								"2034",
+								"2035",
+								"2036",
+								"2037",
+								"2038",
+								"2039",
+								"2040",
+								"2041"
+							]
+						}
+					],
+					"animate": "year"
+				}
+			],
 			"chart_config": {
 				"types": [
 					"CustomBubbleChart"
+				],
+				"animate": {
+					"min": 0,
+					"max": 19,
+					"label": ""
+				},
+				"map_filter": [
+					"SEC_NAME",
+					[
+						"石牌地區",
+						"大屯地區",
+						"關渡地區",
+						"唭哩岸地區",
+						"舊北投地區",
+						"新北投地區",
+						"陽明山地區"
+					],
+					{
+						"allowMultipleDataPointsSelection": [
+							"CustomBubbleChart"
+						]
+					}
 				]
 			},
 			"name": "custom_bubble_chart",
@@ -5692,7 +5749,8 @@
 			"contributors": [
 				"Wee Win"
 			]
-		},"158": {
+		},
+		"158": {
 			"id": 158,
 			"index": "real-time-chart",
 			"map_config": null,
