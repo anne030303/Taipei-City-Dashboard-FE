@@ -2,9 +2,9 @@
 <!-- TODO: 將上 Dashboard-->
 
 <script setup>
-import { ref, computed, watchEffect, onMounted, onUnmounted } from 'vue';
-import mockData from '../../../public/chartData/149.json';
+import { ref, watch, computed, watchEffect } from 'vue';
 import CustomTooltip from '../charts/CustomTooltip.vue';
+import { useRoute } from 'vue-router';
 import { determineScaleAndLabels } from '../../assets/utilityFunctions/determineScaleAndLabels';
 import {calculateAverage} from '../../assets/utilityFunctions/calculateAverage'; 
 import {calculateMedian} from '../../assets/utilityFunctions/calculateMedian'; 
@@ -13,54 +13,85 @@ const props = defineProps([
 	"chart_config",
 	"activeChart",
 	"series",
-	"map_config",
-	"layout",
+	"map_config"
 ]);
 
-// 定義 X 軸和 Y 軸的標籤值, 邊界值
-const xAxisWidth = 50;
-const yAxisHeight = 40;
+const setting =  {
+	dashboard: {
+		svgWidth: 400,
+		svgHeight: 320,
+		xAxisWidth: 50,
+		yAxisHeight: 40,
+		xAxisWidthSafteDistance: 75,
+		yAxisHeightSafteDistance: 15,
+		safeDistance: 15,
+	},
+	mapview: {
+		svgWidth: 380,
+		svgHeight: 300,
+		xAxisWidth: 50,
+		yAxisHeight: 40,
+		xAxisWidthSafteDistance: 10,
+		yAxisHeightSafteDistance: 85,
+		safeDistance: 15,
+	},
+	popoutwindow: {
+		svgWidth: 900,
+		svgHeight: 600,
+		xAxisWidth: 70,
+		yAxisHeight: 50,
+		xAxisWidthSafteDistance: 15,
+		yAxisHeightSafteDistance: 20,
+		safeDistance: 20,
+	}
+}
 
-// x, y軸的預留間隔
-const safeDistance = 15;
+// // 定義 X 軸和 Y 軸的標籤值, 邊界值
+// const xAxisWidth = 50;
+// const yAxisHeight = 40;
 
-const xAxisWidthSafteDistance = 10;
-const yAxisHeightSafteDistance = 85;
+// // x, y軸的預留間隔
+// const safeDistance = 15;
 
-// 假設 SVG 的尺寸如下
-const svgWidth = ref(380);
-const svgHeight = ref(300);
+// const xAxisWidthSafteDistance = 10;
+// const yAxisHeightSafteDistance = 85;
 
-// {
-// 	overAllDashboard: {
-// 		svgWidth: 400,
-// 		svgHeight: 320,
-// 		xAxisWidth: 50,
-// 		yAxisHeight: 40,
-// 		xAxisWidthSafteDistance: 75,
-// 		yAxisHeightSafteDistance: 15,
-// 		safeDistance: 15,
-// 	},
-// 	mapDashboard: {
-// 		svgWidth: 400,
-// 		svgHeight: 320,
-// 		xAxisWidth: 50,
-// 		yAxisHeight: 40,
-// 		xAxisWidthSafteDistance: 10,
-// 		yAxisHeightSafteDistance: 85,
-// 		safeDistance: 15,
-// 	},
-// 	popOutView: {
+// // 假設 SVG 的尺寸如下
+// const svgWidth = ref(380);
+// const svgHeight = ref(300);
 
-// 	}
-// }
+// The following are controls for the mobile version to toggle between dashboard and mapview
+const layout = ref("mapview");
 
-const dataPoints = ref(mockData.data[0].data);
+
+const route = useRoute();
+
+const newSettings = computed(() => 
+	setting[layout.value]);
+
+
+const {svgWidth, svgHeight, xAxisWidth
+	,yAxisHeight, xAxisWidthSafteDistance, yAxisHeightSafteDistance, safeDistance} = newSettings.value
+
+console.log(safeDistance);
+
+
+watch(route, (newRoute) => {
+	if (newRoute.path === '/dashboard') {
+		layout.value = 'dashboard';
+	} else if(newRoute.path === '/mapview'){
+		layout.value = 'mapview';
+	} else {
+		layout.value = 'popoutwindow'
+	}
+});
+
+const dataPoints = ref(props["series"][0].data);
 
 // 老人人口數
-const xLabels = computed(() => determineScaleAndLabels(dataPoints.value, 'x', 'mapDashboard'));
+const xLabels = computed(() => determineScaleAndLabels(dataPoints.value, 'x', layout));
 // 老房人口數
-const yLabels = computed(() => determineScaleAndLabels(dataPoints.value, 'y', 'mapDashboard'));
+const yLabels = computed(() => determineScaleAndLabels(dataPoints.value, 'y', layout));
 
 const maxZ = computed(() => Math.max(...dataPoints.value.map(point => point.z)));
 const currentDataPoints = ref([]);
@@ -93,7 +124,7 @@ const currentYear = ref(1890);
 
 
 function scaleX(value) {
-	const plotWidth = svgWidth.value - 2 * (xAxisWidth + safeDistance)
+	const plotWidth = svgWidth - 2 * (xAxisWidth + safeDistance)
 	const labelValues = xLabels.value.labels.map((label) => translateLabelToNum(label));
 	const intervalWidth = plotWidth / (labelValues.length - 1);
 
@@ -109,9 +140,9 @@ function scaleY(value) {
 	// 假設 SVG 高度為 400px，且留有 50px 邊界
 	const maxValue =  translateLabelToNum(yLabels.value.labels[yLabels.value.labels.length - 1]);// yLabels 最大值
 	const minValue =  translateLabelToNum(yLabels.value.labels[0]);
-	const scaledValue = svgHeight.value - yAxisHeight - safeDistance - ((value - minValue)/ (maxValue - minValue)) * (svgHeight.value - (yAxisHeight + safeDistance) * 2);
-	return scaledValue > svgHeight.value - yAxisHeight 
-		? svgHeight.value - yAxisHeight 
+	const scaledValue = svgHeight - yAxisHeight - safeDistance - ((value - minValue)/ (maxValue - minValue)) * (svgHeight - (yAxisHeight + safeDistance) * 2);
+	return scaledValue > svgHeight - yAxisHeight 
+		? svgHeight - yAxisHeight 
 		: scaledValue < yAxisHeight 
 			? yAxisHeight 
 			: scaledValue; 
@@ -224,7 +255,7 @@ const toggleBubble = (point) => {
 const mouseOverBubble = (point) => {
 	currentHoverPoint.value = {
 		...point,
-		xLine: { x1: point.x, y1: svgHeight.value - yAxisHeight, x2: point.x, y2: point.y + point.z }, // Line from bubble to x-axis
+		xLine: { x1: point.x, y1: svgHeight - yAxisHeight, x2: point.x, y2: point.y + point.z }, // Line from bubble to x-axis
 		yLine: { x1: xAxisWidth, y1: point.y, x2: point.x - point.z, y2: point.y } // Line from bubble to y-axis
 	}
 };

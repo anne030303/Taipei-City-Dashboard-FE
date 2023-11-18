@@ -118,19 +118,22 @@ function handleDataSelection(e, chartContext, config) {
 				? props.chart_config.map_filter[1]
 				: props.chart_config.map_filter[1].filter((key, index) =>
 						config.selectedDataPoints[0].includes(index)
-				  )
+				  ),
+			props.map_config[0]
 		);
 		// 單選
 	} else if (config.dataPointIndex !== selectedIndex.value) {
 		mapStore.addLayerFilter(
 			`${props.map_config[0].index}-${props.map_config[0].type}`,
 			props.chart_config.map_filter[0],
-			props.chart_config.map_filter[1][config.dataPointIndex]
+			props.chart_config.map_filter[1][config.dataPointIndex],
+			props.map_config[0]
 		);
 		selectedIndex.value = config.dataPointIndex;
 	} else {
 		mapStore.clearLayerFilter(
-			`${props.map_config[0].index}-${props.map_config[0].type}`
+			`${props.map_config[0].index}-${props.map_config[0].type}`,
+			props.map_config[0]
 		);
 		selectedIndex.value = null;
 	}
