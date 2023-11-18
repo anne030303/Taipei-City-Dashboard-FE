@@ -3,7 +3,7 @@
 <!-- TODO: 記得把detetminScaleAndLabels 的東西去掉 -->
 
 <script setup>
-import { ref, watch, computed, watchEffect } from 'vue';
+import { ref, watch, computed, watchEffect, onMounted } from 'vue';
 import CustomTooltip from '../charts/CustomTooltip.vue';
 import { useRoute } from 'vue-router';
 import { determineScaleAndLabels } from '../../assets/utilityFunctions/determineScaleAndLabels';
@@ -17,6 +17,12 @@ const props = defineProps([
 	"map_config",
 	"isDialog"
 ]);
+
+const colorDicForTownName = {
+	'中山區': '#66C5CC','中正區': '#F6CF71','信義區':'#F89C74','內湖區': '#DCB0F2','北投區':'#87C55F',
+	'南港區': '#9EB9F3', '士林區': '#FE88B1', '大同區': '#C9DB74', '大安區': '#8BE0A4',
+	'文山區': '#B497E7', '松山區': '#D3B484', '萬華區': '#B3B3B3'
+}
 
 const setting =  {
 	dashboard: {
@@ -43,7 +49,7 @@ const setting =  {
 		xAxisWidth: 70,
 		yAxisHeight: 50,
 		xAxisWidthSafteDistance: 15,
-		yAxisHeightSafteDistance: 20,
+		yAxisHeightSafteDistance: -30,
 		safeDistance: 20,
 	}
 }
@@ -92,7 +98,7 @@ watch(route, (newRoute) => {
 	}
 });
 
-const dataPoints = ref(props["series"][0].data);
+const dataPoints = ref(props["series"]);
 
 // 老人人口數
 const xLabels = computed(() => determineScaleAndLabels(dataPoints.value, 'x', layout));
@@ -124,7 +130,7 @@ const containerRef = ref(null);
 
 
 // 定義初始年份
-const currentYear = ref(1890);
+const currentYear = ref(2022);
 // const isPlaying = ref(false);
 // let intervalId = null;
 
@@ -157,7 +163,7 @@ function scaleY(value) {
 function scaleZ(value) {
 	// 基於數據點的 z 值定義一個合適的比例來計算半徑
 	const maxSize = (maxZ.value); // 假設最大的 z 值
-	const maxRadius = 70; // 最大半徑為 40px
+	const maxRadius = 20; // 最大半徑為 0px
 	const scaleZ = ((value) / maxSize) * maxRadius;
 	return scaleZ < 2 ? 2 : scaleZ; // 轉換為半徑
 }
@@ -204,6 +210,8 @@ function isOverlap(index, axisType) {
 	}
 }
 
+console.log(currentDataPoints.value);
+
 
 watchEffect(() => {
 	// 計算當前顯示的數據點, currentYear有變動時就重新計算
@@ -218,6 +226,7 @@ watchEffect(() => {
 	).map((point, index) => ({
 		index: index,
 		country: point.country,
+		category: point.category,
 		year: point.year,
 		x: scaleX(point.x),
 		y: scaleY(point.y),
@@ -273,10 +282,7 @@ const mouseLeaveBubble = () => {
 
 // 使用計算屬性來確定 fill 顏色
 const getFill = (point) => {
-	if (point.hover && !point.active) {
-		return 'red';
-	}
-	return point.active ? 'red' : 'blue';
+	return colorDicForTownName[point.category];
 };
 
 // 計算屬性：根據 Bubble 的活躍狀態計算透明度
@@ -304,31 +310,35 @@ const isShowTooltip = (point) =>{
 	}
 }
 
+const isPlaying = ref(false);
+let intervalId = null;
 
-// 開始播放
-// const startPlaying = () => {
-// 	if (!isPlaying.value) {
-// 		isPlaying.value = true;
-// 		intervalId = setInterval(() => {
-// 			const nextYear = currentYear.value + 1;
-// 			const lastYear = Math.max(...dataPoints.value.map(p => p.year));
-// 			if (nextYear > lastYear) {
-// 				stopPlaying(); // 如果超出了数据范围，则停止播放
-// 			} else {
-// 				currentYear.value = nextYear;
-// 			}
-// 		}, 200);
-// 	}
-// };
+const startPlaying = () => {
+	if (!isPlaying.value) {
+		isPlaying.value = true;
+		intervalId = setInterval(() => {
+			const nextYear = currentYear.value + 1;
+			const lastYear = Math.max(...dataPoints.value.map(p => p.year));
+			if (nextYear > lastYear) {
+				stopPlaying(); // 如果超出了数据范围，则停止播放
+			} else {
+				currentYear.value = nextYear;
+			}
+		}, 500);
+	}
+};
 
 // 停止播放
-// const stopPlaying = () => {
-// 	if (isPlaying.value) {
-// 		clearInterval(intervalId);
-// 		isPlaying.value = false;
-// 	}
-// };
+const stopPlaying = () => {
+	if (isPlaying.value) {
+		clearInterval(intervalId);
+		isPlaying.value = false;
+	}
+};
 
+onMounted(() => {
+	startPlaying()
+})
 
 const callineLengthBetweenTwoBubbles = (point1, point2) => {
 	if(point1){
@@ -380,22 +390,12 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 		<line v-for="i in (xLabels.labels.length)" :key="'y'+i" :id="'x'+i" :x1="xAxisWidth + safeDistance + (i - 1) * (svgWidth - (xAxisWidth + safeDistance) * 2) / (xLabels.labels.length - 1)" :y1="svgHeight - yAxisHeight" :x2="xAxisWidth + safeDistance + (i - 1) * (svgWidth - (xAxisWidth + safeDistance) * 2) / (xLabels.labels.length - 1)" :y2="yAxisHeight" stroke="#F1EFEF" stroke-width="0.5"/>
 	</g>
 	<!-- 軸標籤 -->
-	<text fill="#fff" :x="svgWidth / 2" :y="svgHeight - xAxisWidthSafteDistance" text-anchor="middle">Income</text>
-	<text fill="#fff" :y="svgHeight / 2 - yAxisHeight  + yAxisHeightSafteDistance" text-anchor="start" transform="rotate(-90 20,200)">Life expectancy</text>
+	<text fill="#fff" :x="svgWidth / 2" :y="svgHeight - xAxisWidthSafteDistance" text-anchor="middle">婦女生育人口數佔比</text>
+	<text fill="#fff" :y="svgHeight / 2 - yAxisHeight  + yAxisHeightSafteDistance" :text-anchor="layout !== 'popoutwindow' ? 'start' :'end'" transform="rotate(-90 20,200)">三階段_幼年人口佔比</text>
 	<!-- 中央年份 -->
 	<text class="central-text" fill="#fff" :x="svgWidth / 2" :y="svgHeight / 1.8" text-anchor="middle" 
 	:style="{fontSize: svgWidth < 600 ? '5rem' : '8rem'}"
 	opacity="0.5">{{currentYear}}</text>
-
-	<!-- X 軸平均值線 -->
-	<line :x1="averageX" :y1="yAxisHeight" :x2="averageX" :y2="svgHeight - yAxisHeight" stroke="#FF0000" stroke-dasharray="5,5"/>
-	<!-- X 軸中位數線 -->
-	<line :x1="medianX" :y1="yAxisHeight" :x2="medianX" :y2="svgHeight - yAxisHeight" stroke="#00FF00" stroke-dasharray="5,5"/>
-
-	<!-- Y 軸平均值線 -->
-	<line :x1="xAxisWidth" :y1="averageY" :x2="svgWidth - xAxisWidth" :y2="averageY" stroke="#FF0000" stroke-dasharray="5,5"/>
-	<!-- Y 軸中位數線 -->
-	<line :x1="xAxisWidth" :y1="medianY" :x2="svgWidth - xAxisWidth" :y2="medianY" stroke="#00FF00" stroke-dasharray="5,5"/>
 
 	<!-- 渲染當前年份的數據點 -->
 	<g v-show="currentDataPoints.length > 0">
@@ -441,13 +441,23 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 			<text fill="#fff" ref="currentHoverPointYLabelBox" :x="xAxisWidth - 5" :y="currentHoverPoint.y" text-anchor="end">{{ currentHoverPoint.originalY }}</text>
 		</g>
 
+			<!-- X 軸平均值線 -->
+		<line :x1="averageX" :y1="yAxisHeight" :x2="averageX" :y2="svgHeight - yAxisHeight" stroke="#FF0000" stroke-dasharray="5,5"/>
+		<!-- X 軸中位數線 -->
+		<line :x1="medianX" :y1="yAxisHeight" :x2="medianX" :y2="svgHeight - yAxisHeight" stroke="#00FF00" stroke-dasharray="5,5"/>
+
+		<!-- Y 軸平均值線 -->
+		<line :x1="xAxisWidth" :y1="averageY" :x2="svgWidth - xAxisWidth" :y2="averageY" stroke="#FF0000" stroke-dasharray="5,5"/>
+		<!-- Y 軸中位數線 -->
+		<line :x1="xAxisWidth" :y1="medianY" :x2="svgWidth - xAxisWidth" :y2="medianY" stroke="#00FF00" stroke-dasharray="5,5"/>
+
 		<!-- Tooltip -->
 		<g v-for="(currentDataPoint, currentDataPointIndex) in currentDataPoints" :key="'tooltip' + currentDataPointIndex">
 			<!-- 光暈效果 -->
 			<circle v-show="isShowHalo(currentDataPoint)"
 				class="glow data-point"
 				:cx="currentDataPoint.x" :cy="currentDataPoint.y" :r="currentDataPoint.z + 6"
-				fill="none" stroke="rgb(255, 88, 114)" stroke-width="3" />
+				fill="none" :stroke="getFill(currentDataPoint)" stroke-width="2" />
 			<CustomTooltip
 				v-if="isShowTooltip(currentDataPoint)"
 				:bubble="currentDataPoint"
@@ -466,7 +476,7 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 	}
 	
     .glow {
-        filter: blur(2px);
+        filter: blur(1px);
     }
 
     .data-point {

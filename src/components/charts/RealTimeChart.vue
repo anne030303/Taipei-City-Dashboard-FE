@@ -4,11 +4,18 @@
 
 <script setup>
 import { ref, watch, computed, watchEffect, onMounted } from 'vue';
-import CustomTooltip from '../charts/CustomTooltip.vue';
+import CustomTooltipForRealChart from './CustomTooltipForRealChart.vue'
 import { useRoute } from 'vue-router';
 import { determineScaleAndLabels } from '../../assets/utilityFunctions/determineScaleAndLabels2';
 // import {calculateAverage} from '../../assets/utilityFunctions/calculateAverage'; 
 // import {calculateMedian} from '../../assets/utilityFunctions/calculateMedian'; 
+
+
+const colorDicForTownName = {
+	'中山區': '#66C5CC','中正區': '#F6CF71','信義區':'#F89C74','內湖區': '#DCB0F2','北投區':'#87C55F',
+	'南港區': '#9EB9F3', '士林區': '#FE88B1', '大同區': '#C9DB74', '大安區': '#8BE0A4',
+	'文山區': '#B497E7', '松山區': '#D3B484', '萬華區': '#B3B3B3'
+}
 
 const props = defineProps([
 	"chart_config",
@@ -43,7 +50,7 @@ const setting =  {
 		xAxisWidth: 70,
 		yAxisHeight: 50,
 		xAxisWidthSafteDistance: 15,
-		yAxisHeightSafteDistance: 20,
+		yAxisHeightSafteDistance: -40,
 		safeDistance: 0,
 	}
 }
@@ -101,7 +108,6 @@ const currentHoverPoint = ref(null);
 // const averageY =  computed(() => calculateAverage(currentDataPoints.value.map(point => point.x)));
 // const medianY =  computed(() => calculateMedian(currentDataPoints.value.map(point => point.y)));
 
-console.log(currentDataPoints.value);
 
 
 // 追蹤被點選的Bubble
@@ -235,10 +241,7 @@ const mouseLeaveBubble = () => {
 
 // 使用計算屬性來確定 fill 顏色
 const getFill = (point) => {
-	if (point.hover && !point.active) {
-		return 'red';
-	}
-	return point.active ? 'red' : 'blue';
+	return colorDicForTownName[point.category]
 };
 
 // 計算屬性：根據 Bubble 的活躍狀態計算透明度
@@ -253,7 +256,9 @@ const isShowHalo = (point) => {
 
 // 計算顯示tooltip, 
 const isShowTooltip = (point) =>{
-	if(point.hover) return true
+	if(point.year === currentYear.value) return true
+
+	return false
 }
 
 
@@ -269,8 +274,8 @@ const callineLengthBetweenTwoBubbles = (point1, point2) => {
 	return 0
 }
 
-const isPlaying = ref(false);
-let intervalId = null;
+// const isPlaying = ref(false);
+// let intervalId = null;
 
 
 const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
@@ -337,8 +342,8 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 		<line v-for="i in (xLabels.length)" :key="'y'+i" :id="'x'+i" :x1="xAxisWidth + safeDistance + (i - 1) * (svgWidth - (xAxisWidth + safeDistance) * 2) / (xLabels.length - 1)" :y1="svgHeight - yAxisHeight" :x2="xAxisWidth + safeDistance + (i - 1) * (svgWidth - (xAxisWidth + safeDistance) * 2) / (xLabels.length - 1)" :y2="yAxisHeight" stroke="#F1EFEF" stroke-width="0.5"/>
 	</g>
 	<!-- 軸標籤 -->
-	<text fill="#fff" :x="svgWidth / 2" :y="svgHeight - xAxisWidthSafteDistance" text-anchor="middle">Income</text>
-	<text fill="#fff" :y="svgHeight / 2 - yAxisHeight  + yAxisHeightSafteDistance" text-anchor="start" transform="rotate(-90 20,200)">Life expectancy</text>
+	<text fill="#fff" :x="svgWidth / 2" :y="svgHeight - xAxisWidthSafteDistance" text-anchor="middle">年份</text>
+	<text fill="#fff" :y="svgHeight / 2 - yAxisHeight  + yAxisHeightSafteDistance" :text-anchor="layout !== 'popoutwindow' ? 'start' :'end'" transform="rotate(-90 20,200)">{{'小於15歲人口總數'}}</text>
 	<!-- 中央年份 -->
 	<text class="central-text" fill="#fff" :x="svgWidth / 2" :y="svgHeight / 1.8" text-anchor="middle" 
 	:style="{fontSize: svgWidth < 600 ? '5rem' : '8rem'}"
@@ -366,6 +371,7 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 			/>
 			<line
 				class="vzb-trail-line"
+				:stroke="getFill(currentDataPoint)"
 				v-if="isShowConnectLine(currentDataPoint, currentDataPointIndex)"
 				:x1="currentDataPoint.x"
 				:x2="currentDataPoints[currentDataPointIndex + 1].x"
@@ -391,12 +397,7 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 
 		<!-- Tooltip -->
 		<g v-for="(currentDataPoint, currentDataPointIndex) in currentDataPoints" :key="'tooltip' + currentDataPointIndex">
-			<!-- 光暈效果 -->
-			<circle v-show="false"
-				class="glow data-point"
-				:cx="currentDataPoint.x" :cy="currentDataPoint.y" :r="currentDataPoint.z + 6"
-				fill="none" stroke="rgb(255, 88, 114)" stroke-width="3" />
-			<CustomTooltip
+			<CustomTooltipForRealChart
 				v-if="isShowTooltip(currentDataPoint)"
 				:bubble="currentDataPoint"
 				:chart-dimensions="{ width: svgWidth, height: svgHeight,  xAxisWidth, yAxisHeight}"
@@ -410,7 +411,7 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 <style scoped>
 
 	text{
-		font-size: 0.72rem;
+		font-size: 0.75rem;
 	}
 	
     .glow {
@@ -428,7 +429,7 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 
     .vzb-trail-line{
         stroke-width: 2.06321;
-        stroke: rgb(0, 152, 223);
+        /* stroke: rgb(0, 152, 223); */
         opacity: 1;
     }
 

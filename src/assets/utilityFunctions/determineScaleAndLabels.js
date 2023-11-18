@@ -5,8 +5,7 @@
 export function determineScaleAndLabels(dataPoints, axis, isMapView) {
 
 	// 記得移除
-	const values = axis === 'x' ? dataPoints.map(point => point[axis]).filter(value => value <= 256000)
-		: dataPoints.map(point => point[axis]).filter(value => value <= 100)
+	const values = dataPoints.map(point => point[axis])
 
 	const max = Math.max(...values);
 	const min = Math.min(...values) <= 0 ? 1: Math.min(...values);
