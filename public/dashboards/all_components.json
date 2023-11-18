@@ -5164,6 +5164,28 @@
 			"contributors": [
 				"Wee Win"
 			]
+		},
+		"149": {
+			"id": 149,
+			"index": "custom_bubble_chart",
+			"map_config": null,
+			"history_data": true,
+			"chart_config": {
+				"types": [
+					"CustomBubbleChart"
+				]
+			},
+			"name": "custom_bubble_chart",
+			"time_from": "",
+			"time_to": "",
+			"short_desc": "",
+			"long_desc": "",
+			"use_case": "",
+			"tags": [],
+			"links": [],
+			"contributors": [
+				"Wee Win"
+			]
 		}
 	}
 }

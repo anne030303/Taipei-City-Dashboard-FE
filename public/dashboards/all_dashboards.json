@@ -136,6 +136,14 @@
 				"106"
 			],
 			"icon": "public"
+		},
+		{
+			"name": "客製化組件",
+			"index": "kenny",
+			"components": [
+				"149"
+			],
+			"icon": "public"
 		}
 	]
 }
