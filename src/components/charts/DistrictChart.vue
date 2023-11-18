@@ -12,10 +12,18 @@ const props = defineProps([
 ]);
 const mapStore = useMapStore();
 
+const allowMultipleDataPointsSelection = ref(
+	(props.chart_config.map_filter?.length === 3 &&
+		props.chart_config.map_filter[2].allowMultipleDataPointsSelection.includes(
+			"DistrictChart"
+		)) ||
+		false
+);
+
 const targetDistrict = ref(null);
 const districtColor = ref(props.chart_config.color[0]);
 const mousePosition = ref({ x: null, y: null });
-const selectedIndex = ref(null);
+const selectedIndex = ref([]);
 
 // Parse District Data (to support 2D or 3D data)
 const districtData = computed(() => {
@@ -74,19 +82,37 @@ function handleDataSelection(index) {
 	if (!props.chart_config.map_filter) {
 		return;
 	}
-	console.log(index);
-	if (index !== selectedIndex.value) {
+	if (allowMultipleDataPointsSelection.value) {
+		if (selectedIndex.value.includes(index)) {
+			const indexToRemove = selectedIndex.value.indexOf(index);
+			if (indexToRemove !== -1) {
+				selectedIndex.value.splice(indexToRemove, 1);
+			}
+		} else {
+			selectedIndex.value.push(index);
+		}
+		mapStore.addLayerMultiFilter(
+			`${props.map_config[0].index}-${props.map_config[0].type}`,
+			props.chart_config.map_filter[0],
+			selectedIndex.value.length === 0
+				? props.chart_config.map_filter[1]
+				: props.chart_config.map_filter[1].filter((key, index) =>
+						selectedIndex.value.includes(index)
+				  ),
+			props.map_config[0]
+		);
+	} else if (!selectedIndex.value.includes(index)) {
 		mapStore.addLayerFilter(
 			`${props.map_config[0].index}-${props.map_config[0].type}`,
 			props.chart_config.map_filter[0],
 			props.chart_config.map_filter[1][index]
 		);
-		selectedIndex.value = index;
+		selectedIndex.value = [index];
 	} else {
 		mapStore.clearLayerFilter(
 			`${props.map_config[0].index}-${props.map_config[0].type}`
 		);
-		selectedIndex.value = null;
+		selectedIndex.value = [];
 	}
 }
 </script>
@@ -112,7 +138,7 @@ function handleDataSelection(index) {
 						:class="{
 							'active-district':
 								targetDistrict === '北投區' ||
-								selectedIndex === 0,
+								selectedIndex.includes(0),
 							'initial-animation-1': true,
 						}"
 						@mouseenter="toggleActive"
@@ -130,7 +156,7 @@ function handleDataSelection(index) {
 						:class="{
 							'active-district':
 								targetDistrict === '士林區' ||
-								selectedIndex === 1,
+								selectedIndex.includes(1),
 							'initial-animation-2': true,
 						}"
 						@mouseenter="toggleActive"
@@ -148,7 +174,7 @@ function handleDataSelection(index) {
 						:class="{
 							'active-district':
 								targetDistrict === '內湖區' ||
-								selectedIndex === 2,
+								selectedIndex.includes(2),
 							'initial-animation-3': true,
 						}"
 						@mouseenter="toggleActive"
@@ -166,7 +192,7 @@ function handleDataSelection(index) {
 						:class="{
 							'active-district':
 								targetDistrict === '中山區' ||
-								selectedIndex === 6,
+								selectedIndex.includes(6),
 							'initial-animation-4': true,
 						}"
 						@mouseenter="toggleActive"
@@ -184,7 +210,7 @@ function handleDataSelection(index) {
 						:class="{
 							'active-district':
 								targetDistrict === '大同區' ||
-								selectedIndex === 7,
+								selectedIndex.includes(7),
 							'initial-animation-5': true,
 						}"
 						@mouseenter="toggleActive"
@@ -202,7 +228,7 @@ function handleDataSelection(index) {
 						:class="{
 							'active-district':
 								targetDistrict === '中正區' ||
-								selectedIndex === 8,
+								selectedIndex.includes(8),
 							'initial-animation-6': true,
 						}"
 						@mouseenter="toggleActive"
@@ -220,7 +246,7 @@ function handleDataSelection(index) {
 						:class="{
 							'active-district':
 								targetDistrict === '萬華區' ||
-								selectedIndex === 9,
+								selectedIndex.includes(9),
 							'initial-animation-7': true,
 						}"
 						@mouseenter="toggleActive"
@@ -238,7 +264,7 @@ function handleDataSelection(index) {
 						:class="{
 							'active-district':
 								targetDistrict === '大安區' ||
-								selectedIndex === 10,
+								selectedIndex.includes(10),
 							'initial-animation-8': true,
 						}"
 						@mouseenter="toggleActive"
@@ -256,7 +282,7 @@ function handleDataSelection(index) {
 						:class="{
 							'active-district':
 								targetDistrict === '信義區' ||
-								selectedIndex === 5,
+								selectedIndex.includes(5),
 							'initial-animation-9': true,
 						}"
 						@mouseenter="toggleActive"
@@ -274,7 +300,7 @@ function handleDataSelection(index) {
 						:class="{
 							'active-district':
 								targetDistrict === '松山區' ||
-								selectedIndex === 4,
+								selectedIndex.includes(4),
 							'initial-animation-10': true,
 						}"
 						@mouseenter="toggleActive"
@@ -292,7 +318,7 @@ function handleDataSelection(index) {
 						:class="{
 							'active-district':
 								targetDistrict === '南港區' ||
-								selectedIndex === 3,
+								selectedIndex.includes(3),
 							'initial-animation-11': true,
 						}"
 						@mouseenter="toggleActive"
@@ -310,7 +336,7 @@ function handleDataSelection(index) {
 						:class="{
 							'active-district':
 								targetDistrict === '文山區' ||
-								selectedIndex === 11,
+								selectedIndex.includes(11),
 							'initial-animation-12': true,
 						}"
 						@mouseenter="toggleActive"

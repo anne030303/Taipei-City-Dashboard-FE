@@ -229,10 +229,10 @@ export const useMapStore = defineStore("map", {
 						`${mapLayerId}-${feature.properties.FULL}-${feature.properties.cat_age_index}`
 					];
 
-				console.log(
-					this.currentFieldName,
-					feature.properties[this.currentFieldName]
-				);
+				// console.log(
+				// 	this.currentFieldName,
+				// 	feature.properties[this.currentFieldName]
+				// );
 				tb.set({
 					scale: {
 						x:
@@ -684,6 +684,22 @@ export const useMapStore = defineStore("map", {
 					);
 				}, 500);
 			}
+			// "fill-extrusion-color": [
+			// 	"match",
+			// 	[
+			// 		"get",
+			// 		"都更機會"
+			// 	],
+			// 	"高液化且大於20年",
+			// 	"#fbb03b",
+			// 	"大於30年",
+			// 	"#223b53",
+			// 	"已在都更範圍",
+			// 	"#e55e5e",
+			// 	"沒有",
+			// 	"#3bb2d0",
+			// 	"#ccc"
+			// ]
 		},
 		// 6. Turn off the visibility of an exisiting map layer but don't remove it completely
 		turnOffMapLayerVisibility(map_config) {
@@ -1148,6 +1164,28 @@ export const useMapStore = defineStore("map", {
 				this.timeRange = range;
 				this.animate();
 			}
+		},
+		setAnimatePlot() {
+			console.log("setAnimatePlot");
+			// hex_pop_reduce
+			// this.map.setPaintProperty(
+			// 	"hex_pop_reduce",
+			// 	"fill-opacity",
+			// 	[
+			// 		"interpolate",
+			// 		[
+			// 			"linear"
+			// 		],
+			// 		[
+			// 			"get",
+			// 			"三階段_幼年人口"
+			// 		],
+			// 		0,
+			// 		0,
+			// 		193,
+			// 		0.8
+			// 	]
+			// )
 		},
 	},
 });
