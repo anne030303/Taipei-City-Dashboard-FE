@@ -3,12 +3,12 @@
 <!-- TODO: 記得把detetminScaleAndLabels 的東西去掉 -->
 
 <script setup>
-import { ref, watch, computed, watchEffect } from 'vue';
+import { ref, watch, computed, watchEffect, onMounted } from 'vue';
 import CustomTooltip from '../charts/CustomTooltip.vue';
 import { useRoute } from 'vue-router';
-import { determineScaleAndLabels } from '../../assets/utilityFunctions/determineScaleAndLabels';
-import {calculateAverage} from '../../assets/utilityFunctions/calculateAverage'; 
-import {calculateMedian} from '../../assets/utilityFunctions/calculateMedian'; 
+import { determineScaleAndLabels } from '../../assets/utilityFunctions/determineScaleAndLabels2';
+// import {calculateAverage} from '../../assets/utilityFunctions/calculateAverage'; 
+// import {calculateMedian} from '../../assets/utilityFunctions/calculateMedian'; 
 
 const props = defineProps([
 	"chart_config",
@@ -20,13 +20,13 @@ const props = defineProps([
 
 const setting =  {
 	dashboard: {
-		svgWidth: 400,
+		svgWidth: 420,
 		svgHeight: 320,
 		xAxisWidth: 50,
 		yAxisHeight: 40,
-		xAxisWidthSafteDistance: 75,
-		yAxisHeightSafteDistance: 15,
-		safeDistance: 15,
+		xAxisWidthSafteDistance: 10,
+		yAxisHeightSafteDistance: 75,
+		safeDistance: 0,
 	},
 	mapview: {
 		svgWidth: 380,
@@ -35,7 +35,7 @@ const setting =  {
 		yAxisHeight: 40,
 		xAxisWidthSafteDistance: 10,
 		yAxisHeightSafteDistance: 85,
-		safeDistance: 15,
+		safeDistance: 0,
 	},
 	popoutwindow: {
 		svgWidth: 900,
@@ -44,26 +44,11 @@ const setting =  {
 		yAxisHeight: 50,
 		xAxisWidthSafteDistance: 15,
 		yAxisHeightSafteDistance: 20,
-		safeDistance: 20,
+		safeDistance: 0,
 	}
 }
 
-// // 定義 X 軸和 Y 軸的標籤值, 邊界值
-// const xAxisWidth = 50;
-// const yAxisHeight = 40;
-
-// // x, y軸的預留間隔
-// const safeDistance = 15;
-
-// const xAxisWidthSafteDistance = 10;
-// const yAxisHeightSafteDistance = 85;
-
-// // 假設 SVG 的尺寸如下
-// const svgWidth = ref(380);
-// const svgHeight = ref(300);
-
-// The following are controls for the mobile version to toggle between dashboard and mapview
-const layout = ref("mapview");
+const layout = ref("dashboard");
 
 
 const route = useRoute();
@@ -92,21 +77,31 @@ watch(route, (newRoute) => {
 	}
 });
 
-const dataPoints = ref(props["series"][0].data);
+const sortData = (data) => {
+	return [...data].sort((a, b) => {
+		// If 'x' values are equal, sort by the 'category'
+		if (a.category < b.category) return -1;
+		if (a.category > b.category) return 1;
 
-// 老人人口數
-const xLabels = computed(() => determineScaleAndLabels(dataPoints.value, 'x', layout));
-// 老房人口數
+		return 0;
+	});
+}
+
+const dataPoints = ref(sortData(props["series"]));
+
+
+// year
+const xLabels = [2022, 2024, 2026, 2028, 2030, 2032, 2034, 2036, 2038, 2040];
+// < 15 人口
 const yLabels = computed(() => determineScaleAndLabels(dataPoints.value, 'y', layout));
 
-const maxZ = computed(() => Math.max(...dataPoints.value.map(point => point.z)));
 const currentDataPoints = ref([]);
 const currentHoverPoint = ref(null);
 
-const averageX = computed(() => calculateAverage(currentDataPoints.value.map(point => point.x)));
-const medianX =  computed(() => calculateMedian(currentDataPoints.value.map(point => point.x)));
-const averageY = computed(() => calculateAverage(currentDataPoints.value.map(point => point.y)));
-const medianY =  computed(() => calculateMedian(currentDataPoints.value.map(point => point.y)));
+// const averageY =  computed(() => calculateAverage(currentDataPoints.value.map(point => point.x)));
+// const medianY =  computed(() => calculateMedian(currentDataPoints.value.map(point => point.y)));
+
+console.log(currentDataPoints.value);
 
 
 // 追蹤被點選的Bubble
@@ -115,7 +110,7 @@ const currentHoverPointXLabelBox = ref(null);
 const currentHoverPointYLabelBox = ref(null);
 const activeCountries = computed(() => {
 	if(activeStatus.value.length > 0){
-		return activeStatus.value.map(item => item?.country)
+		return activeStatus.value.map(item => item?.category)
 	}
 	return []
 })	
@@ -124,42 +119,26 @@ const containerRef = ref(null);
 
 
 // 定義初始年份
-const currentYear = ref(1890);
-// const isPlaying = ref(false);
-// let intervalId = null;
+const currentYear = ref(2022);
 
+function scaleY(value) {
+	const plotHeigh = svgHeight - 2 * (yAxisHeight)
+	const labelValues = yLabels.value.labels.map((label) => translateLabelToNum(label));
+	const intervalHeigh = plotHeigh / (labelValues.length - 1);
 
-function scaleX(value) {
-	const plotWidth = svgWidth - 2 * (xAxisWidth + safeDistance)
-	const labelValues = xLabels.value.labels.map((label) => translateLabelToNum(label));
-	const intervalWidth = plotWidth / (labelValues.length - 1);
 
 	for (let i = 0; i < labelValues.length - 1; i++) {
 		if (value >= labelValues[i] && value <= labelValues[i + 1]) {
-			const relativePosition = (value - labelValues[i]) / (labelValues[i + 1] - labelValues[i]);
-			return (i * intervalWidth) + (relativePosition * intervalWidth) + xAxisWidth + safeDistance;
+			const relativePosition = 1 - (value - labelValues[i]) / (labelValues[i + 1] - labelValues[i]);
+			return plotHeigh - ((i+1) * intervalHeigh) + (relativePosition * intervalHeigh) + yAxisHeight;
 		}
 	}
 }
-
-function scaleY(value) {    
-	// 假設 SVG 高度為 400px，且留有 50px 邊界
-	const maxValue =  translateLabelToNum(yLabels.value.labels[yLabels.value.labels.length - 1]);// yLabels 最大值
-	const minValue =  translateLabelToNum(yLabels.value.labels[0]);
-	const scaledValue = svgHeight - yAxisHeight - safeDistance - ((value - minValue)/ (maxValue - minValue)) * (svgHeight - (yAxisHeight + safeDistance) * 2);
-	return scaledValue > svgHeight - yAxisHeight 
-		? svgHeight - yAxisHeight 
-		: scaledValue < yAxisHeight 
-			? yAxisHeight 
-			: scaledValue; 
-}
-
-function scaleZ(value) {
-	// 基於數據點的 z 值定義一個合適的比例來計算半徑
-	const maxSize = (maxZ.value); // 假設最大的 z 值
-	const maxRadius = 70; // 最大半徑為 40px
-	const scaleZ = ((value) / maxSize) * maxRadius;
-	return scaleZ < 2 ? 2 : scaleZ; // 轉換為半徑
+function scaleX(value) {    
+	const maxValue =  xLabels[xLabels.length - 1];// xLabels 最大值
+	const minValue =  xLabels[0];
+	const scaledValue = xAxisWidth + ((value - minValue)/ (maxValue - minValue)) * (svgWidth - (xAxisWidth) * 2);
+	return scaledValue  >  svgWidth - xAxisWidth? svgWidth - xAxisWidth + 5: scaledValue ; 
 }
 
 // 數值轉換
@@ -192,7 +171,6 @@ function isOverlap(index, axisType) {
 	const element1 = document.getElementById(`${axisType === 'x' ? 'xlabel' : 'ylabel'}${index}`);
 	const element2 = axisType === 'x' ? currentHoverPointXLabelBox : currentHoverPointYLabelBox;
 
-
 	if(element1 && element2.value){
 		const bbox1 = element1.getBBox();
 		const bbox2 = element2.value.getBBox();
@@ -204,58 +182,42 @@ function isOverlap(index, axisType) {
 	}
 }
 
-
 watchEffect(() => {
 	// 計算當前顯示的數據點, currentYear有變動時就重新計算
-	currentDataPoints.value = dataPoints.value.filter(point => {
-		return (
-			activeStatus.value.some(item => item.country === point.country && (item.startYear <= point.year && point.year <= currentYear.value)) ||
-        point.year === currentYear.value) &&
-        typeof point.x === 'number' &&
+	currentDataPoints.value = sortData(dataPoints.value.filter(point => {
+		return typeof point.x === 'number' &&
         typeof point.y === 'number' &&
-        typeof point.z === 'number'
+		currentYear.value >= point.year
 	}
 	).map((point, index) => ({
 		index: index,
-		country: point.country,
 		year: point.year,
 		x: scaleX(point.x),
 		y: scaleY(point.y),
-		z: scaleZ(point.z),
-		originalX: translateNumToLabel(point.x),
+		z: 2,
+		originalX: point.x,
 		originalY: translateNumToLabel(point.y),
-		originalZ: translateNumToLabel(point.z),
 		active: !!point?.active,
+		category: point.category,
 		hover: !!point?.hover
-	})) || [];
+	}))) || [];
+
 });
 
 
 watchEffect(() => {
 	for (const point of currentDataPoints.value) {
-		point.active = activeCountries.value.includes(point.country)
+		point.active = activeCountries.value.includes(point.category)
 	}
 })
 
 watchEffect(() => {
 	for (const point of currentDataPoints.value) {
-		point.hover = currentHoverPoint.value?.country === point.country && currentHoverPoint.value?.year === point.year
+		point.hover = currentHoverPoint.value?.category === point.category
 	}
 })
 
-// 方法：切換 Bubble 活躍狀態
-const toggleBubble = (point) => {
 
-	const countries = activeStatus.value.map(item => item?.country);
-
-	if(countries.includes(point.country)){
-		// {country: 'chn', startYear: 1990}
-		activeStatus.value = activeStatus.value.filter(item => item.country !== point.country);
-	}else{
-		activeStatus.value.push({country: point.country, startYear: point.year});
-	}
-
-};
 
 // 更新 mouseOverBubble 和 mouseLeaveBubble 方法來使用 reactive 數據點
 const mouseOverBubble = (point) => {
@@ -280,8 +242,8 @@ const getFill = (point) => {
 };
 
 // 計算屬性：根據 Bubble 的活躍狀態計算透明度
-const getOpacity = ((point) => {
-	return activeCountries.value.length === 0 &&  !currentHoverPoint.value  ? 0.8 : (activeCountries.value.includes(point.country) || currentHoverPoint.value?.country === point.country ?  0.8 : 0.1);
+const getOpacity = (() => {
+	return activeCountries.value.length === 0 &&  !currentHoverPoint.value  ? 0.8 : 0.1;
 });
 
 // 計算要不要顯示光暈
@@ -291,43 +253,8 @@ const isShowHalo = (point) => {
 
 // 計算顯示tooltip, 
 const isShowTooltip = (point) =>{
-
 	if(point.hover) return true
-
-	if(activeCountries.value.includes(point.country)){
-        
-
-		const pointList = currentDataPoints.value.filter(curPoint => curPoint.country === point.country);
-        
-		if(pointList.length === 1 || pointList.sort((a, b) => a.year - b.year)[0].year === point.year) return true
-        
-	}
 }
-
-
-// 開始播放
-// const startPlaying = () => {
-// 	if (!isPlaying.value) {
-// 		isPlaying.value = true;
-// 		intervalId = setInterval(() => {
-// 			const nextYear = currentYear.value + 1;
-// 			const lastYear = Math.max(...dataPoints.value.map(p => p.year));
-// 			if (nextYear > lastYear) {
-// 				stopPlaying(); // 如果超出了数据范围，则停止播放
-// 			} else {
-// 				currentYear.value = nextYear;
-// 			}
-// 		}, 200);
-// 	}
-// };
-
-// 停止播放
-// const stopPlaying = () => {
-// 	if (isPlaying.value) {
-// 		clearInterval(intervalId);
-// 		isPlaying.value = false;
-// 	}
-// };
 
 
 const callineLengthBetweenTwoBubbles = (point1, point2) => {
@@ -342,29 +269,59 @@ const callineLengthBetweenTwoBubbles = (point1, point2) => {
 	return 0
 }
 
-// connectLine 的資料順序性
+const isPlaying = ref(false);
+let intervalId = null;
+
+
 const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
-	if(currentDataPoints.value[currentDataPointIndex - 1]){
-		const lineLengthBetweenTwoPoints  = callineLengthBetweenTwoBubbles(currentDataPoints.value[currentDataPointIndex + 1], currentDataPoint) 
-        
-		return (currentDataPoint?.country === currentDataPoints.value[currentDataPointIndex + 1]?.country 
-            && lineLengthBetweenTwoPoints > currentDataPoint.z + currentDataPoints.value[currentDataPointIndex + 1]?.z)
+	if(currentDataPoints.value[currentDataPointIndex + 1]){
+		return (currentDataPoint?.category === currentDataPoints.value[currentDataPointIndex + 1]?.category)
+
 	} 
 	return false
 }
 
+// const startPlaying = () => {
+// 	if (!isPlaying.value) {
+// 		isPlaying.value = true;
+// 		intervalId = setInterval(() => {
+// 			const nextYear = currentYear.value + 1;
+// 			const lastYear = Math.max(...dataPoints.value.map(p => p.year));
+// 			if (nextYear > lastYear) {
+// 				stopPlaying(); // 如果超出了数据范围，则停止播放
+// 			} else {
+// 				currentYear.value = nextYear;
+// 			}
+// 		}, 500);
+// 	}
+// };
+
+// // 停止播放
+// const stopPlaying = () => {
+// 	if (isPlaying.value) {
+// 		clearInterval(intervalId);
+// 		isPlaying.value = false;
+// 	}
+// };
+
+// onMounted(() => {
+// 	startPlaying()
+// })
+
 </script>
 
 <template>
-	<div v-if="activeChart === 'CustomBubbleChart'" :key="updateTrigger" ref="containerRef">
+	<div v-if="activeChart === 'RealTimeChart'" :key="updateTrigger" ref="containerRef">
+		
 		<svg :width="svgWidth" :height="svgHeight">
 			<rect width="100%" height="100%" fill="#333"/>
 	<!-- X軸 -->
-	<line :x1="xAxisWidth" :y1="svgHeight - yAxisHeight" :x2="svgWidth - xAxisWidth" :y2="svgHeight - yAxisHeight"  stroke="#ccc" />
+	<!-- 多出來的5 for 2041年... -->
+	<line :x1="xAxisWidth" :y1="svgHeight - yAxisHeight" :x2="svgWidth - xAxisWidth + 5" :y2="svgHeight - yAxisHeight"  stroke="#ccc" />
 	<!-- Y軸 -->
 	<line :x1="xAxisWidth" :y1="svgHeight - yAxisHeight" :x2="xAxisWidth" :y2="yAxisHeight" stroke="#ccc"/>
 	<!-- X軸標籤 -->
-	<text :y="svgHeight - 30" text-anchor="middle" v-for="(label, i) in xLabels.labels" :key="'xlabel'+i" :id="'xlabel'+i" :x="xAxisWidth + safeDistance + (i) * (svgWidth - (xAxisWidth + safeDistance) * 2)/(xLabels.labels.length - 1)" :opacity="isOverlap(i, 'x') ? 0 : 1" fill="#fff">
+	<text :y="svgHeight - 30" text-anchor="middle" v-for="(label, i) in xLabels" :key="'xlabel'+i" :id="'xlabel'+i" :x="xAxisWidth + safeDistance + (i) * (svgWidth - (xAxisWidth + safeDistance) * 2)/(xLabels.length - 1)" :opacity="isOverlap(i, 'x') ? 0 : 1" fill="#fff">
 		{{ label }}
 	</text>
 	<!-- Y軸標籤 -->
@@ -377,7 +334,7 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 	</g>
 	<!-- 網格線 (Y軸) -->
 	<g stroke="lightgrey" >
-		<line v-for="i in (xLabels.labels.length)" :key="'y'+i" :id="'x'+i" :x1="xAxisWidth + safeDistance + (i - 1) * (svgWidth - (xAxisWidth + safeDistance) * 2) / (xLabels.labels.length - 1)" :y1="svgHeight - yAxisHeight" :x2="xAxisWidth + safeDistance + (i - 1) * (svgWidth - (xAxisWidth + safeDistance) * 2) / (xLabels.labels.length - 1)" :y2="yAxisHeight" stroke="#F1EFEF" stroke-width="0.5"/>
+		<line v-for="i in (xLabels.length)" :key="'y'+i" :id="'x'+i" :x1="xAxisWidth + safeDistance + (i - 1) * (svgWidth - (xAxisWidth + safeDistance) * 2) / (xLabels.length - 1)" :y1="svgHeight - yAxisHeight" :x2="xAxisWidth + safeDistance + (i - 1) * (svgWidth - (xAxisWidth + safeDistance) * 2) / (xLabels.length - 1)" :y2="yAxisHeight" stroke="#F1EFEF" stroke-width="0.5"/>
 	</g>
 	<!-- 軸標籤 -->
 	<text fill="#fff" :x="svgWidth / 2" :y="svgHeight - xAxisWidthSafteDistance" text-anchor="middle">Income</text>
@@ -387,22 +344,13 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 	:style="{fontSize: svgWidth < 600 ? '5rem' : '8rem'}"
 	opacity="0.5">{{currentYear}}</text>
 
-	<!-- X 軸平均值線 -->
-	<line :x1="averageX" :y1="yAxisHeight" :x2="averageX" :y2="svgHeight - yAxisHeight" stroke="#FF0000" stroke-dasharray="5,5"/>
-	<!-- X 軸中位數線 -->
-	<line :x1="medianX" :y1="yAxisHeight" :x2="medianX" :y2="svgHeight - yAxisHeight" stroke="#00FF00" stroke-dasharray="5,5"/>
-
-	<!-- Y 軸平均值線 -->
-	<line :x1="xAxisWidth" :y1="averageY" :x2="svgWidth - xAxisWidth" :y2="averageY" stroke="#FF0000" stroke-dasharray="5,5"/>
-	<!-- Y 軸中位數線 -->
-	<line :x1="xAxisWidth" :y1="medianY" :x2="svgWidth - xAxisWidth" :y2="medianY" stroke="#00FF00" stroke-dasharray="5,5"/>
 
 	<!-- 渲染當前年份的數據點 -->
 	<g v-show="currentDataPoints.length > 0">
 		<!-- 親眼見證key的用處 -->
 		<g v-for="(currentDataPoint, currentDataPointIndex) in currentDataPoints" 
-			:key="`vzb-bc-bubble-${currentDataPoint.country}-${activeCountries.includes(currentDataPoint.country) ? currentDataPoint.year === currentYear ? '00' : currentDataPoint.year : '00'}`"
-			:id="`vzb-bc-bubble-${currentDataPoint.country}-${activeCountries.includes(currentDataPoint.country) ? currentDataPoint.year === currentYear ? '00' : currentDataPoint.year : '00'}`"
+			:key="`vzb-bc-bubble-${currentDataPoint.category}-${currentDataPoint.year}`"
+			:id="`vzb-bc-bubble-${currentDataPoint.category}-${activeCountries.includes(currentDataPoint.category) ? currentDataPoint.year === currentYear ? '00' : currentDataPoint.year : '00'}`"
 		>
 			<!-- Bubbles -->
 			<circle 
@@ -444,7 +392,7 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 		<!-- Tooltip -->
 		<g v-for="(currentDataPoint, currentDataPointIndex) in currentDataPoints" :key="'tooltip' + currentDataPointIndex">
 			<!-- 光暈效果 -->
-			<circle v-show="isShowHalo(currentDataPoint)"
+			<circle v-show="false"
 				class="glow data-point"
 				:cx="currentDataPoint.x" :cy="currentDataPoint.y" :r="currentDataPoint.z + 6"
 				fill="none" stroke="rgb(255, 88, 114)" stroke-width="3" />
@@ -481,14 +429,7 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
     .vzb-trail-line{
         stroke-width: 2.06321;
         stroke: rgb(0, 152, 223);
-        opacity: 0;
-        animation: lineAppear 0.5s ease-out 0.01s forwards;
+        opacity: 1;
     }
 
-    @keyframes lineAppear {
-        to {
-            opacity: 1;
-        }
-    }  
-    
 </style>

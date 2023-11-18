@@ -22,8 +22,6 @@ const props = defineProps({
 	isMapLayer: { type: Boolean, default: false },
 });
 
-console.log(props.content);
-
 // The default active chart is the first one in the list defined in the dashboard component
 const activeChart = ref(props.content.chart_config.types[0]);
 

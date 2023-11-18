@@ -5553,6 +5553,28 @@
 			"contributors": [
 				"Wee Win"
 			]
+		},"158": {
+			"id": 158,
+			"index": "real-time-chart",
+			"map_config": null,
+			"history_data": false,
+			"chart_config": {
+				"types": [
+					"RealTimeChart"
+				]
+			},
+			"name": "real-time-chart",
+			"source": "台北市開放資料",
+			"time_from": "",
+			"time_to": "",
+			"short_desc": "",
+			"long_desc": "",
+			"use_case": "",
+			"tags": [],
+			"links": [],
+			"contributors": [
+				"Wee Win"
+			]
 		}
 	}
 }
