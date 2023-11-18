@@ -234,11 +234,6 @@ export const useMapStore = defineStore("map", {
 			this.currentFieldName = fieldName;
 
 			this.stackedCircleData.features.forEach((feature, index) => {
-				// console.log(
-				// 	index,
-				// 	this.currentFieldName,
-				// 	feature.properties[this.currentFieldName]
-				// );
 				const tb =
 					this.tubes[
 						`${mapLayerId}-${feature.properties.FULL}-${feature.properties.cat_age_index}`
@@ -838,6 +833,7 @@ export const useMapStore = defineStore("map", {
 		// Add a filter based on a property on a map layer
 		addLayerFilter(layer_id, property, key, map_config) {
 			const dialogStore = useDialogStore();
+
 			if (!this.map || dialogStore.dialogs.moreInfo) {
 				return;
 			}
@@ -856,6 +852,21 @@ export const useMapStore = defineStore("map", {
 						this.easeToLayer(layer_id, [[property], [[key]]], true);
 					}, 500);
 				}
+				return;
+			} else if (map_config && map_config.type === "stacked-circle") {
+				this.stackedCircleData.features.forEach((feature) => {
+					const tube =
+						this.tubes[
+							`${map_config.index}-${map_config.type}-source-${feature.properties.FULL}-${feature.properties.cat_age_index}`
+						];
+					if (feature.properties[property] === key) {
+						tube.hidden = false;
+					} else {
+						tube.hidden = true;
+					}
+				});
+				window.tb.update();
+				this.map.triggerRepaint();
 				return;
 			}
 			const filter = ["==", ["get", property], key];

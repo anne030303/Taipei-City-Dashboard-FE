@@ -2028,7 +2028,7 @@
 			"index": "dispatch",
 			"map_config": [
 				{
-					"index": "dispatchingpoint",
+					"index": "dispatchingpoint_new",
 					"paint": {
 						"circle-color": "#90dce9"
 					},
@@ -5128,27 +5128,28 @@
 					"#d1a26c",
 					"#b9734a",
 					"#9f4333",
+					"#800026",
 					"#800026"
 				],
-				"unit": "個網格",
+				"unit": "筆資料",
 				"animate": {
 					"min": 0,
 					"max": 39,
 					"label": "villa_age_stack_horiz_test"
 				},
 				"map_filter": [
-					"category",
+					"SEC_NAME",
 					[
-						"極低",
-						"低",
-						"中低",
-						"中",
-						"高"
+						"石牌地區",
+						"大屯地區",
+						"關渡地區",
+						"唭哩岸地區",
+						"舊北投地區",
+						"新北投地區",
+						"陽明山地區"
 					],
 					{
-						"allowMultipleDataPointsSelection": [
-							"BarChart"
-						]
+						"allowMultipleDataPointsSelection": []
 					}
 				]
 			},

@@ -361,7 +361,7 @@ function setCurrentIndex(e) {
 		transition: opacity 0.2s;
 		top: 10px;
 		right: 0;
-		z-index: 1;
+		z-index: 999;
 		&:hover {
 			opacity: 0.8;
 		}
