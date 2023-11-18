@@ -231,6 +231,7 @@ function setCurrentIndex(e) {
 				<p>組件資訊</p>
 				<span>arrow_circle_right</span>
 			</button>
+		</div>
 		<div
 			class="componentmapchart-timebar hide-if-mobile"
 			v-if="checked && content.chart_data && content.chart_config.animate"
