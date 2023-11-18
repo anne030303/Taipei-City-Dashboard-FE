@@ -33,9 +33,15 @@ watch(
 	[() => mapStore.currentIndex, () => animateChart.value],
 	([currentIndex, animateChartValue]) => {
 		if (props.content.index === animateChartValue) {
-			mapStore.setMapLayerSource(
-				`${props.content.map_config[0].index}-${props.content.map_config[0].type}-source`
-			);
+			console.log(props.content, mapStore.currentIndex);
+			if (props.content.index === "stat_pop_nangang") {
+				mapStore.setMapLayerSource(
+					`${props.content.map_config[0].index}-${props.content.map_config[0].type}-source`
+				);
+			}
+			if (props.content.type === "1-3") {
+				mapStore.setAnimatePlot();
+			}
 		}
 	}
 );
@@ -346,6 +352,7 @@ function setCurrentIndex(e) {
 
 	&-chart,
 	&-loading {
+		margin-top: 20px;
 		height: 80%;
 		position: relative;
 		overflow-y: scroll;
@@ -359,7 +366,7 @@ function setCurrentIndex(e) {
 		display: flex;
 		align-items: center;
 		transition: opacity 0.2s;
-		top: 10px;
+		top: 0;
 		right: 0;
 		z-index: 999;
 		&:hover {

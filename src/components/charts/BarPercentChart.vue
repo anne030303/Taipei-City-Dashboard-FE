@@ -12,6 +12,14 @@ const props = defineProps([
 ]);
 const mapStore = useMapStore();
 
+const allowMultipleDataPointsSelection = ref(
+	(props.chart_config.map_filter?.length === 3 &&
+		props.chart_config.map_filter[2].allowMultipleDataPointsSelection.includes(
+			"BarPercentChart"
+		)) ||
+		false
+);
+
 const chartOptions = ref({
 	chart: {
 		stacked: true,
@@ -76,6 +84,16 @@ const chartOptions = ref({
 		},
 		type: "category",
 	},
+	states: {
+		active: {
+			allowMultipleDataPointsSelection:
+				allowMultipleDataPointsSelection.value,
+			filter: {
+				type: "darken",
+				value: 0.5,
+			},
+		},
+	},
 });
 
 const chartHeight = computed(() => {
@@ -88,16 +106,38 @@ function handleDataSelection(e, chartContext, config) {
 	if (!props.chart_config.map_filter) {
 		return;
 	}
-	if (config.dataPointIndex !== selectedIndex.value) {
+	let toFilter = `${config.dataPointIndex} -${config.seriesIndex}`;
+	// 多選
+	if (allowMultipleDataPointsSelection.value) {
+		const { map_filter } = props.chart_config.map_filter[2];
+		const filter_data = [];
+		config.selectedDataPoints.forEach((x, y) => {
+			x.forEach((xIndex) => {
+				filter_data.push([
+					map_filter[0].data[y],
+					map_filter[1].data[xIndex],
+				]);
+			});
+		});
+		mapStore.addLayerMultiFilter(
+			`${props.map_config[0].index}-${props.map_config[0].type}`,
+			[map_filter[0].name, map_filter[1].name],
+			filter_data,
+			props.map_config[0]
+		);
+		// 單選
+	} else if (toFilter !== selectedIndex.value) {
 		mapStore.addLayerFilter(
 			`${props.map_config[0].index}-${props.map_config[0].type}`,
 			props.chart_config.map_filter[0],
-			props.chart_config.map_filter[1][config.dataPointIndex]
+			props.chart_config.map_filter[1][config.dataPointIndex],
+			props.map_config[0]
 		);
-		selectedIndex.value = config.dataPointIndex;
+		selectedIndex.value = toFilter;
 	} else {
 		mapStore.clearLayerFilter(
-			`${props.map_config[0].index}-${props.map_config[0].type}`
+			`${props.map_config[0].index}-${props.map_config[0].type}`,
+			props.map_config[0]
 		);
 		selectedIndex.value = null;
 	}
@@ -105,7 +145,7 @@ function handleDataSelection(e, chartContext, config) {
 </script>
 
 <template>
-	<div v-if="activeChart === 'BarPercentChart'">
+	<div v-if="activeChart === 'BarPercentChart'" :key="updateTrigger">
 		<apexchart
 			width="100%"
 			:height="chartHeight"

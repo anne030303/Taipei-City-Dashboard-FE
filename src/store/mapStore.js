@@ -229,10 +229,10 @@ export const useMapStore = defineStore("map", {
 						`${mapLayerId}-${feature.properties.FULL}-${feature.properties.cat_age_index}`
 					];
 
-				console.log(
-					this.currentFieldName,
-					feature.properties[this.currentFieldName]
-				);
+				// console.log(
+				// 	this.currentFieldName,
+				// 	feature.properties[this.currentFieldName]
+				// );
 				tb.set({
 					scale: {
 						x:
@@ -265,6 +265,7 @@ export const useMapStore = defineStore("map", {
 		},
 
 		setMapLayerSource(mapLayerId) {
+			const authStore = useAuthStore();
 			const fieldName =
 				this.currentMapConfig[
 					this.currentMapConfig.paint["stacked-circle-radius"] +
@@ -277,11 +278,92 @@ export const useMapStore = defineStore("map", {
 
 			this.currentFieldName = fieldName;
 
-			this.processScaleFeatures(
-				mapLayerId,
-				this.stackedCircleData.features,
-				0
+			// this.processScaleFeatures(
+			// 	mapLayerId,
+			// 	this.stackedCircleData.features,
+			// 	0
+			// );
+			const mapConfig = this.currentMapConfig;
+			const _this = this;
+			const delay = authStore.isMobileDevice ? 2000 : 500;
+			let toRestore = {
+				...this.map.getSource(mapLayerId)._data,
+			};
+			// console.log(this.currentFieldName);
+			console.log(this.map.getStyle().layers);
+			this.map.removeLayer(mapConfig.layerId);
+			const tubesTemp = {};
+			this.map.addLayer({
+				id: mapConfig.layerId,
+				type: "custom",
+				renderingMode: "3d",
+				onAdd: function () {
+					toRestore.features.forEach((feature) => {
+						// console.log(feature.properties[_this.currentFieldName]);
+						const point1 = [
+							...feature.geometry.coordinates,
+							mapConfig.paint["stacked-circle-height"] *
+								(feature.properties.cat_age_index - 1) +
+								mapConfig.paint["stacked-circle-baseHeight"],
+						];
+						const point2 = [
+							...feature.geometry.coordinates,
+							mapConfig.paint["stacked-circle-height"] *
+								(feature.properties.cat_age_index - 1) +
+								mapConfig.paint["stacked-circle-baseHeight"] +
+								1,
+						];
+						let options = {
+							geometry: [point1, point2],
+							radius:
+								feature.properties[_this.currentFieldName] *
+								mapConfig.paint["stacked-circle-weight"],
+							sides: 32,
+							material: "MeshBasicMaterial",
+							color: mapConfig.paint["stacked-circle-color"][
+								feature.properties.cat_age_index - 1
+							],
+							anchor: "center",
+							opacity: 0.8,
+						};
+
+						let tubeMesh = window.tb.tube(options);
+						tubeMesh.setCoords(point1);
+						tubesTemp[
+							`${mapConfig.layerId}-source-${feature.properties.FULL}-${feature.properties.cat_age_index}`
+						] = tubeMesh;
+						// tubeMesh.set({
+						// 	scale: {
+						// 		x:
+						// 			feature.properties.values_ratio *
+						// 			mapConfig.paint["stacked-circle-weight"],
+						// 		y:
+						// 			feature.properties.values_ratio *
+						// 			mapConfig.paint["stacked-circle-weight"],
+						// 		z: 1,
+						// 	},
+						// 	duration: 500,
+						// });
+
+						tubeMesh.bbox = true;
+						// tubeMesh.tooltip = true;
+
+						window.tb.add(tubeMesh);
+					});
+				},
+				render: function () {
+					// tb.toggleLayer(layerId, visible)
+					window.tb.update(); //update Threebox scene
+				},
+			});
+			this.tubes = tubesTemp;
+			this.currentLayers.push(mapConfig.layerId);
+			this.mapConfigs[mapConfig.layerId] = mapConfig;
+			this.loadingLayers = this.loadingLayers.filter(
+				(el) => el !== mapConfig.layerId
 			);
+			this.currentVisibleLayers.push(mapConfig.layerId);
+
 			// console.log("clear");
 			// window.tb.dispose();
 
@@ -304,8 +386,8 @@ export const useMapStore = defineStore("map", {
 
 			// let count = 0;
 			// const render = setInterval(() => {
-			// 	window.tb.update();
-			// 	this.map.triggerRepaint();
+			window.tb.update();
+			this.map.triggerRepaint();
 			// 	count++;
 			// 	if (count > 100) clearInterval(render);
 			// }, 300);
@@ -684,6 +766,22 @@ export const useMapStore = defineStore("map", {
 					);
 				}, 500);
 			}
+			// "fill-extrusion-color": [
+			// 	"match",
+			// 	[
+			// 		"get",
+			// 		"都更機會"
+			// 	],
+			// 	"高液化且大於20年",
+			// 	"#fbb03b",
+			// 	"大於30年",
+			// 	"#223b53",
+			// 	"已在都更範圍",
+			// 	"#e55e5e",
+			// 	"沒有",
+			// 	"#3bb2d0",
+			// 	"#ccc"
+			// ]
 		},
 		// 6. Turn off the visibility of an exisiting map layer but don't remove it completely
 		turnOffMapLayerVisibility(map_config) {
@@ -1148,6 +1246,28 @@ export const useMapStore = defineStore("map", {
 				this.timeRange = range;
 				this.animate();
 			}
+		},
+		setAnimatePlot() {
+			console.log("setAnimatePlot");
+			// hex_pop_reduce
+			// this.map.setPaintProperty(
+			// 	"hex_pop_reduce",
+			// 	"fill-opacity",
+			// 	[
+			// 		"interpolate",
+			// 		[
+			// 			"linear"
+			// 		],
+			// 		[
+			// 			"get",
+			// 			"三階段_幼年人口"
+			// 		],
+			// 		0,
+			// 		0,
+			// 		193,
+			// 		0.8
+			// 	]
+			// )
 		},
 	},
 });
