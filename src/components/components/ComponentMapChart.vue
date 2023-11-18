@@ -34,7 +34,7 @@ watch(
 	([currentIndex, animateChartValue]) => {
 		if (props.content.index === animateChartValue) {
 			console.log(props.content, mapStore.currentIndex);
-			if (props.content === "stat_pop_nangang") {
+			if (props.content.index === "stat_pop_nangang") {
 				mapStore.setMapLayerSource(
 					`${props.content.map_config[0].index}-${props.content.map_config[0].type}-source`
 				);
