@@ -5440,7 +5440,7 @@
 			"contributors": [
 				"Wee Win"
 			]
-		},		"152": {
+		},	"152": {
 			"id": 152,
 			"index": "1-4",
 			"map_config": [
@@ -6042,6 +6042,132 @@
 				]
 			},
 			"name": "real-time-chart",
+			"source": "台北市開放資料",
+			"time_from": "",
+			"time_to": "",
+			"short_desc": "",
+			"long_desc": "",
+			"use_case": "",
+			"tags": [],
+			"links": [],
+			"contributors": [
+				"Wee Win"
+			]
+		},
+		"159": {
+			"id": 159,
+			"index": "custom_bubble_chart",
+			"history_data": false,
+			"map_config": [
+				{
+					"index": "",
+					"property": [
+						{
+							"key": "year",
+							"name": "年份",
+							"data": [
+								"2022",
+								"2023",
+								"2024",
+								"2025",
+								"2026",
+								"2027",
+								"2028",
+								"2029",
+								"2030",
+								"2031",
+								"2032",
+								"2033",
+								"2034",
+								"2035",
+								"2036",
+								"2037",
+								"2038",
+								"2039",
+								"2040",
+								"2041"
+							]
+						}
+					],
+					"animate": "year"
+				}
+			],
+			"chart_config": {
+				"types": [
+					"CustomBubbleChartForMainTown"
+				],
+				"animate": {
+					"min": 0,
+					"max": 19,
+					"label": ""
+				},
+				"map_filter": [
+					"SEC_NAME",
+					[
+						"石牌地區",
+						"大屯地區",
+						"關渡地區",
+						"唭哩岸地區",
+						"舊北投地區",
+						"新北投地區",
+						"陽明山地區"
+					],
+					{
+						"allowMultipleDataPointsSelection": [
+							"CustomBubbleChartForMainTown"
+						]
+					}
+				]
+			},
+			"name": "custom_bubble_chart",
+			"source": "台北市開放資料",
+			"time_from": "",
+			"time_to": "",
+			"short_desc": "",
+			"long_desc": "",
+			"use_case": "",
+			"tags": [],
+			"links": [],
+			"contributors": [
+				"Wee Win"
+			]
+		},
+		"160": {
+			"id": 160,
+			"index": "5歲以下每人幼稚園數-MAIN",
+			"history_data": false,
+			"map_config": [],
+			"chart_config": {
+				"types": [
+					"CustomBubbleChartForKid"
+				],
+				"town": "mainTown"
+			},
+			"name": "5歲以下每人幼稚園數-MAIN",
+			"source": "台北市開放資料",
+			"time_from": "",
+			"time_to": "",
+			"short_desc": "",
+			"long_desc": "",
+			"use_case": "",
+			"tags": [],
+			"links": [],
+			"contributors": [
+				"Wee Win"
+			]
+		},
+		"161": {
+			"id": 161,
+			"index": "5歲以下每人幼稚園數-SEC",
+			"history_data": false,
+			"map_config": [],
+			"chart_config": {
+				"types": [
+					"CustomBubbleChartForKid"
+				],
+				"town": "secTown"
+			},
+			"name": "5歲以下每人幼稚園數-SEC",
 			"source": "台北市開放資料",
 			"time_from": "",
 			"time_to": "",

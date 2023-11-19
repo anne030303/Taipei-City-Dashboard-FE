@@ -294,7 +294,6 @@ export const useMapStore = defineStore("map", {
 				...this.map.getSource(mapLayerId)._data,
 			};
 			// console.log(this.currentFieldName);
-			console.log(this.map.getStyle().layers);
 			this.map.removeLayer(mapConfig.layerId);
 			const tubesTemp = {};
 			this.map.addLayer({
@@ -1275,7 +1274,6 @@ export const useMapStore = defineStore("map", {
 			}
 		},
 		setAnimatePlot() {
-			console.log("setAnimatePlot");
 			// hex_pop_reduce
 			// this.map.setPaintProperty(
 			// 	"hex_pop_reduce",
