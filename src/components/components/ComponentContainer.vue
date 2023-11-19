@@ -222,6 +222,28 @@ function toggleFavorite() {
 					"
 					class="history-tag"
 				/>
+				<ComponentTag
+					v-if="content.chart_config.types.includes('RealTimeChart')"
+					icon="play_circle"
+					text="動態資料"
+					@click="
+						dialogStore.showNotification(
+							'info',
+							'本組件有動態資料'
+						)
+					"
+				/>
+				<ComponentTag
+					v-if="content.chart_config.types.includes('CustomBubbleChart')"
+					icon="bubble_chart"
+					text="散佈資料"
+					@click="
+						dialogStore.showNotification(
+							'info',
+							'本組件有可散佈資料'
+						)
+					"
+				/>
 			</div>
 			<!-- The content in the target component should be passed into the "showMoreInfo" function of the mapStore to show more info -->
 			<button

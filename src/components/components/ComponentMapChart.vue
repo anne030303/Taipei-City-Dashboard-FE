@@ -170,6 +170,26 @@ function setCurrentIndex(e) {
 						"
 						>insights</span
 					>
+					<span
+						v-if="content.chart_config.types.includes('RealTimeChart')"
+						@click="
+							dialogStore.showNotification(
+								'info',
+								'回到儀表板頁面並點擊「組件資訊」以查看'
+							)
+						"
+						>play_circle</span
+					>
+					<span
+						v-if="content.chart_config.types.includes('CustomBubbleChart')"
+						@click="
+							dialogStore.showNotification(
+								'info',
+								'回到儀表板頁面並點擊「組件資訊」以查看'
+							)
+						"
+						>bubble_chart</span
+					>
 				</div>
 				<h4 v-if="checked">{{ `${content.source} | ${dataTime}` }}</h4>
 			</div>

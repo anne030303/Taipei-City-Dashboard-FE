@@ -5591,7 +5591,8 @@
 				],
 				"types": [
 					"ColumnChart",
-					"BarPercentChart"
+					"BarPercentChart",
+					"CustomBubbleChart"
 				],
 				"unit": "",
 				"animate": {
@@ -5990,7 +5991,7 @@
 				"types": [
 					"ColumnChart",
 					"BarPercentChart",
-					""
+					"CustomBubbleChart"
 				],
 				"unit": "",
 				"categories": [
@@ -6130,7 +6131,7 @@
 				"types": [
 					"ColumnChart",
 					"BarPercentChart",
-					""
+					"CustomBubbleChart"
 				],
 				"unit": "",
 				"categories": [
