@@ -5284,9 +5284,9 @@
 			],
 			"chart_config": {
 				"color": [
-					"#B35B00",
+					"#FFA84D",
 					"#FF8200",
-					"#FFA84D"
+					"#B35B00"
 				],
 				"types": [
 					"BarPercentChart",
