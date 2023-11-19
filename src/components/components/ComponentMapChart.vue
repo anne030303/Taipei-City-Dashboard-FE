@@ -226,6 +226,7 @@ function setCurrentIndex(e) {
 				:chart_config="content.chart_config"
 				:series="content.chart_data"
 				:map_config="content.map_config"
+				:filterYear="getMapLayerConfig(mapStore.currentIndex)"
 			>
 			</component>
 		</div>

@@ -22,7 +22,8 @@ const props = defineProps([
 	"activeChart",
 	"series",
 	"map_config",
-	"isDialog"
+	"isDialog",
+	"filterYear"
 ]);
 
 const setting =  {
@@ -125,7 +126,7 @@ const containerRef = ref(null);
 
 
 // 定義初始年份
-const currentYear = ref(2022);
+const currentYear = ref(props.filterYear ? 2022: props.filterYear);
 
 function scaleY(value) {
 	const plotHeigh = svgHeight - 2 * (yAxisHeight)

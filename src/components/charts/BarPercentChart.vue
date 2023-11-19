@@ -12,6 +12,8 @@ const props = defineProps([
 ]);
 const mapStore = useMapStore();
 
+// console.log(props.chart_config.map_filter);
+
 const allowMultipleDataPointsSelection = ref(
 	(props.chart_config.map_filter?.length === 3 &&
 		props.chart_config.map_filter[2].allowMultipleDataPointsSelection.includes(
