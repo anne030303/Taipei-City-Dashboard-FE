@@ -33,14 +33,20 @@ watch(
 	[() => mapStore.currentIndex, () => animateChart.value],
 	([currentIndex, animateChartValue]) => {
 		if (props.content.index === animateChartValue) {
-			// console.log(props.content, mapStore.currentIndex);
 			if (props.content.index === "stat_pop_nangang") {
 				mapStore.setMapLayerSource(
 					`${props.content.map_config[0].index}-${props.content.map_config[0].type}-source`
 				);
 			}
-			if (props.content.type === "1-3") {
-				mapStore.setAnimatePlot();
+			if (
+				props.content.index === "1-3" ||
+				props.content.index === "1-4"
+			) {
+				mapStore.setAnimatePlot(
+					props.content.map_config,
+					props.content.index,
+					mapStore.currentIndex
+				);
 			}
 		}
 	}
@@ -103,7 +109,7 @@ function changeActiveChart(chartName) {
 function getMapLayerConfig(index) {
 	const mapConfig = props.content.map_config.find(
 		(mapLayer) =>
-			mapLayer.index === props.content.chart_config.animate.label
+			mapLayer.index === props.content.chart_config.animate?.label
 	);
 	return mapConfig?.property.find((item) => item.key === mapConfig.animate)
 		.data[index];
@@ -111,6 +117,7 @@ function getMapLayerConfig(index) {
 
 function setCurrentIndex(e) {
 	animateChart.value = parseInt(e);
+	mapStore.setAnimatePlot(props.content.map_config, e, mapStore.currentIndex);
 }
 </script>
 

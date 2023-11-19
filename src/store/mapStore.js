@@ -216,10 +216,31 @@ export const useMapStore = defineStore("map", {
 				this.addStackedCircleMapLayer(map_config, formatData);
 				this.stackedCircleData = data;
 			} else {
-				this.map.addSource(`${map_config.layerId}-source`, {
-					type: "geojson",
-					data: { ...data },
-				});
+				if (map_config.animate) {
+					this.currentFieldName = "values_2022";
+					const formatData = {
+						...data,
+						features: data.features.map((feature) => ({
+							...feature,
+							properties: {
+								...feature.properties,
+								values: feature.properties[
+									this.currentFieldName
+								],
+							},
+						})),
+					};
+					this.map.addSource(`${map_config.layerId}-source`, {
+						type: "geojson",
+						data: { ...formatData },
+					});
+				} else {
+					this.map.addSource(`${map_config.layerId}-source`, {
+						type: "geojson",
+						data: { ...data },
+					});
+				}
+
 				this.addMapLayer(map_config);
 			}
 		},
@@ -294,7 +315,7 @@ export const useMapStore = defineStore("map", {
 				...this.map.getSource(mapLayerId)._data,
 			};
 			// console.log(this.currentFieldName);
-			console.log(this.map.getStyle().layers);
+
 			this.map.removeLayer(mapConfig.layerId);
 			const tubesTemp = {};
 			this.map.addLayer({
@@ -1274,27 +1295,34 @@ export const useMapStore = defineStore("map", {
 				this.animate();
 			}
 		},
-		setAnimatePlot() {
-			console.log("setAnimatePlot");
-			// hex_pop_reduce
-			// this.map.setPaintProperty(
-			// 	"hex_pop_reduce",
-			// 	"fill-opacity",
-			// 	[
-			// 		"interpolate",
-			// 		[
-			// 			"linear"
-			// 		],
-			// 		[
-			// 			"get",
-			// 			"三階段_幼年人口"
-			// 		],
-			// 		0,
-			// 		0,
-			// 		193,
-			// 		0.8
-			// 	]
-			// )
+		setAnimatePlot(map_configs, layerId, index) {
+			map_configs.forEach((map_config) => {
+				`${map_config.index}-${map_config.type}`;
+
+				const fieldName =
+					"values_" +
+					map_config.property.find(
+						(item) => item.key === map_config.animate
+					).data[index];
+
+				console.log(
+					`${map_config.index}-${map_config.type}`,
+					fieldName
+				);
+				this.map.setPaintProperty(
+					`${map_config.index}-${map_config.type}`,
+					"fill-opacity",
+					[
+						"interpolate",
+						["linear"],
+						["get", fieldName],
+						0,
+						0,
+						map_config.index === "hex_pop_mom_horiz" ? 279 : 193,
+						0.8,
+					]
+				);
+			});
 		},
 	},
 });

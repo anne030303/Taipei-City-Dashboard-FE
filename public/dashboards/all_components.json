@@ -5174,7 +5174,7 @@
 					}
 				]
 			},
-			"name": "1-1",
+			"name": "15歲以下人口分佈",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5319,7 +5319,7 @@
 					}
 				]
 			},
-			"name": "1-2",
+			"name": "15歲以下人口分佈",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5337,7 +5337,7 @@
 			"index": "1-3",
 			"map_config": [
 				{
-					"index": "hex_pop_reduce",
+					"index": "hex_pop_child_horiz",
 					"paint": {
 						"fill-color": "#FF8200",
 						"fill-opacity": [
@@ -5347,7 +5347,7 @@
 							],
 							[
 								"get",
-								"三階段_幼年人口"
+								"values_2022"
 							],
 							0,
 							0,
@@ -5357,12 +5357,20 @@
 					},
 					"property": [
 						{
-							"key": "三階段_幼年人口",
-							"name": "三階段_幼年人口"
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "values",
+							"name": "幼年人口"
 						},
 						{
 							"key": "年份基準",
-							"name": "年份基準",
+							"name": "",
 							"data": [
 								"2022",
 								"2023",
@@ -5414,7 +5422,7 @@
 				"animate": {
 					"min": 0,
 					"max": 19,
-					"label": "hex_pop_reduce"
+					"label": "hex_pop_child_horiz"
 				},
 				"categories": [],
 				"map_filter": [
@@ -5427,7 +5435,7 @@
 					}
 				]
 			},
-			"name": "1-3",
+			"name": "15歲以下人口趨勢",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5465,12 +5473,20 @@
 					},
 					"property": [
 						{
-							"key": "三階段_幼年人口",
-							"name": "三階段_幼年人口"
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "values",
+							"name": "幼年人口"
 						},
 						{
 							"key": "年份基準",
-							"name": "年份基準",
+							"name": "",
 							"data": [
 								"2022",
 								"2023",
@@ -5514,18 +5530,26 @@
 							],
 							0,
 							0,
-							193,
+							279,
 							0.8
 						]
 					},
 					"property": [
 						{
-							"key": "三階段_幼年人口",
-							"name": "三階段_幼年人口"
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "values",
+							"name": "婦女生育人口數"
 						},
 						{
 							"key": "年份基準",
-							"name": "年份基準",
+							"name": "",
 							"data": [
 								"2022",
 								"2023",
@@ -5551,7 +5575,7 @@
 						}
 					],
 					"type": "fill",
-					"title": "幼年人口",
+					"title": "婦女生育人口數",
 					"animate": "年份基準"
 				}
 			],
@@ -5567,6 +5591,11 @@
 					"ColumnChart"
 				],
 				"unit": "",
+				"animate": {
+					"min": 0,
+					"max": 19,
+					"label": "hex_pop_child_horiz"
+				},
 				"categories": [
 					"北投區",
 					"士林區",
@@ -5592,7 +5621,7 @@
 					}
 				]
 			},
-			"name": "1-4",
+			"name": "15歲以下與婦女人口分佈",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5681,7 +5710,7 @@
 					}
 				]
 			},
-			"name": "2-1",
+			"name": "居住安全性分佈",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5745,8 +5774,21 @@
 				],
 				"unit": "",
 				"map_filter": [
-					"",
-					[],
+					"TOWN_NAME",
+					[
+						"北投區",
+						"士林區",
+						"內湖區",
+						"南港區",
+						"松山區",
+						"信義區",
+						"中山區",
+						"大同區",
+						"中正區",
+						"萬華區",
+						"大安區",
+						"文山區"
+					],
 					{
 						"allowMultipleDataPointsSelection": [
 							"DistrictChart",
@@ -5755,7 +5797,7 @@
 					}
 				]
 			},
-			"name": "2-2",
+			"name": "15歲以下每人公園綠地空間",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5846,7 +5888,7 @@
 					}
 				]
 			},
-			"name": "2-3",
+			"name": "15歲以下每人社福機構數",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5988,7 +6030,7 @@
 					}
 				]
 			},
-			"name": "2-4",
+			"name": "5歲以下每人幼稚園數",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -6117,7 +6159,7 @@
 					}
 				]
 			},
-			"name": "2-5",
+			"name": "15歲以下每人空教室數",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
