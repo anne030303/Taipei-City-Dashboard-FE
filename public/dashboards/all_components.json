@@ -5853,10 +5853,11 @@
 			],
 			"chart_config": {
 				"color": [
-					"#9c7a3e",
-					"#b7e28e",
-					"#7febd0",
-					"#8ce8ff"
+					"#FFF495",
+					"#DDB11F",
+					"#E3863A",
+					"#C2651C",
+					"#A65818"
 				],
 				"types": [
 					"BarPercentChart",
