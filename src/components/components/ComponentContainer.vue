@@ -240,7 +240,7 @@ function toggleFavorite() {
 					@click="
 						dialogStore.showNotification(
 							'info',
-							'本組件有可散佈資料'
+							'本組件有散佈資料'
 						)
 					"
 				/>
