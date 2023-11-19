@@ -290,145 +290,151 @@ export const useMapStore = defineStore("map", {
 		},
 
 		setMapLayerSource(mapLayerId) {
-			const authStore = useAuthStore();
-			const fieldName =
-				this.currentMapConfig[
-					this.currentMapConfig.paint["stacked-circle-radius"] +
-						"Prefix"
-				] +
-				"_" +
-				this.currentMapConfig.property.find(
-					(item) => item.key === this.currentMapConfig.animate
-				).data[this.currentIndex];
+			if (this.ifAnimate === "1-2") {
+				const authStore = useAuthStore();
+				const fieldName =
+					this.currentMapConfig[
+						this.currentMapConfig.paint["stacked-circle-radius"] +
+							"Prefix"
+					] +
+					"_" +
+					this.currentMapConfig.property.find(
+						(item) => item.key === this.currentMapConfig.animate
+					).data[this.currentIndex];
 
-			this.currentFieldName = fieldName;
+				this.currentFieldName = fieldName;
 
-			// this.processScaleFeatures(
-			// 	mapLayerId,
-			// 	this.stackedCircleData.features,
-			// 	0
-			// );
-			const mapConfig = this.currentMapConfig;
-			const _this = this;
-			const delay = authStore.isMobileDevice ? 2000 : 500;
-			let toRestore = {
-				...this.map.getSource(mapLayerId)._data,
-			};
-			// console.log(this.currentFieldName);
+				// this.processScaleFeatures(
+				// 	mapLayerId,
+				// 	this.stackedCircleData.features,
+				// 	0
+				// );
+				const mapConfig = this.currentMapConfig;
+				const _this = this;
+				const delay = authStore.isMobileDevice ? 2000 : 500;
+				let toRestore = {
+					...this.map.getSource(mapLayerId)._data,
+				};
+				// console.log(this.currentFieldName);
 
-			this.map.removeLayer(mapConfig.layerId);
-			const tb = (window.tb = new Threebox(
-				this.map,
-				this.map.getCanvas().getContext("webgl"), //get the context from the map canvas
-				{
-					defaultLights: true,
-					enableSelectingFeatures: true,
-					enableSelectingObjects: true,
-					enableTooltips: true,
-					multiLayer: true,
-				}
-			));
+				this.map.removeLayer(mapConfig.layerId);
+				const tb = (window.tb = new Threebox(
+					this.map,
+					this.map.getCanvas().getContext("webgl"), //get the context from the map canvas
+					{
+						defaultLights: true,
+						enableSelectingFeatures: true,
+						enableSelectingObjects: true,
+						enableTooltips: true,
+						multiLayer: true,
+					}
+				));
 
-			const tubesTemp = {};
-			this.map.addLayer({
-				id: mapConfig.layerId,
-				// id: `${mapConfig.layerId}-${_this.currentFieldName}`,
-				type: "custom",
-				renderingMode: "3d",
-				onAdd: function () {
-					toRestore.features.forEach((feature) => {
-						// console.log(feature.properties[_this.currentFieldName]);
-						const point1 = [
-							...feature.geometry.coordinates,
-							mapConfig.paint["stacked-circle-height"] *
-								(feature.properties.cat_age_index - 1) +
-								mapConfig.paint["stacked-circle-baseHeight"],
-						];
-						const point2 = [
-							...feature.geometry.coordinates,
-							mapConfig.paint["stacked-circle-height"] *
-								(feature.properties.cat_age_index - 1) +
-								mapConfig.paint["stacked-circle-baseHeight"] +
-								1,
-						];
-						let options = {
-							geometry: [point1, point2],
-							radius:
-								feature.properties[_this.currentFieldName] *
-								mapConfig.paint["stacked-circle-weight"],
-							sides: 32,
-							material: "MeshBasicMaterial",
-							color: mapConfig.paint["stacked-circle-color"][
-								feature.properties.cat_age_index - 1
-							],
-							anchor: "center",
-							opacity: 0.8,
-						};
+				const tubesTemp = {};
+				this.map.addLayer({
+					id: mapConfig.layerId,
+					// id: `${mapConfig.layerId}-${_this.currentFieldName}`,
+					type: "custom",
+					renderingMode: "3d",
+					onAdd: function () {
+						toRestore.features.forEach((feature) => {
+							// console.log(feature.properties[_this.currentFieldName]);
+							const point1 = [
+								...feature.geometry.coordinates,
+								mapConfig.paint["stacked-circle-height"] *
+									(feature.properties.cat_age_index - 1) +
+									mapConfig.paint[
+										"stacked-circle-baseHeight"
+									],
+							];
+							const point2 = [
+								...feature.geometry.coordinates,
+								mapConfig.paint["stacked-circle-height"] *
+									(feature.properties.cat_age_index - 1) +
+									mapConfig.paint[
+										"stacked-circle-baseHeight"
+									] +
+									1,
+							];
+							let options = {
+								geometry: [point1, point2],
+								radius:
+									feature.properties[_this.currentFieldName] *
+									mapConfig.paint["stacked-circle-weight"],
+								sides: 32,
+								material: "MeshBasicMaterial",
+								color: mapConfig.paint["stacked-circle-color"][
+									feature.properties.cat_age_index - 1
+								],
+								anchor: "center",
+								opacity: 0.8,
+							};
 
-						let tubeMesh = tb.tube(options);
-						tubeMesh.setCoords(point1);
-						tubesTemp[
-							`${mapConfig.layerId}-source-${feature.properties.FULL}-${feature.properties.cat_age_index}`
-						] = tubeMesh;
-						// tubeMesh.set({
-						// 	scale: {
-						// 		x:
-						// 			feature.properties.values_ratio *
-						// 			mapConfig.paint["stacked-circle-weight"],
-						// 		y:
-						// 			feature.properties.values_ratio *
-						// 			mapConfig.paint["stacked-circle-weight"],
-						// 		z: 1,
-						// 	},
-						// 	duration: 500,
-						// });
+							let tubeMesh = tb.tube(options);
+							tubeMesh.setCoords(point1);
+							tubesTemp[
+								`${mapConfig.layerId}-source-${feature.properties.FULL}-${feature.properties.cat_age_index}`
+							] = tubeMesh;
+							// tubeMesh.set({
+							// 	scale: {
+							// 		x:
+							// 			feature.properties.values_ratio *
+							// 			mapConfig.paint["stacked-circle-weight"],
+							// 		y:
+							// 			feature.properties.values_ratio *
+							// 			mapConfig.paint["stacked-circle-weight"],
+							// 		z: 1,
+							// 	},
+							// 	duration: 500,
+							// });
 
-						tubeMesh.bbox = true;
-						// tubeMesh.tooltip = true;
+							tubeMesh.bbox = true;
+							// tubeMesh.tooltip = true;
 
-						tb.add(tubeMesh);
-					});
-				},
-				render: function () {
-					// tb.toggleLayer(layerId, visible)
-					tb.update(); //update Threebox scene
-				},
-			});
-			this.tubes = tubesTemp;
-			this.currentLayers.push(mapConfig.layerId);
-			this.mapConfigs[mapConfig.layerId] = mapConfig;
-			this.loadingLayers = this.loadingLayers.filter(
-				(el) => el !== mapConfig.layerId
-			);
-			this.currentVisibleLayers.push(mapConfig.layerId);
+							tb.add(tubeMesh);
+						});
+					},
+					render: function () {
+						// tb.toggleLayer(layerId, visible)
+						tb.update(); //update Threebox scene
+					},
+				});
+				this.tubes = tubesTemp;
+				this.currentLayers.push(mapConfig.layerId);
+				this.mapConfigs[mapConfig.layerId] = mapConfig;
+				this.loadingLayers = this.loadingLayers.filter(
+					(el) => el !== mapConfig.layerId
+				);
+				this.currentVisibleLayers.push(mapConfig.layerId);
 
-			// console.log("clear");
-			// window.tb.dispose();
+				// console.log("clear");
+				// window.tb.dispose();
 
-			// this.stackedCircleData.features.forEach((feature, index) => {
-			// 	const tb =
-			// 		this.tubes[
-			// 			`${mapLayerId}-${feature.properties.FULL}-${feature.properties.cat_age_index}`
-			// 		];
+				// this.stackedCircleData.features.forEach((feature, index) => {
+				// 	const tb =
+				// 		this.tubes[
+				// 			`${mapLayerId}-${feature.properties.FULL}-${feature.properties.cat_age_index}`
+				// 		];
 
-			// 	tb.set({
-			// 		scale: {
-			// 			x: feature.properties[this.currentFieldName] * 30,
-			// 			y: feature.properties[this.currentFieldName] * 30,
-			// 			z: 1,
-			// 		},
-			// 		duration: 1000,
-			// 	});
-			// 	// tb.hidden = true;
-			// });
+				// 	tb.set({
+				// 		scale: {
+				// 			x: feature.properties[this.currentFieldName] * 30,
+				// 			y: feature.properties[this.currentFieldName] * 30,
+				// 			z: 1,
+				// 		},
+				// 		duration: 1000,
+				// 	});
+				// 	// tb.hidden = true;
+				// });
 
-			// let count = 0;
-			// const render = setInterval(() => {
-			tb.update();
-			this.map.triggerRepaint();
-			// 	count++;
-			// 	if (count > 100) clearInterval(render);
-			// }, 300);
+				// let count = 0;
+				// const render = setInterval(() => {
+				// tb.update();
+				// this.map.triggerRepaint();
+				// 	count++;
+				// 	if (count > 100) clearInterval(render);
+				// }, 300);
+			}
 		},
 		// 4-1. Using the mapbox source and map config, create a new layer
 		// The styles and configs can be edited in /assets/configs/mapbox/mapConfig.js
