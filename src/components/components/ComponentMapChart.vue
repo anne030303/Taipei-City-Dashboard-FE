@@ -175,7 +175,7 @@ function setCurrentIndex(e) {
 						@click="
 							dialogStore.showNotification(
 								'info',
-								'回到儀表板頁面並點擊「組件資訊」以查看'
+								'本組件有播放資料'
 							)
 						"
 						>play_circle</span
@@ -185,7 +185,7 @@ function setCurrentIndex(e) {
 						@click="
 							dialogStore.showNotification(
 								'info',
-								'回到儀表板頁面並點擊「組件資訊」以查看'
+								'本組件有散佈資料'
 							)
 						"
 						>bubble_chart</span
