@@ -5699,9 +5699,9 @@
 			"index": "2-2",
 			"map_config": [
 				{
-					"index": "hex_pop_reduce",
+					"index": "agg_hex_green",
 					"paint": {
-						"fill-color": "#FF8200",
+						"fill-color": "#33C552",
 						"fill-opacity": [
 							"interpolate",
 							[
@@ -5709,49 +5709,30 @@
 							],
 							[
 								"get",
-								"三階段_幼年人口"
+								"公園綠地面積"
 							],
 							0,
 							0,
-							193,
+							23811,
 							0.8
 						]
 					},
 					"property": [
 						{
-							"key": "三階段_幼年人口",
-							"name": "三階段_幼年人口"
+							"key": "TOWN_NAME",
+							"name": "行政區"
 						},
 						{
-							"key": "年份基準",
-							"name": "年份基準",
-							"data": [
-								"2022",
-								"2023",
-								"2024",
-								"2025",
-								"2026",
-								"2027",
-								"2028",
-								"2029",
-								"2030",
-								"2031",
-								"2032",
-								"2033",
-								"2034",
-								"2035",
-								"2036",
-								"2037",
-								"2038",
-								"2039",
-								"2040",
-								"2041"
-							]
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "公園綠地面積",
+							"name": "公園綠地面積"
 						}
 					],
 					"type": "fill",
-					"title": "幼年人口",
-					"animate": "年份基準"
+					"title": "公園綠地"
 				}
 			],
 			"chart_config": {
@@ -5790,7 +5771,44 @@
 		"155": {
 			"id": 155,
 			"index": "2-3",
-			"map_config": [],
+			"map_config": [
+				{
+					"index": "agg_hex_wel",
+					"paint": {
+						"fill-color": "#FF8200",
+						"fill-opacity": [
+							"interpolate",
+							[
+								"linear"
+							],
+							[
+								"get",
+								"社福設施_總數"
+							],
+							0,
+							0.2,
+							5,
+							1
+						]
+					},
+					"property": [
+						{
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "社福設施_總數",
+							"name": "社福設施數量"
+						}
+					],
+					"type": "fill",
+					"title": "社福機構"
+				}
+			],
 			"chart_config": {
 				"color": [
 					"#9c7a3e",
