@@ -5154,7 +5154,6 @@
 		"149": {
 			"id": 149,
 			"index": "1-1",
-			"map_config": [],
 			"chart_config": {
 				"color": [
 					"#2f9ca1"
@@ -5440,7 +5439,8 @@
 			"contributors": [
 				"Wee Win"
 			]
-		},		"152": {
+		},
+		"152": {
 			"id": 152,
 			"index": "1-4",
 			"map_config": [
@@ -5862,7 +5862,80 @@
 		"156": {
 			"id": 156,
 			"index": "2-4",
-			"map_config": [],
+			"map_config": [
+				{
+					"index": "agg_hex_kid_pub",
+					"paint": {
+						"fill-color": "#00A9E0",
+						"fill-opacity": [
+							"interpolate",
+							[
+								"linear"
+							],
+							[
+								"get",
+								"幼兒園_公立數"
+							],
+							0,
+							0,
+							1,
+							0.7
+						]
+					},
+					"property": [
+						{
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "幼兒園_公立數",
+							"name": "公立幼兒園數"
+						}
+					],
+					"type": "fill",
+					"title": "公立幼兒園數"
+				},
+				{
+					"index": "agg_hex_kid_pri",
+					"paint": {
+						"fill-color": "#FD5696",
+						"fill-opacity": [
+							"interpolate",
+							[
+								"linear"
+							],
+							[
+								"get",
+								"幼兒園_私立數"
+							],
+							0,
+							0,
+							3,
+							0.7
+						]
+					},
+					"property": [
+						{
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "幼兒園_私立數",
+							"name": "私立幼兒園數"
+						}
+					],
+					"type": "fill",
+					"title": "私立幼兒園數"
+				}
+			],
 			"chart_config": {
 				"color": [
 					"#9c7a3e",
@@ -5891,8 +5964,21 @@
 					"文山區"
 				],
 				"map_filter": [
-					"",
-					[],
+					"TOWN_NAME",
+					[
+						"北投區",
+						"士林區",
+						"內湖區",
+						"南港區",
+						"松山區",
+						"信義區",
+						"中山區",
+						"大同區",
+						"中正區",
+						"萬華區",
+						"大安區",
+						"文山區"
+					],
 					{
 						"allowMultipleDataPointsSelection": [
 							"BarPercentChart",
@@ -5918,7 +6004,80 @@
 		"157": {
 			"id": 157,
 			"index": "2-5",
-			"map_config": [],
+			"map_config": [
+				{
+					"index": "agg_hex_room_instant",
+					"paint": {
+						"fill-color": "#76DC85",
+						"fill-opacity": [
+							"interpolate",
+							[
+								"linear"
+							],
+							[
+								"get",
+								"中小學教室_可立刻活化間數"
+							],
+							0,
+							0,
+							7,
+							0.7
+						]
+					},
+					"property": [
+						{
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "中小學教室_可立刻活化間數",
+							"name": "已空置可用教室"
+						}
+					],
+					"type": "fill",
+					"title": "已空置可用教室"
+				},
+				{
+					"index": "agg_hex_room_potential",
+					"paint": {
+						"fill-color": "#FF8200",
+						"fill-opacity": [
+							"interpolate",
+							[
+								"linear"
+							],
+							[
+								"get",
+								"中小學教室_潛在釋放空間"
+							],
+							0,
+							0,
+							66,
+							0.7
+						]
+					},
+					"property": [
+						{
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "中小學教室_潛在釋放空間",
+							"name": "潛在空置教室"
+						}
+					],
+					"type": "fill",
+					"title": "潛在空置教室"
+				}
+			],
 			"chart_config": {
 				"color": [
 					"#9c7a3e",
@@ -5971,8 +6130,8 @@
 				"Wee Win"
 			]
 		},
-		"157": {
-			"id": 157,
+		"158": {
+			"id": 158,
 			"index": "custom_bubble_chart",
 			"history_data": false,
 			"map_config": [
@@ -6049,8 +6208,8 @@
 				"Wee Win"
 			]
 		},
-		"158": {
-			"id": 158,
+		"159": {
+			"id": 159,
 			"index": "real-time-chart",
 			"map_config": null,
 			"history_data": false,

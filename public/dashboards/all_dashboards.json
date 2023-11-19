@@ -1,7 +1,7 @@
 {
 	"data": [
 		{
-			"name": "人口",
+			"name": "現在好孕嗎",
 			"index": "people",
 			"components": [
 				"149",
@@ -12,14 +12,15 @@
 			"icon": "baby_changing_station"
 		},
 		{
-			"name": "環境",
+			"name": "處處有好孕",
 			"index": "environment1",
 			"components": [
 				"153",
 				"154",
 				"155",
 				"156",
-				"157"
+				"157",
+				"158"
 			],
 			"icon": "bedroom_baby"
 		},
