@@ -5154,7 +5154,6 @@
 		"149": {
 			"id": 149,
 			"index": "1-1",
-			"map_config": [],
 			"chart_config": {
 				"color": [
 					"#2f9ca1"
@@ -5175,7 +5174,7 @@
 					}
 				]
 			},
-			"name": "1-1",
+			"name": "15歲以下人口分群",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5196,26 +5195,26 @@
 					"index": "villa_age_stack_horiz_sec",
 					"paint": {
 						"stacked-circle-color": [
-							"#fcc5e4",
-							"#f0bcde",
-							"#e3b3d9",
-							"#d7aad3",
-							"#caa1ce",
-							"#be98c8",
-							"#b18fc3",
-							"#a586bd",
-							"#987db8",
-							"#8c74b2",
-							"#7f6aad",
-							"#7361a7",
-							"#6658a2",
-							"#5a4f9c",
-							"#4d4697",
-							"#413d91",
-							"#34348c",
-							"#282b86",
-							"#1b2281",
-							"#0f197b"
+							"#FFA84D",
+							"#FF8200",
+							"#B35B00",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D",
+							"#7D7D7D"
 						],
 						"stacked-circle-baseHeight": 100,
 						"stacked-circle-height": 60,
@@ -5285,16 +5284,20 @@
 			],
 			"chart_config": {
 				"color": [
-					"#9c7a3e",
-					"#b7e28e",
-					"#7febd0",
-					"#8ce8ff"
+					"#B35B00",
+					"#FF8200",
+					"#FFA84D"
 				],
 				"types": [
 					"BarPercentChart",
 					"ColumnChart"
 				],
 				"unit": "",
+				"animate": {
+					"min": 0,
+					"max": 19,
+					"label": "villa_age_stack_horiz_sec"
+				},
 				"categories": [
 					"北投區",
 					"士林區",
@@ -5320,7 +5323,7 @@
 					}
 				]
 			},
-			"name": "1-2",
+			"name": "15歲以下人口分群",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5336,9 +5339,10 @@
 		"151": {
 			"id": 158,
 			"index": "1-3",
+			"history_data": true,
 			"map_config": [
 				{
-					"index": "hex_pop_reduce",
+					"index": "hex_pop_child_horiz",
 					"paint": {
 						"fill-color": "#FF8200",
 						"fill-opacity": [
@@ -5348,7 +5352,7 @@
 							],
 							[
 								"get",
-								"三階段_幼年人口"
+								"values_2022"
 							],
 							0,
 							0,
@@ -5358,12 +5362,20 @@
 					},
 					"property": [
 						{
-							"key": "三階段_幼年人口",
-							"name": "三階段_幼年人口"
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "values",
+							"name": "幼年人口"
 						},
 						{
 							"key": "年份基準",
-							"name": "年份基準",
+							"name": "",
 							"data": [
 								"2022",
 								"2023",
@@ -5415,7 +5427,7 @@
 				"animate": {
 					"min": 0,
 					"max": 19,
-					"label": "hex_pop_reduce"
+					"label": "hex_pop_child_horiz"
 				},
 				"categories": [],
 				"map_filter": [
@@ -5428,7 +5440,7 @@
 					}
 				]
 			},
-			"name": "1-3",
+			"name": "15歲以下人口趨勢",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5440,7 +5452,8 @@
 			"contributors": [
 				"Wee Win"
 			]
-		},	"152": {
+		},
+		"152": {
 			"id": 152,
 			"index": "1-4",
 			"map_config": [
@@ -5465,12 +5478,20 @@
 					},
 					"property": [
 						{
-							"key": "三階段_幼年人口",
-							"name": "三階段_幼年人口"
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "values",
+							"name": "幼年人口"
 						},
 						{
 							"key": "年份基準",
-							"name": "年份基準",
+							"name": "",
 							"data": [
 								"2022",
 								"2023",
@@ -5514,18 +5535,26 @@
 							],
 							0,
 							0,
-							193,
+							279,
 							0.8
 						]
 					},
 					"property": [
 						{
-							"key": "三階段_幼年人口",
-							"name": "三階段_幼年人口"
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "values",
+							"name": "婦女生育人口數"
 						},
 						{
 							"key": "年份基準",
-							"name": "年份基準",
+							"name": "",
 							"data": [
 								"2022",
 								"2023",
@@ -5551,22 +5580,25 @@
 						}
 					],
 					"type": "fill",
-					"title": "幼年人口",
+					"title": "婦女生育人口數",
 					"animate": "年份基準"
 				}
 			],
 			"chart_config": {
 				"color": [
-					"#9c7a3e",
-					"#b7e28e",
-					"#7febd0",
-					"#8ce8ff"
+					"#FF8200",
+					"#76DC85"
 				],
 				"types": [
 					"BarPercentChart",
 					"ColumnChart"
 				],
 				"unit": "",
+				"animate": {
+					"min": 0,
+					"max": 19,
+					"label": "hex_pop_child_horiz"
+				},
 				"categories": [
 					"北投區",
 					"士林區",
@@ -5592,7 +5624,7 @@
 					}
 				]
 			},
-			"name": "1-4",
+			"name": "15歲以下與婦女人口分佈",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5681,7 +5713,7 @@
 					}
 				]
 			},
-			"name": "2-1",
+			"name": "居住安全性分佈",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5699,9 +5731,9 @@
 			"index": "2-2",
 			"map_config": [
 				{
-					"index": "hex_pop_reduce",
+					"index": "agg_hex_green",
 					"paint": {
-						"fill-color": "#FF8200",
+						"fill-color": "#33C552",
 						"fill-opacity": [
 							"interpolate",
 							[
@@ -5709,54 +5741,35 @@
 							],
 							[
 								"get",
-								"三階段_幼年人口"
+								"公園綠地面積"
 							],
 							0,
 							0,
-							193,
+							23811,
 							0.8
 						]
 					},
 					"property": [
 						{
-							"key": "三階段_幼年人口",
-							"name": "三階段_幼年人口"
+							"key": "TOWN_NAME",
+							"name": "行政區"
 						},
 						{
-							"key": "年份基準",
-							"name": "年份基準",
-							"data": [
-								"2022",
-								"2023",
-								"2024",
-								"2025",
-								"2026",
-								"2027",
-								"2028",
-								"2029",
-								"2030",
-								"2031",
-								"2032",
-								"2033",
-								"2034",
-								"2035",
-								"2036",
-								"2037",
-								"2038",
-								"2039",
-								"2040",
-								"2041"
-							]
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "公園綠地面積",
+							"name": "公園綠地面積"
 						}
 					],
 					"type": "fill",
-					"title": "幼年人口",
-					"animate": "年份基準"
+					"title": "公園綠地"
 				}
 			],
 			"chart_config": {
 				"color": [
-					"#2f9ca1"
+					"#33C552"
 				],
 				"types": [
 					"DistrictChart",
@@ -5764,8 +5777,21 @@
 				],
 				"unit": "",
 				"map_filter": [
-					"",
-					[],
+					"TOWN_NAME",
+					[
+						"北投區",
+						"士林區",
+						"內湖區",
+						"南港區",
+						"松山區",
+						"信義區",
+						"中山區",
+						"大同區",
+						"中正區",
+						"萬華區",
+						"大安區",
+						"文山區"
+					],
 					{
 						"allowMultipleDataPointsSelection": [
 							"DistrictChart",
@@ -5774,7 +5800,7 @@
 					}
 				]
 			},
-			"name": "2-2",
+			"name": "15歲以下每人公園綠地空間",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5790,13 +5816,51 @@
 		"155": {
 			"id": 155,
 			"index": "2-3",
-			"map_config": [],
+			"map_config": [
+				{
+					"index": "agg_hex_wel",
+					"paint": {
+						"fill-color": "#FF8200",
+						"fill-opacity": [
+							"interpolate",
+							[
+								"linear"
+							],
+							[
+								"get",
+								"社福設施_總數"
+							],
+							0,
+							0.2,
+							5,
+							1
+						]
+					},
+					"property": [
+						{
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "社福設施_總數",
+							"name": "社福設施數量"
+						}
+					],
+					"type": "fill",
+					"title": "社福機構"
+				}
+			],
 			"chart_config": {
 				"color": [
-					"#9c7a3e",
-					"#b7e28e",
-					"#7febd0",
-					"#8ce8ff"
+					"#FFF495",
+					"#DDB11F",
+					"#E3863A",
+					"#C2651C",
+					"#A65818"
 				],
 				"types": [
 					"BarPercentChart",
@@ -5828,7 +5892,7 @@
 					}
 				]
 			},
-			"name": "2-3",
+			"name": "15歲以下每人社福機構數",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5842,15 +5906,86 @@
 			]
 		},
 		"156": {
-			"id": 156,
+			"id": 166,
 			"index": "2-4",
-			"map_config": [],
+			"map_config": [
+				{
+					"index": "agg_hex_kid_pub",
+					"paint": {
+						"fill-color": "#00A9E0",
+						"fill-opacity": [
+							"interpolate",
+							[
+								"linear"
+							],
+							[
+								"get",
+								"幼兒園_公立數"
+							],
+							0,
+							0,
+							1,
+							0.7
+						]
+					},
+					"property": [
+						{
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "幼兒園_公立數",
+							"name": "公立幼兒園數"
+						}
+					],
+					"type": "fill",
+					"title": "公立幼兒園數"
+				},
+				{
+					"index": "agg_hex_kid_pri",
+					"paint": {
+						"fill-color": "#FD5696",
+						"fill-opacity": [
+							"interpolate",
+							[
+								"linear"
+							],
+							[
+								"get",
+								"幼兒園_私立數"
+							],
+							0,
+							0,
+							3,
+							0.7
+						]
+					},
+					"property": [
+						{
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "幼兒園_私立數",
+							"name": "私立幼兒園數"
+						}
+					],
+					"type": "fill",
+					"title": "私立幼兒園數"
+				}
+			],
 			"chart_config": {
 				"color": [
-					"#9c7a3e",
-					"#b7e28e",
-					"#7febd0",
-					"#8ce8ff"
+					"#FD5696",
+					"#00A9E0"
 				],
 				"types": [
 					"BarPercentChart",
@@ -5873,8 +6008,21 @@
 					"文山區"
 				],
 				"map_filter": [
-					"",
-					[],
+					"TOWN_NAME",
+					[
+						"北投區",
+						"士林區",
+						"內湖區",
+						"南港區",
+						"松山區",
+						"信義區",
+						"中山區",
+						"大同區",
+						"中正區",
+						"萬華區",
+						"大安區",
+						"文山區"
+					],
 					{
 						"allowMultipleDataPointsSelection": [
 							"BarPercentChart",
@@ -5884,7 +6032,7 @@
 					}
 				]
 			},
-			"name": "2-4",
+			"name": "5歲以下每人幼稚園數",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5898,15 +6046,86 @@
 			]
 		},
 		"157": {
-			"id": 157,
+			"id": 167,
 			"index": "2-5",
-			"map_config": [],
+			"map_config": [
+				{
+					"index": "agg_hex_room_instant",
+					"paint": {
+						"fill-color": "#76DC85",
+						"fill-opacity": [
+							"interpolate",
+							[
+								"linear"
+							],
+							[
+								"get",
+								"中小學教室_可立刻活化間數"
+							],
+							0,
+							0,
+							7,
+							0.7
+						]
+					},
+					"property": [
+						{
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "中小學教室_可立刻活化間數",
+							"name": "已空置可用教室"
+						}
+					],
+					"type": "fill",
+					"title": "已空置可用教室"
+				},
+				{
+					"index": "agg_hex_room_potential",
+					"paint": {
+						"fill-color": "#FF8200",
+						"fill-opacity": [
+							"interpolate",
+							[
+								"linear"
+							],
+							[
+								"get",
+								"中小學教室_潛在釋放空間"
+							],
+							0,
+							0,
+							66,
+							0.7
+						]
+					},
+					"property": [
+						{
+							"key": "TOWN_NAME",
+							"name": "行政區"
+						},
+						{
+							"key": "SEC_NAME",
+							"name": "次分區"
+						},
+						{
+							"key": "中小學教室_潛在釋放空間",
+							"name": "潛在空置教室"
+						}
+					],
+					"type": "fill",
+					"title": "潛在空置教室"
+				}
+			],
 			"chart_config": {
 				"color": [
-					"#9c7a3e",
-					"#b7e28e",
-					"#7febd0",
-					"#8ce8ff"
+					"#76DC85",
+					"#FF8200"
 				],
 				"types": [
 					"BarPercentChart",
@@ -5940,7 +6159,7 @@
 					}
 				]
 			},
-			"name": "2-5",
+			"name": "15歲以下每人空教室數",
 			"source": "",
 			"time_from": "",
 			"time_to": "",
@@ -5953,8 +6172,8 @@
 				"Wee Win"
 			]
 		},
-		"157": {
-			"id": 157,
+		"158": {
+			"id": 158,
 			"index": "custom_bubble_chart",
 			"history_data": false,
 			"map_config": [
@@ -6031,8 +6250,8 @@
 				"Wee Win"
 			]
 		},
-		"158": {
-			"id": 158,
+		"159": {
+			"id": 159,
 			"index": "real-time-chart",
 			"map_config": null,
 			"history_data": false,

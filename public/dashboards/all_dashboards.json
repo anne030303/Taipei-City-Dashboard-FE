@@ -1,19 +1,18 @@
 {
 	"data": [
 		{
-			"name": "人口",
-			"index": "people",
+			"name": "現在好孕嗎",
+			"index": "weewin-1",
 			"components": [
-				"149",
 				"150",
 				"151",
 				"152"
 			],
-			"icon": "baby_changing_station"
+			"icon": "child_care"
 		},
 		{
-			"name": "環境",
-			"index": "environment1",
+			"name": "處處有好孕",
+			"index": "weewin-2",
 			"components": [
 				"153",
 				"154",
@@ -24,7 +23,7 @@
 				"160",
 				"161"
 			],
-			"icon": "bedroom_baby"
+			"icon": "family_restroom"
 		},
 		{
 			"name": "測試",

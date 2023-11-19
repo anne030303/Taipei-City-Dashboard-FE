@@ -4,7 +4,7 @@
 
 <script setup>
 import { ref, watch, computed, watchEffect } from "vue";
-import CustomTooltip from "../charts/CustomTooltip.vue";
+import CustomTooltipForRealChart from "../charts/CustomTooltipForRealChart.vue";
 import { useRoute } from "vue-router";
 import { determineScaleAndLabels } from "../../assets/utilityFunctions/determineScaleAndLabels";
 import { calculateAverage } from "../../assets/utilityFunctions/calculateAverage";
@@ -20,20 +20,20 @@ const props = defineProps([
 ]);
 
 
-// const colorDicForTownName = {
-// 	中山區: "#66C5CC",
-// 	中正區: "#F6CF71",
-// 	信義區: "#F89C74",
-// 	內湖區: "#DCB0F2",
-// 	北投區: "#87C55F",
-// 	南港區: "#9EB9F3",
-// 	士林區: "#FE88B1",
-// 	大同區: "#C9DB74",
-// 	大安區: "#8BE0A4",
-// 	文山區: "#B497E7",
-// 	松山區: "#D3B484",
-// 	萬華區: "#B3B3B3",
-// };
+const colorDicForTownName = {
+	中山區: "#66C5CC",
+	中正區: "#F6CF71",
+	信義區: "#F89C74",
+	內湖區: "#DCB0F2",
+	北投區: "#87C55F",
+	南港區: "#9EB9F3",
+	士林區: "#FE88B1",
+	大同區: "#C9DB74",
+	大安區: "#8BE0A4",
+	文山區: "#B497E7",
+	松山區: "#D3B484",
+	萬華區: "#B3B3B3",
+};
 
 const setting = {
 	dashboard: {
@@ -116,20 +116,27 @@ watch(route, (newRoute) => {
 const dataPoints = ref(props["series"]);
 
 // 老人人口數
+// 老人人口數
 const xLabels = computed(() =>{
 	if(props.chart_config.town === 'mainTown'){
-		return { scale: 'linear', labels: [100, 200, 300, 400, 500, 600, 700, 800, 900]};
+		return { scale: 'linear', labels: ["0", "100", "200", "300", "400", "500", "600", "700", "800", "900"]};
+	}else{
+		return { scale: 'linear', labels: ["0", "50", "100", "200", "400", "800", "1600", "3200", "6400"]};	
 	}
 
-	return determineScaleAndLabels(dataPoints.value, "x", layout)
+	// return determineScaleAndLabels(dataPoints.value, "x", layout)
 });
+
+
 // 老房人口數
 const yLabels = computed(() =>{
 	if(props.chart_config.town === 'mainTown'){
-		return { scale: 'linear', labels: [300, 400, 500, 600, 700, 800, 900]};
+		return { scale: 'linear', labels: ["0", "200", "400", "600", "800", "1000", "1200", "1400", "1600"]};
 	}
 
-	return determineScaleAndLabels(dataPoints.value, "y", layout)
+	return {scale: 'linear', labels: ["0", "100", "200", "300", "400", "500", "600", "700", "800"]}
+
+	// return determineScaleAndLabels(dataPoints.value, "y", layout)
 });
 
 
@@ -139,14 +146,8 @@ const maxZ = computed(() =>
 const currentDataPoints = ref([]);
 const currentHoverPoint = ref(null);
 
-const averageX = computed(() =>
-	calculateAverage(currentDataPoints.value.map((point) => point.x))
-);
 const medianX = computed(() =>
 	calculateMedian(currentDataPoints.value.map((point) => point.x))
-);
-const averageY = computed(() =>
-	calculateAverage(currentDataPoints.value.map((point) => point.y))
 );
 const medianY = computed(() =>
 	calculateMedian(currentDataPoints.value.map((point) => point.y))
@@ -168,10 +169,15 @@ const containerRef = ref(null);
 
 
 function scaleX(value) {
+
+	if(!value) return xAxisWidth +
+				safeDistance
+
 	const plotWidth = svgWidth - 2 * (xAxisWidth + safeDistance);
 	const labelValues = xLabels.value.labels.map((label) =>
-		translateLabelToNum(label)
+		parseInt(label)
 	);
+
 	const intervalWidth = plotWidth / (labelValues.length - 1);
 
 	for (let i = 0; i < labelValues.length - 1; i++) {
@@ -183,18 +189,22 @@ function scaleX(value) {
 				i * intervalWidth +
 				relativePosition * intervalWidth +
 				xAxisWidth +
+				safeDistance <= 0 ? 0 : i * intervalWidth +
+				relativePosition * intervalWidth +
+				xAxisWidth +
 				safeDistance
 			);
 		}
+
 	}
 }
 
 function scaleY(value) {
 	// 假設 SVG 高度為 400px，且留有 50px 邊界
-	const maxValue = translateLabelToNum(
+	const maxValue = parseInt(
 		yLabels.value.labels[yLabels.value.labels.length - 1]
 	); // yLabels 最大值
-	const minValue = translateLabelToNum(yLabels.value.labels[0]);
+	const minValue = parseInt(yLabels.value.labels[0]);
 	const scaledValue =
 		svgHeight -
 		yAxisHeight -
@@ -353,7 +363,7 @@ const mouseLeaveBubble = () => {
 
 // 使用計算屬性來確定 fill 顏色
 const getFill = (point) => {
-	return point.category ? "#7D7D7D" : "#488388";
+	return colorDicForTownName[point.country];
 };
 
 // 計算屬性：根據 Bubble 的活躍狀態計算透明度
@@ -372,9 +382,11 @@ const isShowHalo = (point) => {
 };
 
 // 計算顯示tooltip,
-const isShowTooltip = () => {
-	return true;
-};
+const isShowTooltip = (point) =>{
+	if(point.hover) return true
+
+	return false
+}
 
 // const isPlaying = ref(false);
 // let intervalId = null;
@@ -570,19 +582,6 @@ const isShowTooltip = () => {
 			>
 				私立幼稚園
 			</text>
-			<!-- 中央年份 -->
-			<text
-				class="central-text"
-				fill="#fff"
-				:x="svgWidth / 2"
-				:y="svgHeight / 1.8"
-				text-anchor="middle"
-				:style="{ fontSize: svgWidth < 600 ? '5rem' : '8rem' }"
-				opacity="0.5"
-			>
-				{{ parseInt(mapStore.currentIndex) + 2022 }}
-			</text>
-
 			<!-- 渲染當前年份的數據點 -->
 			<g v-show="currentDataPoints.length > 0">
 				<!-- 親眼見證key的用處 -->
@@ -594,8 +593,9 @@ const isShowTooltip = () => {
 				>
 					<!-- Bubbles -->
 					<circle
+						v-show="currentDataPoint.x > xAxisWidth"
 						class="data-point"
-						:cx="currentDataPoint.x"
+						:cx="currentDataPoint.x <= 0 ? 0: currentDataPoint.x"
 						:cy="currentDataPoint.y"
 						:r="currentDataPoint.z"
 						:fill="getFill(currentDataPoint)"
@@ -608,55 +608,6 @@ const isShowTooltip = () => {
 					/>
 				</g>
 				<!-- Dashed lines for the hovered bubble -->
-				<g v-if="currentHoverPoint">
-					<line
-						:x1="currentHoverPoint.xLine.x1"
-						:y1="currentHoverPoint.xLine.y1"
-						:x2="currentHoverPoint.xLine.x2"
-						:y2="currentHoverPoint.xLine.y2"
-						stroke-dasharray="5,5"
-						stroke="black"
-					/>
-					<line
-						:x1="currentHoverPoint.yLine.x1"
-						:y1="currentHoverPoint.yLine.y1"
-						:x2="currentHoverPoint.yLine.x2"
-						:y2="currentHoverPoint.yLine.y2"
-						stroke-dasharray="5,5"
-						stroke="black"
-					/>
-
-					<!-- Text for x and y-axis values for the hovered bubble -->
-					<text
-						fill="#fff"
-						ref="currentHoverPointXLabelBox"
-						:x="currentHoverPoint.x"
-						:y="svgHeight - 30"
-						text-anchor="middle"
-					>
-						{{ currentHoverPoint.originalX }}
-					</text>
-					<text
-						fill="#fff"
-						ref="currentHoverPointYLabelBox"
-						:x="xAxisWidth - 5"
-						:y="currentHoverPoint.y"
-						text-anchor="end"
-					>
-						{{ currentHoverPoint.originalY }}
-					</text>
-				</g>
-
-				<!-- X 軸平均值線 -->
-				<line
-					:x1="averageX"
-					:y1="yAxisHeight"
-					:x2="averageX"
-					:y2="svgHeight - yAxisHeight"
-					stroke-dasharray="5,5"
-					stroke="#D3B484"
-					stroke-width="3"
-				/>
 				<!-- X 軸中位數線 -->
 				<line
 					:x1="medianX"
@@ -668,16 +619,6 @@ const isShowTooltip = () => {
 					stroke-dasharray="5,5"
 				/>
 
-				<!-- Y 軸平均值線 -->
-				<line
-					:x1="xAxisWidth"
-					:y1="averageY"
-					:x2="svgWidth - xAxisWidth"
-					:y2="averageY"
-					stroke="#D3B484"
-					stroke-width="3"
-					stroke-dasharray="5,5"
-				/>
 				<!-- Y 軸中位數線 -->
 				<line
 					:x1="xAxisWidth"
@@ -707,7 +648,7 @@ const isShowTooltip = () => {
 						:stroke="getFill(currentDataPoint)"
 						stroke-width="2"
 					/>
-					<CustomTooltip
+					<CustomTooltipForRealChart
 						v-if="isShowTooltip(currentDataPoint)"
 						:bubble="currentDataPoint"
 						:chart-dimensions="{
