@@ -5339,6 +5339,7 @@
 		"151": {
 			"id": 158,
 			"index": "1-3",
+			"history_data": true,
 			"map_config": [
 				{
 					"index": "hex_pop_child_horiz",
