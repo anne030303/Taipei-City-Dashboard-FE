@@ -33,7 +33,8 @@ watch(
 	[() => mapStore.currentIndex, () => animateChart.value],
 	([currentIndex, animateChartValue]) => {
 		if (props.content.index === animateChartValue) {
-			if (props.content.index === "stat_pop_nangang") {
+			console.log(props.content.index);
+			if (props.content.index === "1-2") {
 				mapStore.setMapLayerSource(
 					`${props.content.map_config[0].index}-${props.content.map_config[0].type}-source`
 				);
@@ -116,12 +117,17 @@ function getMapLayerConfig(index) {
 
 function setCurrentIndex(e) {
 	animateChart.value = parseInt(e);
-	if (!props.content.index === "stat_pop_nangang")
+	if (props.content.index === "1-2") {
+		mapStore.setMapLayerSource(
+			`${props.content.map_config[0].index}-${props.content.map_config[0].type}-source`
+		);
+	} else {
 		mapStore.setAnimatePlot(
 			props.content.map_config,
 			e,
 			mapStore.currentIndex
 		);
+	}
 }
 </script>
 

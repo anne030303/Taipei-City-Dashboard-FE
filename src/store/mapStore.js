@@ -314,12 +314,25 @@ export const useMapStore = defineStore("map", {
 			let toRestore = {
 				...this.map.getSource(mapLayerId)._data,
 			};
-			// console.log(this.currentFieldName);
+			console.log(this.currentFieldName);
 
 			this.map.removeLayer(mapConfig.layerId);
+			const tb = (window.tb = new Threebox(
+				this.map,
+				this.map.getCanvas().getContext("webgl"), //get the context from the map canvas
+				{
+					defaultLights: true,
+					enableSelectingFeatures: true,
+					enableSelectingObjects: true,
+					enableTooltips: true,
+					multiLayer: true,
+				}
+			));
+
 			const tubesTemp = {};
 			this.map.addLayer({
 				id: mapConfig.layerId,
+				// id: `${mapConfig.layerId}-${_this.currentFieldName}`,
 				type: "custom",
 				renderingMode: "3d",
 				onAdd: function () {
@@ -352,7 +365,7 @@ export const useMapStore = defineStore("map", {
 							opacity: 0.8,
 						};
 
-						let tubeMesh = window.tb.tube(options);
+						let tubeMesh = tb.tube(options);
 						tubeMesh.setCoords(point1);
 						tubesTemp[
 							`${mapConfig.layerId}-source-${feature.properties.FULL}-${feature.properties.cat_age_index}`
@@ -373,12 +386,12 @@ export const useMapStore = defineStore("map", {
 						tubeMesh.bbox = true;
 						// tubeMesh.tooltip = true;
 
-						window.tb.add(tubeMesh);
+						tb.add(tubeMesh);
 					});
 				},
 				render: function () {
 					// tb.toggleLayer(layerId, visible)
-					window.tb.update(); //update Threebox scene
+					tb.update(); //update Threebox scene
 				},
 			});
 			this.tubes = tubesTemp;
@@ -411,7 +424,7 @@ export const useMapStore = defineStore("map", {
 
 			// let count = 0;
 			// const render = setInterval(() => {
-			window.tb.update();
+			tb.update();
 			this.map.triggerRepaint();
 			// 	count++;
 			// 	if (count > 100) clearInterval(render);
