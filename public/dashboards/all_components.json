@@ -5284,13 +5284,14 @@
 			],
 			"chart_config": {
 				"color": [
-					"#B35B00",
-					"#FF8200",
-					"#FFA84D"
+					"#9c7a3e",
+					"#b7e28e",
+					"#7febd0",
+					"#8ce8ff"
 				],
 				"types": [
-					"BarPercentChart",
-					"ColumnChart"
+					"ColumnChart",
+					"BarPercentChart"
 				],
 				"unit": "",
 				"animate": {
@@ -5590,8 +5591,9 @@
 					"#76DC85"
 				],
 				"types": [
+					"ColumnChart",
 					"BarPercentChart",
-					"ColumnChart"
+					"CustomBubbleChart"
 				],
 				"unit": "",
 				"animate": {
@@ -5654,8 +5656,8 @@
 					"#7D7D7D"
 				],
 				"types": [
-					"BarPercentChart",
-					"ColumnChart"
+					"ColumnChart",
+					"BarPercentChart"
 				],
 				"unit": "",
 				"categories": [
@@ -5863,8 +5865,8 @@
 					"#A65818"
 				],
 				"types": [
-					"BarPercentChart",
-					"ColumnChart"
+					"ColumnChart",
+					"BarPercentChart"
 				],
 				"unit": "",
 				"categories": [
@@ -5988,9 +5990,9 @@
 					"#00A9E0"
 				],
 				"types": [
-					"BarPercentChart",
 					"ColumnChart",
-					""
+					"BarPercentChart",
+					"CustomBubbleChart"
 				],
 				"unit": "",
 				"categories": [
@@ -6128,9 +6130,9 @@
 					"#FF8200"
 				],
 				"types": [
-					"BarPercentChart",
 					"ColumnChart",
-					""
+					"BarPercentChart",
+					"CustomBubbleChart"
 				],
 				"unit": "",
 				"categories": [
