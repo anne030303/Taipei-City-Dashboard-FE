@@ -89,7 +89,7 @@ function parseTime(time) {
 	<div>
 		<apexchart
 			width="100%"
-			height="140px"
+			height="300px"
 			type="area"
 			:options="chartOptions"
 			:series="series"
