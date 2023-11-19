@@ -5981,10 +5981,8 @@
 			],
 			"chart_config": {
 				"color": [
-					"#9c7a3e",
-					"#b7e28e",
-					"#7febd0",
-					"#8ce8ff"
+					"#FD5696",
+					"#00A9E0"
 				],
 				"types": [
 					"BarPercentChart",
@@ -6123,10 +6121,8 @@
 			],
 			"chart_config": {
 				"color": [
-					"#9c7a3e",
-					"#b7e28e",
-					"#7febd0",
-					"#8ce8ff"
+					"#76DC85",
+					"#FF8200"
 				],
 				"types": [
 					"BarPercentChart",
