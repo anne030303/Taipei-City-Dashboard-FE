@@ -5289,8 +5289,8 @@
 					"#B35B00"
 				],
 				"types": [
-					"BarPercentChart",
-					"ColumnChart"
+					"ColumnChart",
+					"BarPercentChart"
 				],
 				"unit": "",
 				"animate": {
@@ -5590,8 +5590,8 @@
 					"#76DC85"
 				],
 				"types": [
-					"BarPercentChart",
-					"ColumnChart"
+					"ColumnChart",
+					"BarPercentChart"
 				],
 				"unit": "",
 				"animate": {
@@ -5654,8 +5654,8 @@
 					"#7D7D7D"
 				],
 				"types": [
-					"BarPercentChart",
-					"ColumnChart"
+					"ColumnChart",
+					"BarPercentChart"
 				],
 				"unit": "",
 				"categories": [
@@ -5863,8 +5863,8 @@
 					"#A65818"
 				],
 				"types": [
-					"BarPercentChart",
-					"ColumnChart"
+					"ColumnChart",
+					"BarPercentChart"
 				],
 				"unit": "",
 				"categories": [
@@ -5988,8 +5988,8 @@
 					"#00A9E0"
 				],
 				"types": [
-					"BarPercentChart",
 					"ColumnChart",
+					"BarPercentChart",
 					""
 				],
 				"unit": "",
@@ -6128,8 +6128,8 @@
 					"#FF8200"
 				],
 				"types": [
-					"BarPercentChart",
 					"ColumnChart",
+					"BarPercentChart",
 					""
 				],
 				"unit": "",
