@@ -4,7 +4,7 @@
 
 <script setup>
 import { ref, watch, computed, watchEffect, onMounted } from "vue";
-import CustomTooltip from "../charts/CustomTooltip.vue";
+import CustomTooltip from "./CustomTooltip.vue";
 import { useRoute } from "vue-router";
 import { determineScaleAndLabels } from "../../assets/utilityFunctions/determineScaleAndLabels";
 import { calculateAverage } from "../../assets/utilityFunctions/calculateAverage";
@@ -64,19 +64,6 @@ const setting = {
 	},
 };
 
-// // 定義 X 軸和 Y 軸的標籤值, 邊界值
-// const xAxisWidth = 50;
-// const yAxisHeight = 40;
-
-// // x, y軸的預留間隔
-// const safeDistance = 15;
-
-// const xAxisWidthSafteDistance = 10;
-// const yAxisHeightSafteDistance = 85;
-
-// // 假設 SVG 的尺寸如下
-// const svgWidth = ref(380);
-// const svgHeight = ref(300);
 
 // The following are controls for the mobile version to toggle between dashboard and mapview
 const layout = ref("mapview");
@@ -122,8 +109,6 @@ const xLabels = computed(() =>
 const yLabels = computed(() =>
 	determineScaleAndLabels(dataPoints.value, "y", layout)
 );
-
-console.log(xLabels);
 
 const maxZ = computed(() =>
 	Math.max(...dataPoints.value.map((point) => point.z))
@@ -184,8 +169,6 @@ function scaleX(value) {
 	}
 }
 
-console.log(currentDataPoints.value);
-
 function scaleY(value) {
 	// 假設 SVG 高度為 400px，且留有 50px 邊界
 	const maxValue = translateLabelToNum(
@@ -201,8 +184,8 @@ function scaleY(value) {
 	return scaledValue > svgHeight - yAxisHeight
 		? svgHeight - yAxisHeight
 		: scaledValue < yAxisHeight
-		? yAxisHeight
-		: scaledValue;
+			? yAxisHeight
+			: scaledValue;
 }
 
 function scaleZ(value) {
@@ -290,7 +273,6 @@ watchEffect(() => {
 			.map((point, index) => ({
 				index: index,
 				country: point.country,
-				category: point.category,
 				year: point.year,
 				x: scaleX(point.x),
 				y: scaleY(point.y),
@@ -332,7 +314,6 @@ const toggleBubble = (point) => {
 			startYear: point.year,
 		});
 	}
-	console.log("activeStatus", activeStatus._value);
 };
 
 // 更新 mouseOverBubble 和 mouseLeaveBubble 方法來使用 reactive 數據點
@@ -361,17 +342,17 @@ const mouseLeaveBubble = () => {
 
 // 使用計算屬性來確定 fill 顏色
 const getFill = (point) => {
-	return colorDicForTownName[point.category];
+	return colorDicForTownName[point.country];
 };
 
 // 計算屬性：根據 Bubble 的活躍狀態計算透明度
 const getOpacity = (point) => {
 	return activeCountries.value.length === 0 && !currentHoverPoint.value
 		? 0.8
-		: activeCountries.value.includes(point.country) ||
-		  currentHoverPoint.value?.country === point.country
-		? 0.8
-		: 0.1;
+		: activeCountries.value.includes(point.country) 
+		|| currentHoverPoint.value?.country === point.country
+			? 0.8
+			: 0.1;
 };
 
 // 計算要不要顯示光暈
@@ -396,8 +377,8 @@ const isShowTooltip = (point) => {
 	}
 };
 
-const isPlaying = ref(false);
-let intervalId = null;
+// const isPlaying = ref(false);
+// let intervalId = null;
 
 // const startPlaying = () => {
 // 	if (!isPlaying.value) {
@@ -460,7 +441,7 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 
 <template>
 	<div
-		v-if="activeChart === 'CustomBubbleChart'"
+		v-if="activeChart === 'CustomBubbleChartForMainTown'"
 		:key="updateTrigger"
 		ref="containerRef"
 	>

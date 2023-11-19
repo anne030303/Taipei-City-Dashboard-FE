@@ -35,6 +35,8 @@ import MapLegend from "./components/charts/MapLegend.vue";
 import MetroChart from "./components/charts/MetroChart.vue";
 import HeatmapChart from "./components/charts/HeatmapChart.vue";
 import CustomBubbleChart from "./components/charts/CustomBubbleChart.vue";
+import CustomBubbleChartForMainTown from "./components/charts/CustomBubbleChartForMainTown.vue";
+import CustomBubbleChartForKid from "./components/charts/CustomBubbleChartForKid.vue";
 import RealTimeChart from "./components/charts/RealTimeChart.vue";
 
 const app = createApp(App);
@@ -59,6 +61,8 @@ app.component("MapLegend", MapLegend);
 app.component("MetroChart", MetroChart);
 app.component("HeatmapChart", HeatmapChart);
 app.component("CustomBubbleChart", CustomBubbleChart);
+app.component("CustomBubbleChartForKid", CustomBubbleChartForKid);
+app.component("CustomBubbleChartForMainTown", CustomBubbleChartForMainTown);
 app.component("RealTimeChart", RealTimeChart);
 
 app.mount("#app");

@@ -3,8 +3,8 @@
 <!-- TODO: 記得把detetminScaleAndLabels 的東西去掉 -->
 
 <script setup>
-import { ref, watch, computed, watchEffect, onMounted } from "vue";
-import CustomTooltip from "../charts/CustomTooltip.vue";
+import { ref, watch, computed, watchEffect } from "vue";
+import CustomTooltipForRealChart from "../charts/CustomTooltipForRealChart.vue";
 import { useRoute } from "vue-router";
 import { determineScaleAndLabels } from "../../assets/utilityFunctions/determineScaleAndLabels";
 import { calculateAverage } from "../../assets/utilityFunctions/calculateAverage";
@@ -18,6 +18,7 @@ const props = defineProps([
 	"map_config",
 	"isDialog",
 ]);
+
 
 const colorDicForTownName = {
 	中山區: "#66C5CC",
@@ -115,15 +116,29 @@ watch(route, (newRoute) => {
 const dataPoints = ref(props["series"]);
 
 // 老人人口數
-const xLabels = computed(() =>
-	determineScaleAndLabels(dataPoints.value, "x", layout)
-);
-// 老房人口數
-const yLabels = computed(() =>
-	determineScaleAndLabels(dataPoints.value, "y", layout)
-);
+// 老人人口數
+const xLabels = computed(() =>{
+	if(props.chart_config.town === 'mainTown'){
+		return { scale: 'linear', labels: ["0", "100", "200", "300", "400", "500", "600", "700", "800", "900"]};
+	}else{
+		return { scale: 'linear', labels: ["0", "50", "100", "200", "400", "800", "1600", "3200", "6400"]};	
+	}
 
-console.log(xLabels);
+	// return determineScaleAndLabels(dataPoints.value, "x", layout)
+});
+
+
+// 老房人口數
+const yLabels = computed(() =>{
+	if(props.chart_config.town === 'mainTown'){
+		return { scale: 'linear', labels: ["0", "200", "400", "600", "800", "1000", "1200", "1400", "1600"]};
+	}
+
+	return {scale: 'linear', labels: ["0", "100", "200", "300", "400", "500", "600", "700", "800"]}
+
+	// return determineScaleAndLabels(dataPoints.value, "y", layout)
+});
+
 
 const maxZ = computed(() =>
 	Math.max(...dataPoints.value.map((point) => point.z))
@@ -131,14 +146,8 @@ const maxZ = computed(() =>
 const currentDataPoints = ref([]);
 const currentHoverPoint = ref(null);
 
-const averageX = computed(() =>
-	calculateAverage(currentDataPoints.value.map((point) => point.x))
-);
 const medianX = computed(() =>
 	calculateMedian(currentDataPoints.value.map((point) => point.x))
-);
-const averageY = computed(() =>
-	calculateAverage(currentDataPoints.value.map((point) => point.y))
 );
 const medianY = computed(() =>
 	calculateMedian(currentDataPoints.value.map((point) => point.y))
@@ -157,16 +166,18 @@ const activeCountries = computed(() => {
 
 const containerRef = ref(null);
 
-// 定義初始年份
-const currentYear = ref(parseInt(mapStore.currentIndex) + 2022);
-// const isPlaying = ref(false);
-// let intervalId = null;
+
 
 function scaleX(value) {
+
+	if(!value) return xAxisWidth +
+				safeDistance
+
 	const plotWidth = svgWidth - 2 * (xAxisWidth + safeDistance);
 	const labelValues = xLabels.value.labels.map((label) =>
-		translateLabelToNum(label)
+		parseInt(label)
 	);
+
 	const intervalWidth = plotWidth / (labelValues.length - 1);
 
 	for (let i = 0; i < labelValues.length - 1; i++) {
@@ -178,20 +189,22 @@ function scaleX(value) {
 				i * intervalWidth +
 				relativePosition * intervalWidth +
 				xAxisWidth +
+				safeDistance <= 0 ? 0 : i * intervalWidth +
+				relativePosition * intervalWidth +
+				xAxisWidth +
 				safeDistance
 			);
 		}
+
 	}
 }
 
-console.log(currentDataPoints.value);
-
 function scaleY(value) {
 	// 假設 SVG 高度為 400px，且留有 50px 邊界
-	const maxValue = translateLabelToNum(
+	const maxValue = parseInt(
 		yLabels.value.labels[yLabels.value.labels.length - 1]
 	); // yLabels 最大值
-	const minValue = translateLabelToNum(yLabels.value.labels[0]);
+	const minValue = parseInt(yLabels.value.labels[0]);
 	const scaledValue =
 		svgHeight -
 		yAxisHeight -
@@ -201,8 +214,8 @@ function scaleY(value) {
 	return scaledValue > svgHeight - yAxisHeight
 		? svgHeight - yAxisHeight
 		: scaledValue < yAxisHeight
-		? yAxisHeight
-		: scaledValue;
+			? yAxisHeight
+			: scaledValue;
 }
 
 function scaleZ(value) {
@@ -266,7 +279,7 @@ function isOverlap(index, axisType) {
 	}
 }
 
-// console.log(currentDataPoints.value);
+console.log(currentDataPoints.value);
 
 watchEffect(() => {
 	// 計算當前顯示的數據點, currentYear有變動時就重新計算
@@ -274,24 +287,16 @@ watchEffect(() => {
 		dataPoints.value
 			.filter((point) => {
 				return (
-					(activeStatus.value.some(
-						(item) =>
-							item.country === point.country &&
-							item.startYear <= point.year &&
-							point.year <= parseInt(mapStore.currentIndex) + 2022
-					) ||
-						point.year ===
-							parseInt(mapStore.currentIndex) + 2022) &&
-					typeof point.x === "number" &&
+					(
+						typeof point.x === "number" &&
 					typeof point.y === "number" &&
 					typeof point.z === "number"
-				);
+					))
 			})
 			.map((point, index) => ({
 				index: index,
 				country: point.country,
-				category: point.category,
-				year: point.year,
+				category: point?.category,
 				x: scaleX(point.x),
 				y: scaleY(point.y),
 				z: scaleZ(point.z),
@@ -312,8 +317,7 @@ watchEffect(() => {
 watchEffect(() => {
 	for (const point of currentDataPoints.value) {
 		point.hover =
-			currentHoverPoint.value?.country === point.country &&
-			currentHoverPoint.value?.year === point.year;
+			currentHoverPoint.value?.country === point.country
 	}
 });
 
@@ -329,10 +333,8 @@ const toggleBubble = (point) => {
 	} else {
 		activeStatus.value.push({
 			country: point.country,
-			startYear: point.year,
 		});
 	}
-	console.log("activeStatus", activeStatus._value);
 };
 
 // 更新 mouseOverBubble 和 mouseLeaveBubble 方法來使用 reactive 數據點
@@ -361,7 +363,7 @@ const mouseLeaveBubble = () => {
 
 // 使用計算屬性來確定 fill 顏色
 const getFill = (point) => {
-	return colorDicForTownName[point.category];
+	return colorDicForTownName[point.country];
 };
 
 // 計算屬性：根據 Bubble 的活躍狀態計算透明度
@@ -369,9 +371,9 @@ const getOpacity = (point) => {
 	return activeCountries.value.length === 0 && !currentHoverPoint.value
 		? 0.8
 		: activeCountries.value.includes(point.country) ||
-		  currentHoverPoint.value?.country === point.country
-		? 0.8
-		: 0.1;
+		currentHoverPoint.value?.country === point.country
+			? 0.8
+			: 0.1;
 };
 
 // 計算要不要顯示光暈
@@ -380,24 +382,14 @@ const isShowHalo = (point) => {
 };
 
 // 計算顯示tooltip,
-const isShowTooltip = (point) => {
-	if (point.hover) return true;
+const isShowTooltip = (point) =>{
+	if(point.hover) return true
 
-	if (activeCountries.value.includes(point.country)) {
-		const pointList = currentDataPoints.value.filter(
-			(curPoint) => curPoint.country === point.country
-		);
+	return false
+}
 
-		if (
-			pointList.length === 1 ||
-			pointList.sort((a, b) => a.year - b.year)[0].year === point.year
-		)
-			return true;
-	}
-};
-
-const isPlaying = ref(false);
-let intervalId = null;
+// const isPlaying = ref(false);
+// let intervalId = null;
 
 // const startPlaying = () => {
 // 	if (!isPlaying.value) {
@@ -426,42 +418,41 @@ let intervalId = null;
 // 	startPlaying()
 // })
 
-const callineLengthBetweenTwoBubbles = (point1, point2) => {
-	if (point1) {
-		const x1 = point1.x;
-		const x2 = point2.x;
-		const y1 = point1.y;
-		const y2 = point2.y;
+// const callineLengthBetweenTwoBubbles = (point1, point2) => {
+// 	if (point1) {
+// 		const x1 = point1.x;
+// 		const x2 = point2.x;
+// 		const y1 = point1.y;
+// 		const y2 = point2.y;
 
-		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-	}
-	return 0;
-};
+// 		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+// 	}
+// 	return 0;
+// };
 
 // connectLine 的資料順序性
-const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
-	if (currentDataPoints.value[currentDataPointIndex - 1]) {
-		const lineLengthBetweenTwoPoints = callineLengthBetweenTwoBubbles(
-			currentDataPoints.value[currentDataPointIndex + 1],
-			currentDataPoint
-		);
+// const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
+// 	if (currentDataPoints.value[currentDataPointIndex - 1]) {
+// 		const lineLengthBetweenTwoPoints = callineLengthBetweenTwoBubbles(
+// 			currentDataPoints.value[currentDataPointIndex + 1],
+// 			currentDataPoint
+// 		);
 
-		return (
-			currentDataPoint?.country ===
-				currentDataPoints.value[currentDataPointIndex + 1]?.country &&
-			lineLengthBetweenTwoPoints >
-				currentDataPoint.z +
-					currentDataPoints.value[currentDataPointIndex + 1]?.z
-		);
-	}
-	return false;
-};
+// 		return (
+// 			currentDataPoint?.country ===
+// 				currentDataPoints.value[currentDataPointIndex + 1]?.country &&
+// 			lineLengthBetweenTwoPoints >
+// 				currentDataPoint.z +
+// 					currentDataPoints.value[currentDataPointIndex + 1]?.z
+// 		);
+// 	}
+// 	return false;
+// };
 </script>
 
 <template>
 	<div
-		v-if="activeChart === 'CustomBubbleChart'"
-		:key="updateTrigger"
+		v-if="activeChart === 'CustomBubbleChartForKid'"
 		ref="containerRef"
 	>
 		<svg :width="svgWidth" :height="svgHeight">
@@ -581,7 +572,7 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 				:y="svgHeight - xAxisWidthSafteDistance"
 				text-anchor="middle"
 			>
-				婦女生育人口數佔比
+				公立幼稚園
 			</text>
 			<text
 				fill="#fff"
@@ -589,21 +580,8 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 				:text-anchor="layout !== 'popoutwindow' ? 'start' : 'end'"
 				transform="rotate(-90 20,200)"
 			>
-				三階段_幼年人口佔比
+				私立幼稚園
 			</text>
-			<!-- 中央年份 -->
-			<text
-				class="central-text"
-				fill="#fff"
-				:x="svgWidth / 2"
-				:y="svgHeight / 1.8"
-				text-anchor="middle"
-				:style="{ fontSize: svgWidth < 600 ? '5rem' : '8rem' }"
-				opacity="0.5"
-			>
-				{{ parseInt(mapStore.currentIndex) + 2022 }}
-			</text>
-
 			<!-- 渲染當前年份的數據點 -->
 			<g v-show="currentDataPoints.length > 0">
 				<!-- 親眼見證key的用處 -->
@@ -611,25 +589,13 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 					v-for="(
 						currentDataPoint, currentDataPointIndex
 					) in currentDataPoints"
-					:key="`vzb-bc-bubble-${currentDataPoint.country}-${
-						activeCountries.includes(currentDataPoint.country)
-							? currentDataPoint.year === currentYear
-								? '00'
-								: currentDataPoint.year
-							: '00'
-					}`"
-					:id="`vzb-bc-bubble-${currentDataPoint.country}-${
-						activeCountries.includes(currentDataPoint.country)
-							? currentDataPoint.year === currentYear
-								? '00'
-								: currentDataPoint.year
-							: '00'
-					}`"
+					:key="`vzb-bc-bubble-${currentDataPoint.country}-${currentDataPoint.category ? currentDataPoint.category : ''}-${currentDataPointIndex}`"
 				>
 					<!-- Bubbles -->
 					<circle
+						v-show="currentDataPoint.x > xAxisWidth"
 						class="data-point"
-						:cx="currentDataPoint.x"
+						:cx="currentDataPoint.x <= 0 ? 0: currentDataPoint.x"
 						:cy="currentDataPoint.y"
 						:r="currentDataPoint.z"
 						:fill="getFill(currentDataPoint)"
@@ -640,113 +606,28 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 						@mouseenter="mouseOverBubble(currentDataPoint)"
 						@mouseleave="mouseLeaveBubble()"
 					/>
-					<line
-						class="vzb-trail-line"
-						v-if="
-							isShowConnectLine(
-								currentDataPoint,
-								currentDataPointIndex
-							)
-						"
-						:x1="currentDataPoint.x"
-						:x2="currentDataPoints[currentDataPointIndex + 1].x"
-						:y1="currentDataPoint.y"
-						:y2="currentDataPoints[currentDataPointIndex + 1].y"
-						:style="{
-							strokeDasharray: `0 
-					${currentDataPoints[currentDataPointIndex + 1].z}
-					${callineLengthBetweenTwoBubbles(
-						currentDataPoint,
-						currentDataPoints[currentDataPointIndex + 1]
-					)} 
-					${currentDataPoint.z} `,
-						}"
-					>
-						<animate
-							attributeName="opacity"
-							from="0"
-							to="1"
-							dur="0.5s"
-							begin="0.5s"
-						/>
-					</line>
 				</g>
 				<!-- Dashed lines for the hovered bubble -->
-				<g v-if="currentHoverPoint">
-					<line
-						:x1="currentHoverPoint.xLine.x1"
-						:y1="currentHoverPoint.xLine.y1"
-						:x2="currentHoverPoint.xLine.x2"
-						:y2="currentHoverPoint.xLine.y2"
-						stroke-dasharray="5,5"
-						stroke="black"
-					/>
-					<line
-						:x1="currentHoverPoint.yLine.x1"
-						:y1="currentHoverPoint.yLine.y1"
-						:x2="currentHoverPoint.yLine.x2"
-						:y2="currentHoverPoint.yLine.y2"
-						stroke-dasharray="5,5"
-						stroke="black"
-					/>
-
-					<!-- Text for x and y-axis values for the hovered bubble -->
-					<text
-						fill="#fff"
-						ref="currentHoverPointXLabelBox"
-						:x="currentHoverPoint.x"
-						:y="svgHeight - 30"
-						text-anchor="middle"
-					>
-						{{ currentHoverPoint.originalX }}
-					</text>
-					<text
-						fill="#fff"
-						ref="currentHoverPointYLabelBox"
-						:x="xAxisWidth - 5"
-						:y="currentHoverPoint.y"
-						text-anchor="end"
-					>
-						{{ currentHoverPoint.originalY }}
-					</text>
-				</g>
-
-				<!-- X 軸平均值線 -->
-				<line
-					:x1="averageX"
-					:y1="yAxisHeight"
-					:x2="averageX"
-					:y2="svgHeight - yAxisHeight"
-					stroke="#FF0000"
-					stroke-dasharray="5,5"
-				/>
 				<!-- X 軸中位數線 -->
 				<line
 					:x1="medianX"
 					:y1="yAxisHeight"
 					:x2="medianX"
 					:y2="svgHeight - yAxisHeight"
-					stroke="#00FF00"
+					stroke="#D3B484"
+					stroke-width="3"
 					stroke-dasharray="5,5"
 				/>
 
-				<!-- Y 軸平均值線 -->
-				<line
-					:x1="xAxisWidth"
-					:y1="averageY"
-					:x2="svgWidth - xAxisWidth"
-					:y2="averageY"
-					stroke="#FF0000"
-					stroke-dasharray="5,5"
-				/>
 				<!-- Y 軸中位數線 -->
 				<line
 					:x1="xAxisWidth"
 					:y1="medianY"
 					:x2="svgWidth - xAxisWidth"
 					:y2="medianY"
-					stroke="#00FF00"
+					stroke="#D3B484"
 					stroke-dasharray="5,5"
+					stroke-width="3"
 				/>
 
 				<!-- Tooltip -->
@@ -767,7 +648,7 @@ const isShowConnectLine = (currentDataPoint, currentDataPointIndex) => {
 						:stroke="getFill(currentDataPoint)"
 						stroke-width="2"
 					/>
-					<CustomTooltip
+					<CustomTooltipForRealChart
 						v-if="isShowTooltip(currentDataPoint)"
 						:bubble="currentDataPoint"
 						:chart-dimensions="{
@@ -801,16 +682,4 @@ button {
 	max-height: 30px;
 }
 
-.vzb-trail-line {
-	stroke-width: 2.06321;
-	stroke: rgb(0, 152, 223);
-	opacity: 0;
-	animation: lineAppear 0.5s ease-out 0.01s forwards;
-}
-
-@keyframes lineAppear {
-	to {
-		opacity: 1;
-	}
-}
 </style>

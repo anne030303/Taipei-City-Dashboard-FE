@@ -13,7 +13,7 @@ const props = defineProps({
 });
 
 const tooltipContent = computed(() => {
-	return props.bubble.category;
+	return props.bubble.category == null ? props.bubble.country : props.bubble.category;
 });
 
 const tooltipPosition = computed(() => {

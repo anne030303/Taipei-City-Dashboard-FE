@@ -33,7 +33,6 @@ watch(
 	[() => mapStore.currentIndex, () => animateChart.value],
 	([currentIndex, animateChartValue]) => {
 		if (props.content.index === animateChartValue) {
-			console.log(props.content.index);
 			if (props.content.index === "1-2") {
 				mapStore.setMapLayerSource(
 					`${props.content.map_config[0].index}-${props.content.map_config[0].type}-source`
@@ -177,7 +176,9 @@ function setCurrentIndex(e) {
 						>insights</span
 					>
 					<span
-						v-if="content.chart_config.types.includes('RealTimeChart')"
+						v-if="
+							content.chart_config.types.includes('RealTimeChart')
+						"
 						@click="
 							dialogStore.showNotification(
 								'info',
@@ -187,7 +188,11 @@ function setCurrentIndex(e) {
 						>play_circle</span
 					>
 					<span
-						v-if="content.chart_config.types.includes('CustomBubbleChart')"
+						v-if="
+							content.chart_config.types.includes(
+								'CustomBubbleChart'
+							)
+						"
 						@click="
 							dialogStore.showNotification(
 								'info',

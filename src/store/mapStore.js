@@ -314,7 +314,7 @@ export const useMapStore = defineStore("map", {
 			let toRestore = {
 				...this.map.getSource(mapLayerId)._data,
 			};
-			console.log(this.currentFieldName);
+			// console.log(this.currentFieldName);
 
 			this.map.removeLayer(mapConfig.layerId);
 			const tb = (window.tb = new Threebox(
