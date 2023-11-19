@@ -241,6 +241,7 @@ onMounted(() => {
 	width: 100%;
 	height: calc(100% - 32px);
 	border-radius: 5px;
+	mix-blend-mode: screen;
 
 	@media (max-width: 1000px) {
 		height: 100%;

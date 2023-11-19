@@ -173,7 +173,11 @@ export const useMapStore = defineStore("map", {
 				appendLayerId.layerId = mapLayerId;
 				// 1-2. If the layer doesn't exist, call an API to get the layer data
 				this.loadingLayers.push(appendLayerId.layerId);
-				this.fetchLocalGeoJson(appendLayerId);
+				if (mapLayerId === "city-3Dcity") {
+					this.setCityColor(mapLayerId);
+				} else {
+					this.fetchLocalGeoJson(appendLayerId);
+				}
 			});
 		},
 		// 2. Call an API to get the layer data
@@ -752,61 +756,106 @@ export const useMapStore = defineStore("map", {
 		},
 		//  5. Turn on the visibility for a exisiting map layer
 		turnOnMapLayerVisibility(mapLayerId) {
-			this.map?.setLayoutProperty(mapLayerId, "visibility", "visible");
-			this.tb?.setLayoutProperty(mapLayerId, "visibility", "visible");
-			if (this.ifAutoNavigate) {
-				setTimeout(() => {
-					this.easeToLayer(
-						mapLayerId,
-						null,
-						mapLayerId.slice(-3) === "arc" ||
-							mapLayerId.slice(-14) === "stacked-circle"
-							? true
-							: false
-					);
-				}, 500);
+			console.log(mapLayerId);
+			if (mapLayerId === "city-3Dcity") {
+				this.setCityColor(mapLayerId);
+			} else {
+				this.map?.setLayoutProperty(
+					mapLayerId,
+					"visibility",
+					"visible"
+				);
+				this.tb?.setLayoutProperty(mapLayerId, "visibility", "visible");
+				if (this.ifAutoNavigate) {
+					setTimeout(() => {
+						this.easeToLayer(
+							mapLayerId,
+							null,
+							mapLayerId.slice(-3) === "arc" ||
+								mapLayerId.slice(-14) === "stacked-circle"
+								? true
+								: false
+						);
+					}, 500);
+				}
 			}
-			// "fill-extrusion-color": [
-			// 	"match",
-			// 	[
-			// 		"get",
-			// 		"都更機會"
-			// 	],
-			// 	"高液化且大於20年",
-			// 	"#fbb03b",
-			// 	"大於30年",
-			// 	"#223b53",
-			// 	"已在都更範圍",
-			// 	"#e55e5e",
-			// 	"沒有",
-			// 	"#3bb2d0",
-			// 	"#ccc"
-			// ]
 		},
 		// 6. Turn off the visibility of an exisiting map layer but don't remove it completely
 		turnOffMapLayerVisibility(map_config) {
 			map_config.forEach((element) => {
 				let mapLayerId = `${element.index}-${element.type}`;
+				if (mapLayerId === "city-3Dcity") {
+					this.setCityColor(mapLayerId, false);
+				} else {
+					this.loadingLayers = this.loadingLayers.filter(
+						(el) => el !== mapLayerId
+					);
+
+					if (this.map.getLayer(mapLayerId)) {
+						this.clearLayerFilter(
+							mapLayerId,
+							element,
+							false,
+							false
+						);
+						if (element.type !== "arc") {
+							this.map?.setLayoutProperty(
+								mapLayerId,
+								"visibility",
+								"none"
+							);
+						}
+					}
+
+					this.currentVisibleLayers =
+						this.currentVisibleLayers.filter(
+							(element) => element !== mapLayerId
+						);
+				}
+			});
+			this.removePopup();
+		},
+		setCityColor(mapLayerId, isOpen = true) {
+			if (isOpen) {
+				this.map.setPaintProperty(
+					"taipei_building_3d",
+					"fill-extrusion-color",
+					[
+						"match",
+						["get", "都更機會"],
+						"高液化且大於20年",
+						"#A25FAD",
+						"大於30年",
+						"#E06666",
+						"已在都更範圍",
+						"#F49F36",
+						"沒有",
+						"#7D7D7D",
+						"#7D7D7D",
+					]
+				);
 				this.loadingLayers = this.loadingLayers.filter(
 					(el) => el !== mapLayerId
 				);
-
-				if (this.map.getLayer(mapLayerId)) {
-					this.clearLayerFilter(mapLayerId, element, false, false);
-					if (element.type !== "arc") {
-						this.map?.setLayoutProperty(
-							mapLayerId,
-							"visibility",
-							"none"
-						);
-					}
-				}
-
-				this.currentVisibleLayers = this.currentVisibleLayers.filter(
-					(element) => element !== mapLayerId
+				this.map.easeTo({
+					zoom: 15,
+					duration: 2000,
+				});
+			} else {
+				this.map.setPaintProperty(
+					"taipei_building_3d",
+					"fill-extrusion-color",
+					[
+						"interpolate",
+						["linear"],
+						["zoom"],
+						14.4,
+						"#121212",
+						14.5,
+						"#272727",
+					]
 				);
-			});
-			this.removePopup();
+			}
 		},
 
 		handleAutoNavigate(checked) {
@@ -816,49 +865,6 @@ export const useMapStore = defineStore("map", {
 			// console.log(this.map.getPitch());
 			// console.log(this.map.getBearing());
 			// console.log(this.map.getStyle().layers);
-			// if (checked) {
-			// 	this.map.setPaintProperty(
-			// 		"taipei_building_3d",
-			// 		"fill-extrusion-color",
-			// 		[
-			// 			"interpolate",
-			// 			["linear"],
-			// 			["get", "1_top_high"],
-			// 			0,
-			// 			"#F2F12D",
-			// 			10,
-			// 			"#EED322",
-			// 			20,
-			// 			"#E6B71E",
-			// 			30,
-			// 			"#DA9C20",
-			// 			50,
-			// 			"#CA8323",
-			// 			125,
-			// 			"#B86B25",
-			// 			250,
-			// 			"#A25626",
-			// 			500,
-			// 			"#8B4225",
-			// 			1000,
-			// 			"#723122",
-			// 		]
-			// 	);
-			// } else {
-			// 	this.map.setPaintProperty(
-			// 		"taipei_building_3d",
-			// 		"fill-extrusion-color",
-			// 		[
-			// 			"interpolate",
-			// 			["linear"],
-			// 			["zoom"],
-			// 			14.4,
-			// 			"#121212",
-			// 			14.5,
-			// 			"#272727",
-			// 		]
-			// 	);
-			// }
 		},
 
 		/* Popup Related Functions */
@@ -1134,15 +1140,33 @@ export const useMapStore = defineStore("map", {
 				}
 				return;
 			}
-			const filter = ["in", property, ...selectedDataPoints];
-			this.map.setFilter(layer_id, filter);
-			if (this.ifAutoNavigate) {
-				setTimeout(() => {
-					this.easeToLayer(layer_id, [
-						[property],
-						selectedDataPoints.map((item) => [item]),
+			if (layer_id === "city-3Dcity") {
+				if (selectedDataPoints.length === 0) {
+					this.clearLayerFilter(layer_id);
+				} else {
+					const filteItem = [];
+					selectedDataPoints.forEach((item) => {
+						if (!filteItem.includes(item[1])) {
+							filteItem.push(item[1]);
+						}
+					});
+					this.map.setFilter("taipei_building_3d", [
+						"in",
+						"TOWN_NAME",
+						...filteItem,
 					]);
-				}, 500);
+				}
+			} else {
+				const filter = ["in", property, ...selectedDataPoints];
+				this.map.setFilter(layer_id, filter);
+				if (this.ifAutoNavigate) {
+					setTimeout(() => {
+						this.easeToLayer(layer_id, [
+							[property],
+							selectedDataPoints.map((item) => [item]),
+						]);
+					}, 500);
+				}
 			}
 		},
 		// Remove any filters on a map layer
@@ -1179,6 +1203,9 @@ export const useMapStore = defineStore("map", {
 						];
 					tube.hidden = false;
 				});
+			}
+			if (layer_id === "city-3Dcity") {
+				this.map.setFilter("taipei_building_3d", null);
 			}
 			this.map.setFilter(layer_id, null);
 		},
