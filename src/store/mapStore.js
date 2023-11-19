@@ -1305,10 +1305,6 @@ export const useMapStore = defineStore("map", {
 						(item) => item.key === map_config.animate
 					).data[index];
 
-				console.log(
-					`${map_config.index}-${map_config.type}`,
-					fieldName
-				);
 				this.map.setPaintProperty(
 					`${map_config.index}-${map_config.type}`,
 					"fill-opacity",

@@ -5294,6 +5294,11 @@
 					"ColumnChart"
 				],
 				"unit": "",
+				"animate": {
+					"min": 0,
+					"max": 19,
+					"label": "villa_age_stack_horiz_sec"
+				},
 				"categories": [
 					"北投區",
 					"士林區",
@@ -5903,7 +5908,7 @@
 			]
 		},
 		"156": {
-			"id": 156,
+			"id": 166,
 			"index": "2-4",
 			"map_config": [
 				{
@@ -6045,7 +6050,7 @@
 			]
 		},
 		"157": {
-			"id": 157,
+			"id": 167,
 			"index": "2-5",
 			"map_config": [
 				{
