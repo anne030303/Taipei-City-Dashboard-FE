@@ -106,12 +106,14 @@ function changeActiveChart(chartName) {
 }
 
 function getMapLayerConfig(index) {
-	const mapConfig = props.content.map_config.find(
+	const mapConfig = props.content?.map_config?.find(
 		(mapLayer) =>
 			mapLayer.index === props.content.chart_config.animate?.label
 	);
-	return mapConfig?.property.find((item) => item.key === mapConfig.animate)
-		.data[index];
+	return (
+		mapConfig?.property.find((item) => item.key === mapConfig.animate)
+			?.data[index] || ""
+	);
 }
 
 function setCurrentIndex(e) {
@@ -177,7 +179,7 @@ function setCurrentIndex(e) {
 					>
 					<span
 						v-if="
-							content.chart_config.types.includes('RealTimeChart')
+							content.chart_data && content.chart_config.animate
 						"
 						@click="
 							dialogStore.showNotification(
@@ -242,7 +244,7 @@ function setCurrentIndex(e) {
 				class="refresh"
 				v-if="
 					content.chart_config.map_filter?.length === 3 &&
-					content.chart_config.map_filter[2]?.allowMultipleDataPointsSelection.includes(
+					content.chart_config?.map_filter[2]?.allowMultipleDataPointsSelection.includes(
 						activeChart
 					)
 				"

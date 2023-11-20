@@ -14,7 +14,8 @@ const mapStore = useMapStore();
 
 const allowMultipleDataPointsSelection = ref(
 	(props.chart_config.map_filter?.length === 3 &&
-		props.chart_config.map_filter[2].allowMultipleDataPointsSelection.includes(
+		props.chart_config?.map_filter &&
+		props.chart_config?.map_filter[2]?.allowMultipleDataPointsSelection?.includes(
 			"BarChart"
 		)) ||
 		false

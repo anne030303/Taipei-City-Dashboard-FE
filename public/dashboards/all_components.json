@@ -5311,16 +5311,6 @@
 					"萬華區",
 					"大安區",
 					"文山區"
-				],
-				"map_filter": [
-					"",
-					[],
-					{
-						"allowMultipleDataPointsSelection": [
-							"BarPercentChart",
-							"ColumnChart"
-						]
-					}
 				]
 			},
 			"name": "15歲以下人口分群",
@@ -5429,16 +5419,7 @@
 					"max": 19,
 					"label": "hex_pop_child_horiz"
 				},
-				"categories": [],
-				"map_filter": [
-					"",
-					[],
-					{
-						"allowMultipleDataPointsSelection": [
-							""
-						]
-					}
-				]
+				"categories": []
 			},
 			"name": "15歲以下人口趨勢",
 			"source": "",
@@ -5591,8 +5572,7 @@
 				],
 				"types": [
 					"ColumnChart",
-					"BarPercentChart",
-					"CustomBubbleChart"
+					"BarPercentChart"
 				],
 				"unit": "",
 				"animate": {
@@ -5613,16 +5593,6 @@
 					"萬華區",
 					"大安區",
 					"文山區"
-				],
-				"map_filter": [
-					"",
-					[],
-					{
-						"allowMultipleDataPointsSelection": [
-							"BarPercentChart",
-							"ColumnChart"
-						]
-					}
 				]
 			},
 			"name": "15歲以下與婦女人口分佈",
@@ -5881,16 +5851,6 @@
 					"萬華區",
 					"大安區",
 					"文山區"
-				],
-				"map_filter": [
-					"",
-					[],
-					{
-						"allowMultipleDataPointsSelection": [
-							"BarPercentChart",
-							"ColumnChart"
-						]
-					}
 				]
 			},
 			"name": "15歲以下每人社福機構數",
@@ -5907,7 +5867,7 @@
 			]
 		},
 		"156": {
-			"id": 166,
+			"id": 156,
 			"index": "2-4",
 			"map_config": [
 				{
@@ -5924,8 +5884,8 @@
 								"幼兒園_公立數"
 							],
 							0,
-							0,
-							1,
+							0.3,
+							3,
 							0.7
 						]
 					},
@@ -5960,7 +5920,7 @@
 								"幼兒園_私立數"
 							],
 							0,
-							0,
+							0.3,
 							3,
 							0.7
 						]
@@ -5990,8 +5950,7 @@
 				],
 				"types": [
 					"ColumnChart",
-					"BarPercentChart",
-					"CustomBubbleChart"
+					"BarPercentChart"
 				],
 				"unit": "",
 				"categories": [
@@ -6007,30 +5966,6 @@
 					"萬華區",
 					"大安區",
 					"文山區"
-				],
-				"map_filter": [
-					"TOWN_NAME",
-					[
-						"北投區",
-						"士林區",
-						"內湖區",
-						"南港區",
-						"松山區",
-						"信義區",
-						"中山區",
-						"大同區",
-						"中正區",
-						"萬華區",
-						"大安區",
-						"文山區"
-					],
-					{
-						"allowMultipleDataPointsSelection": [
-							"BarPercentChart",
-							"ColumnChart",
-							""
-						]
-					}
 				]
 			},
 			"name": "5歲以下每人幼稚園數",
@@ -6047,7 +5982,7 @@
 			]
 		},
 		"157": {
-			"id": 167,
+			"id": 157,
 			"index": "2-5",
 			"map_config": [
 				{
@@ -6130,8 +6065,7 @@
 				],
 				"types": [
 					"ColumnChart",
-					"BarPercentChart",
-					"CustomBubbleChart"
+					"BarPercentChart"
 				],
 				"unit": "",
 				"categories": [
@@ -6147,17 +6081,6 @@
 					"萬華區",
 					"大安區",
 					"文山區"
-				],
-				"map_filter": [
-					"",
-					[],
-					{
-						"allowMultipleDataPointsSelection": [
-							"BarPercentChart",
-							"ColumnChart",
-							""
-						]
-					}
 				]
 			},
 			"name": "15歲以下每人空教室數",
@@ -6274,7 +6197,7 @@
 				"Wee Win"
 			]
 		},
-		"159": {
+		"160": {
 			"id": 159,
 			"index": "custom_bubble_chart",
 			"history_data": false,
@@ -6352,18 +6275,17 @@
 				"Wee Win"
 			]
 		},
-		"160": {
-			"id": 160,
+		"161": {
+			"id": 161,
 			"index": "5歲以下每人幼稚園數-MAIN",
 			"history_data": false,
-			"map_config": [],
 			"chart_config": {
 				"types": [
 					"CustomBubbleChartForKid"
 				],
 				"town": "mainTown"
 			},
-			"name": "5歲以下每人幼稚園數-MAIN",
+			"name": "5歲以下每人幼稚園數-行政區",
 			"source": "台北市開放資料",
 			"time_from": "",
 			"time_to": "",
@@ -6376,18 +6298,17 @@
 				"Wee Win"
 			]
 		},
-		"161": {
-			"id": 161,
+		"162": {
+			"id": 162,
 			"index": "5歲以下每人幼稚園數-SEC",
 			"history_data": false,
-			"map_config": [],
 			"chart_config": {
 				"types": [
 					"CustomBubbleChartForKid"
 				],
 				"town": "secTown"
 			},
-			"name": "5歲以下每人幼稚園數-SEC",
+			"name": "5歲以下每人幼稚園數-次分區",
 			"source": "台北市開放資料",
 			"time_from": "",
 			"time_to": "",
