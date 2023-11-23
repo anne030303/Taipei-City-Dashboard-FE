@@ -289,7 +289,7 @@ export const useMapStore = defineStore("map", {
 			// console.log(mapLayerId, this.ifAnimate, this.map.getStyle().layers);
 
 			if (this.ifAnimate === "1-2") {
-				const authStore = useAuthStore();
+				// const authStore = useAuthStore();
 				const fieldName =
 					this.currentMapConfig[
 						this.currentMapConfig.paint["stacked-circle-radius"] +
@@ -550,7 +550,7 @@ export const useMapStore = defineStore("map", {
 		addStackedCircleMapLayer(
 			map_config,
 			data,
-			isFilter = false,
+			// isFilter = false,
 			isVisible = true
 		) {
 			const authStore = useAuthStore();
@@ -572,7 +572,7 @@ export const useMapStore = defineStore("map", {
 			this.currentMapConfig = map_config;
 
 			const delay = authStore.isMobileDevice ? 2000 : 500;
-			let _this = this;
+			// let _this = this;
 			setTimeout(() => {
 				const tubesTemp = {};
 				this.map.addLayer({

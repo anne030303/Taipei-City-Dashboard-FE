@@ -3,7 +3,7 @@
 <!-- TODO: 記得把detetminScaleAndLabels 的東西去掉 -->
 
 <script setup>
-import { ref, watch, computed, watchEffect, onMounted } from "vue";
+import { ref, watch, computed, watchEffect } from "vue";
 import CustomTooltip from "./CustomTooltip.vue";
 import { useRoute } from "vue-router";
 import { determineScaleAndLabels } from "../../assets/utilityFunctions/determineScaleAndLabels";
@@ -63,7 +63,6 @@ const setting = {
 		safeDistance: 20,
 	},
 };
-
 
 // The following are controls for the mobile version to toggle between dashboard and mapview
 const layout = ref("mapview");
@@ -349,8 +348,8 @@ const getFill = (point) => {
 const getOpacity = (point) => {
 	return activeCountries.value.length === 0 && !currentHoverPoint.value
 		? 0.8
-		: activeCountries.value.includes(point.country) 
-		|| currentHoverPoint.value?.country === point.country
+		: activeCountries.value.includes(point.country) ||
+		currentHoverPoint.value?.country === point.country
 			? 0.8
 			: 0.1;
 };

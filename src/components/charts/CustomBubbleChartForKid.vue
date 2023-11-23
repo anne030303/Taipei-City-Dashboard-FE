@@ -6,10 +6,7 @@
 import { ref, watch, computed, watchEffect } from "vue";
 import CustomTooltipForRealChart from "../charts/CustomTooltipForRealChart.vue";
 import { useRoute } from "vue-router";
-import { determineScaleAndLabels } from "../../assets/utilityFunctions/determineScaleAndLabels";
-import { calculateAverage } from "../../assets/utilityFunctions/calculateAverage";
 import { calculateMedian } from "../../assets/utilityFunctions/calculateMedian";
-import { useMapStore } from "../../store/mapStore";
 
 const props = defineProps([
 	"chart_config",
@@ -82,7 +79,6 @@ const setting = {
 const layout = ref("mapview");
 
 const route = useRoute();
-const mapStore = useMapStore();
 
 const newSettings = computed(() => {
 	if (props.isDialog) {
@@ -248,8 +244,8 @@ function scaleY(value) {
 	return scaledValue > svgHeight - yAxisHeight
 		? svgHeight - yAxisHeight
 		: scaledValue < yAxisHeight
-		? yAxisHeight
-		: scaledValue;
+			? yAxisHeight
+			: scaledValue;
 }
 
 function scaleZ(value) {
@@ -275,18 +271,6 @@ function translateNumToLabel(num) {
 			(Math.round(num / 100000000) / 10).toString().replace(".0", "") +
 			"B"
 		);
-	}
-}
-
-function translateLabelToNum(label) {
-	if (label.includes("K")) {
-		return parseInt(label.replace("K", "")) * 1000;
-	} else if (label.includes("M")) {
-		return parseInt(label.replace("M", "")) * 1000000;
-	} else if (label.includes("B")) {
-		return parseInt(label.replace("B", "")) * 1000000000;
-	} else {
-		return parseInt(label);
 	}
 }
 
@@ -403,9 +387,9 @@ const getOpacity = (point) => {
 	return activeCountries.value.length === 0 && !currentHoverPoint.value
 		? 0.8
 		: activeCountries.value.includes(point.country) ||
-		  currentHoverPoint.value?.country === point.country
-		? 0.8
-		: 0.1;
+		currentHoverPoint.value?.country === point.country
+			? 0.8
+			: 0.1;
 };
 
 // 計算要不要顯示光暈

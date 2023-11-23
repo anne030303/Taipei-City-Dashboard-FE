@@ -3,7 +3,7 @@
 <!-- TODO: 記得把detetminScaleAndLabels 的東西去掉 -->
 
 <script setup>
-import { ref, watch, computed, watchEffect, onMounted } from "vue";
+import { ref, watch, computed, watchEffect } from "vue";
 import CustomTooltipForRealChart from "./CustomTooltipForRealChart.vue";
 import { useRoute } from "vue-router";
 import { determineScaleAndLabels } from "../../assets/utilityFunctions/determineScaleAndLabels2";
@@ -303,9 +303,9 @@ const getOpacity = () => {
 };
 
 // 計算要不要顯示光暈
-const isShowHalo = (point) => {
-	return point.hover;
-};
+// const isShowHalo = (point) => {
+// 	return point.hover;
+// };
 
 // 計算顯示tooltip,
 const isShowTooltip = (point) => {

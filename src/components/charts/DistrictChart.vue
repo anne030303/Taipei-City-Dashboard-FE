@@ -98,8 +98,8 @@ function handleDataSelection(index) {
 			selectedIndex.value.length === 0
 				? props.chart_config.map_filter[1]
 				: props.chart_config.map_filter[1].filter((key, index) =>
-						selectedIndex.value.includes(index)
-				  ),
+					selectedIndex.value.includes(index)
+				),
 			props.map_config[0]
 		);
 	} else if (!selectedIndex.value.includes(index)) {

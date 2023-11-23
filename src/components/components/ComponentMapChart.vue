@@ -31,6 +31,7 @@ const animateChart = ref(null);
 
 watch(
 	[() => mapStore.currentIndex, () => animateChart.value],
+	// eslint-disable-next-line no-unused-vars
 	([currentIndex, animateChartValue]) => {
 		if (props.content.index === animateChartValue) {
 			if (props.content.index === "1-2") {

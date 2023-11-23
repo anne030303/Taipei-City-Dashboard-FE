@@ -3,7 +3,7 @@
 <!-- TODO: 記得把detetminScaleAndLabels 的東西去掉 -->
 
 <script setup>
-import { ref, watch, computed, watchEffect, onMounted } from "vue";
+import { ref, watch, computed, watchEffect } from "vue";
 import CustomTooltip from "../charts/CustomTooltip.vue";
 import { useRoute } from "vue-router";
 import { determineScaleAndLabels } from "../../assets/utilityFunctions/determineScaleAndLabels";
@@ -201,8 +201,8 @@ function scaleY(value) {
 	return scaledValue > svgHeight - yAxisHeight
 		? svgHeight - yAxisHeight
 		: scaledValue < yAxisHeight
-		? yAxisHeight
-		: scaledValue;
+			? yAxisHeight
+			: scaledValue;
 }
 
 function scaleZ(value) {
@@ -368,9 +368,9 @@ const getOpacity = (point) => {
 	return activeCountries.value.length === 0 && !currentHoverPoint.value
 		? 0.8
 		: activeCountries.value.includes(point.country) ||
-		  currentHoverPoint.value?.country === point.country
-		? 0.8
-		: 0.1;
+		currentHoverPoint.value?.country === point.country
+			? 0.8
+			: 0.1;
 };
 
 // 計算要不要顯示光暈
@@ -394,9 +394,6 @@ const isShowTooltip = (point) => {
 			return true;
 	}
 };
-
-const isPlaying = ref(false);
-let intervalId = null;
 
 // const startPlaying = () => {
 // 	if (!isPlaying.value) {

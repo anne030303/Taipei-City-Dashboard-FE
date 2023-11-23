@@ -118,8 +118,8 @@ function handleDataSelection(e, chartContext, config) {
 			config.selectedDataPoints[0].length === 0
 				? props.chart_config.map_filter[1]
 				: props.chart_config.map_filter[1].filter((key, index) =>
-						config.selectedDataPoints[0].includes(index)
-				  ),
+					config.selectedDataPoints[0].includes(index)
+				),
 			props.map_config[0]
 		);
 		// 單選
