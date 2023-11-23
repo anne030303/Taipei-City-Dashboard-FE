@@ -31,22 +31,36 @@ Please refer to the docs for the [Chinese Version](https://tuic.gov.taipei/docum
 ### charts
 
 1. CustomBubbleChart
+<img width="500" alt="image" src="https://github.com/anne030303/Taipei-City-Dashboard-FE/assets/24452337/cca3aa0c-2344-4d28-89ba-02a6d207e30c">
 2. RealTimeChart
 
 ### Map
 
 1. StackedCircleMapLayer
+<img width="500" alt="image" src="https://github.com/anne030303/Taipei-City-Dashboard-FE/assets/24452337/38102585-269f-453c-935c-2d7c87ce88eb">
+
 2. 3D Building Illuminator
-3. HexagonMapLayer
+<img width="500" alt="image" src="https://github.com/anne030303/Taipei-City-Dashboard-FE/assets/24452337/49bc1cde-35d4-43d9-b4ab-75ca4fb98655">
+
+4. HexagonMapLayer
+<img width="500" alt="image" src="https://github.com/anne030303/Taipei-City-Dashboard-FE/assets/24452337/11054692-8674-40e2-a876-4d0122cdaa83">
+<img width="500" alt="image" src="https://github.com/anne030303/Taipei-City-Dashboard-FE/assets/24452337/9eed5776-0cfe-491f-b5d7-df3046bc6657">
+
 
 ### Others
 
 1. Map Layer Animation (StackedCircleMapLayer, HexagonMapLayer)
+
 2. Auto Navigation
+
 3. Map Filter
     1. Two-Dimensional Filtering
+
     2. Multi-Selection Enhancement
+
 4. Chart Zoom Popup
+<img width="500" alt="image" src="https://github.com/anne030303/Taipei-City-Dashboard-FE/assets/24452337/200700c1-fe13-429b-9530-ae32fa4783ca">
+
 
 ## Quick Start
 
