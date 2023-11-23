@@ -1,11 +1,10 @@
-# <img src='src/assets/images/TUIC.svg' height='28'>   Taipei City Dashboard Open Source FE
+# <img src='src/assets/images/TUIC.svg' height='28'> Taipei City Dashboard Open Source FE
 
 ## Taipei Codefest 2023
 
-Hey! Before you go any further, we would like to invite you to participate in an exciting hackathon event on Nov 18 - 19 this year. 
+Hey! Before you go any further, we would like to invite you to participate in an exciting hackathon event on Nov 18 - 19 this year.
 
 <img width="200" alt="Codefest_Black" src="https://github.com/tpe-doit/Taipei-City-Dashboard-FE/assets/13110501/29ebed08-a63d-4fd5-8bd5-e4c423f4e4d4">
-
 
 Taipei Codefest is hosted by the Taipei City Government to promote and accelerate the open-source effort of Taipei City Dashboard. Contestants will attempt to create more than 4 new components for Taipei City Dashboard in 32 hours. With a top prize of NT$300,000 and unlimited food during the contest, this is definitely an opportunity you wouldn't want to miss. Check out more information on the hackathon's official site: https://codefest.taipei
 
@@ -26,6 +25,28 @@ We have since completed the initial layouts and basic functionalities of Taipei 
 Please refer to the docs for the [Chinese Version](https://tuic.gov.taipei/documentation/front-end/introduction) (and click on the "switch languages" icon in the top right corner).
 
 [Demo](https://tuic.gov.taipei/dashboard-demo) | [License](https://github.com/tpe-doit/Taipei-City-Dashboard-FE/blob/main/LICENSE) | [Code of Conduct](https://github.com/tpe-doit/Taipei-City-Dashboard-FE/blob/main/.github/CODE_OF_CONDUCT.md) | [Contribution Guide](https://tuic.gov.taipei/documentation/front-end/contribution-overview)
+
+## New Feature by Wee Win
+
+### charts
+
+1. CustomBubbleChart
+2. RealTimeChart
+
+### Map
+
+1. StackedCircleMapLayer
+2. 3D Building Illuminator
+3. HexagonMapLayer
+
+### Others
+
+1. Map Layer Animation (StackedCircleMapLayer, HexagonMapLayer)
+2. Auto Navigation
+3. Map Filter
+    1. Two-Dimensional Filtering
+    2. Multi-Selection Enhancement
+4. Chart Zoom Popup
 
 ## Quick Start
 
