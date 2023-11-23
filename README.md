@@ -33,9 +33,9 @@ Please refer to the docs for the [Chinese Version](https://tuic.gov.taipei/docum
 1. CustomBubbleChart
 <img width="500" alt="image" src="https://github.com/anne030303/Taipei-City-Dashboard-FE/assets/24452337/cca3aa0c-2344-4d28-89ba-02a6d207e30c">
 
-2. RealTimeChart
+2. [RealTimeChart](https://www.youtube.com/watch?v=ec0wCuQICsY)
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=ec0wCuQICsY" target="_blank">
-    <img src="http://img.youtube.com/vi/ec0wCuQICsY/0.jpg" alt="IMAGE ALT TEXT HERE" width="500" height="375" border="10" />
+    <img src="http://img.youtube.com/vi/ec0wCuQICsY/0.jpg" alt="RealTimeChart" width="500" height="375" border="10" />
 </a>
 
 ### Map
@@ -53,7 +53,7 @@ Please refer to the docs for the [Chinese Version](https://tuic.gov.taipei/docum
 
 ### Others
 
-1. Map Layer Animation (StackedCircleMapLayer, HexagonMapLayer)
+1. Map Layer Animation ([StackedCircleMapLayer](https://www.youtube.com/watch?v=_mzw6ApchxI), [HexagonMapLayer](https://www.youtube.com/watch?v=ec0wCuQICsY))
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=_mzw6ApchxI" target="_blank">
     <img src="http://img.youtube.com/vi/_mzw6ApchxI/0.jpg" alt="IMAGE ALT TEXT HERE" width="500" height="375" border="10" />
 </a>
@@ -62,12 +62,12 @@ Please refer to the docs for the [Chinese Version](https://tuic.gov.taipei/docum
     <img src="http://img.youtube.com/vi/ec0wCuQICsY/0.jpg" alt="IMAGE ALT TEXT HERE" width="500" height="375" border="10" />
 </a>
 
-2. Auto Navigation
+2. [Auto Navigation](https://www.youtube.com/watch?v=LamWG-6kuRA)
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=LamWG-6kuRA" target="_blank">
     <img src="http://img.youtube.com/vi/LamWG-6kuRA/0.jpg" alt="IMAGE ALT TEXT HERE" width="500" height="375" border="10" />
 </a>
 
-3. Map Filter
+3. [Map Filter](https://www.youtube.com/watch?v=t7s_YFlg5DE)
     1. Two-Dimensional Filtering
     2. Multi-Selection Enhancement
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=t7s_YFlg5DE" target="_blank">
@@ -75,10 +75,6 @@ Please refer to the docs for the [Chinese Version](https://tuic.gov.taipei/docum
 </a>
 
 (see branch map-filter)
-
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=isLrzFX_K-g" target="_blank">
-    <img src="http://img.youtube.com/vi/isLrzFX_K-g/0.jpg" alt="IMAGE ALT TEXT HERE" width="500" height="375" border="10" />
-</a>
 
 4. Chart Zoom Popup
 <img width="500" alt="image" src="https://github.com/anne030303/Taipei-City-Dashboard-FE/assets/24452337/200700c1-fe13-429b-9530-ae32fa4783ca">
