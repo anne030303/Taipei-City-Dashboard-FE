@@ -19,7 +19,6 @@ const props = defineProps([
 	"isDialog",
 ]);
 
-
 const colorDicForTownName = {
 	中山區: "#66C5CC",
 	中正區: "#F6CF71",
@@ -117,28 +116,69 @@ const dataPoints = ref(props["series"]);
 
 // 老人人口數
 // 老人人口數
-const xLabels = computed(() =>{
-	if(props.chart_config.town === 'mainTown'){
-		return { scale: 'linear', labels: ["0", "100", "200", "300", "400", "500", "600", "700", "800", "900"]};
-	}else{
-		return { scale: 'linear', labels: ["0", "50", "100", "200", "400", "800", "1600", "3200", "6400"]};	
+const xLabels = computed(() => {
+	if (props.chart_config.town === "mainTown") {
+		return {
+			scale: "linear",
+			labels: [
+				"0",
+				"100",
+				"200",
+				"300",
+				"400",
+				"500",
+				"600",
+				"700",
+				"800",
+				"900",
+			],
+		};
+	} else {
+		return {
+			scale: "linear",
+			labels: [
+				"0",
+				"50",
+				"100",
+				"200",
+				"400",
+				"800",
+				"1600",
+				"3200",
+				"6400",
+			],
+		};
 	}
 
 	// return determineScaleAndLabels(dataPoints.value, "x", layout)
 });
 
-
 // 老房人口數
-const yLabels = computed(() =>{
-	if(props.chart_config.town === 'mainTown'){
-		return { scale: 'linear', labels: ["0", "200", "400", "600", "800", "1000", "1200", "1400", "1600"]};
+const yLabels = computed(() => {
+	if (props.chart_config.town === "mainTown") {
+		return {
+			scale: "linear",
+			labels: [
+				"0",
+				"200",
+				"400",
+				"600",
+				"800",
+				"1000",
+				"1200",
+				"1400",
+				"1600",
+			],
+		};
 	}
 
-	return {scale: 'linear', labels: ["0", "100", "200", "300", "400", "500", "600", "700", "800"]}
+	return {
+		scale: "linear",
+		labels: ["0", "100", "200", "300", "400", "500", "600", "700", "800"],
+	};
 
 	// return determineScaleAndLabels(dataPoints.value, "y", layout)
 });
-
 
 const maxZ = computed(() =>
 	Math.max(...dataPoints.value.map((point) => point.z))
@@ -166,17 +206,11 @@ const activeCountries = computed(() => {
 
 const containerRef = ref(null);
 
-
-
 function scaleX(value) {
-
-	if(!value) return xAxisWidth +
-				safeDistance
+	if (!value) return xAxisWidth + safeDistance;
 
 	const plotWidth = svgWidth - 2 * (xAxisWidth + safeDistance);
-	const labelValues = xLabels.value.labels.map((label) =>
-		parseInt(label)
-	);
+	const labelValues = xLabels.value.labels.map((label) => parseInt(label));
 
 	const intervalWidth = plotWidth / (labelValues.length - 1);
 
@@ -185,17 +219,17 @@ function scaleX(value) {
 			const relativePosition =
 				(value - labelValues[i]) /
 				(labelValues[i + 1] - labelValues[i]);
-			return (
-				i * intervalWidth +
+			return i * intervalWidth +
 				relativePosition * intervalWidth +
 				xAxisWidth +
-				safeDistance <= 0 ? 0 : i * intervalWidth +
-				relativePosition * intervalWidth +
-				xAxisWidth +
-				safeDistance
-			);
+				safeDistance <=
+				0
+				? 0
+				: i * intervalWidth +
+						relativePosition * intervalWidth +
+						xAxisWidth +
+						safeDistance;
 		}
-
 	}
 }
 
@@ -214,8 +248,8 @@ function scaleY(value) {
 	return scaledValue > svgHeight - yAxisHeight
 		? svgHeight - yAxisHeight
 		: scaledValue < yAxisHeight
-			? yAxisHeight
-			: scaledValue;
+		? yAxisHeight
+		: scaledValue;
 }
 
 function scaleZ(value) {
@@ -279,7 +313,7 @@ function isOverlap(index, axisType) {
 	}
 }
 
-console.log(currentDataPoints.value);
+// console.log(currentDataPoints.value);
 
 watchEffect(() => {
 	// 計算當前顯示的數據點, currentYear有變動時就重新計算
@@ -287,11 +321,10 @@ watchEffect(() => {
 		dataPoints.value
 			.filter((point) => {
 				return (
-					(
-						typeof point.x === "number" &&
+					typeof point.x === "number" &&
 					typeof point.y === "number" &&
 					typeof point.z === "number"
-					))
+				);
 			})
 			.map((point, index) => ({
 				index: index,
@@ -316,8 +349,7 @@ watchEffect(() => {
 
 watchEffect(() => {
 	for (const point of currentDataPoints.value) {
-		point.hover =
-			currentHoverPoint.value?.country === point.country
+		point.hover = currentHoverPoint.value?.country === point.country;
 	}
 });
 
@@ -371,9 +403,9 @@ const getOpacity = (point) => {
 	return activeCountries.value.length === 0 && !currentHoverPoint.value
 		? 0.8
 		: activeCountries.value.includes(point.country) ||
-		currentHoverPoint.value?.country === point.country
-			? 0.8
-			: 0.1;
+		  currentHoverPoint.value?.country === point.country
+		? 0.8
+		: 0.1;
 };
 
 // 計算要不要顯示光暈
@@ -382,11 +414,11 @@ const isShowHalo = (point) => {
 };
 
 // 計算顯示tooltip,
-const isShowTooltip = (point) =>{
-	if(point.hover) return true
+const isShowTooltip = (point) => {
+	if (point.hover) return true;
 
-	return false
-}
+	return false;
+};
 
 // const isPlaying = ref(false);
 // let intervalId = null;
@@ -451,10 +483,7 @@ const isShowTooltip = (point) =>{
 </script>
 
 <template>
-	<div
-		v-if="activeChart === 'CustomBubbleChartForKid'"
-		ref="containerRef"
-	>
+	<div v-if="activeChart === 'CustomBubbleChartForKid'" ref="containerRef">
 		<svg :width="svgWidth" :height="svgHeight">
 			<rect width="100%" height="100%" fill="#333" />
 			<!-- X軸 -->
@@ -589,13 +618,17 @@ const isShowTooltip = (point) =>{
 					v-for="(
 						currentDataPoint, currentDataPointIndex
 					) in currentDataPoints"
-					:key="`vzb-bc-bubble-${currentDataPoint.country}-${currentDataPoint.category ? currentDataPoint.category : ''}-${currentDataPointIndex}`"
+					:key="`vzb-bc-bubble-${currentDataPoint.country}-${
+						currentDataPoint.category
+							? currentDataPoint.category
+							: ''
+					}-${currentDataPointIndex}`"
 				>
 					<!-- Bubbles -->
 					<circle
 						v-show="currentDataPoint.x > xAxisWidth"
 						class="data-point"
-						:cx="currentDataPoint.x <= 0 ? 0: currentDataPoint.x"
+						:cx="currentDataPoint.x <= 0 ? 0 : currentDataPoint.x"
 						:cy="currentDataPoint.y"
 						:r="currentDataPoint.z"
 						:fill="getFill(currentDataPoint)"
@@ -681,5 +714,4 @@ button {
 	width: 50px;
 	max-height: 30px;
 }
-
 </style>

@@ -9,12 +9,13 @@ Testing: Jack Huang (Data Scientist), Ian Huang (Data Analysis Intern)
 <!-- Department of Information Technology, Taipei City Government -->
 
 <script setup>
-import { useContentStore } from '../store/contentStore';
-import { useDialogStore } from '../store/dialogStore';
+import { useContentStore } from "../store/contentStore";
+import { useDialogStore } from "../store/dialogStore";
 
-import ComponentContainer from '../components/components/ComponentContainer.vue';
-import MoreInfo from '../components/dialogs/MoreInfo.vue';
-import ReportIssue from '../components/dialogs/ReportIssue.vue';
+import ComponentContainer from "../components/components/ComponentContainer.vue";
+import MoreInfo from "../components/dialogs/MoreInfo.vue";
+import ReportIssue from "../components/dialogs/ReportIssue.vue";
+import ShowChart from "../components/dialogs/ShowChart.vue";
 
 const contentStore = useContentStore();
 const dialogStore = useDialogStore();
@@ -22,19 +23,37 @@ const dialogStore = useDialogStore();
 
 <template>
 	<!-- If the dashboard is map layers -->
-	<div v-if="contentStore.currentDashboard.index === 'map-layers'" class="dashboard">
-		<ComponentContainer v-for="item in contentStore.currentDashboard.content" :content="item" :is-map-layer="true"
-			:key="item.index" />
+	<div
+		v-if="contentStore.currentDashboard.index === 'map-layers'"
+		class="dashboard"
+	>
+		<ComponentContainer
+			v-for="item in contentStore.currentDashboard.content"
+			:content="item"
+			:is-map-layer="true"
+			:key="item.index"
+		/>
 		<ReportIssue />
 	</div>
 	<!-- other dashboards that have components -->
-	<div v-else-if="contentStore.currentDashboard.content.length !== 0" class="dashboard">
-		<ComponentContainer v-for="item in contentStore.currentDashboard.content" :content="item" :key="item.index" />
+	<div
+		v-else-if="contentStore.currentDashboard.content.length !== 0"
+		class="dashboard"
+	>
+		<ComponentContainer
+			v-for="item in contentStore.currentDashboard.content"
+			:content="item"
+			:key="item.index"
+		/>
 		<MoreInfo />
 		<ReportIssue />
+		<ShowChart />
 	</div>
 	<!-- if dashboard is still loading -->
-	<div v-else-if="contentStore.loading" class="dashboard dashboard-nodashboard">
+	<div
+		v-else-if="contentStore.loading"
+		class="dashboard dashboard-nodashboard"
+	>
 		<div class="dashboard-nodashboard-content">
 			<div></div>
 		</div>
@@ -51,8 +70,13 @@ const dialogStore = useDialogStore();
 		<div class="dashboard-nodashboard-content">
 			<span>addchart</span>
 			<h2>尚未加入組件</h2>
-			<button @click="dialogStore.showDialog('addComponent')" class="hide-if-mobile"
-				v-if="contentStore.currentDashboard.index !== 'favorites'">加入您的第一個組件</button>
+			<button
+				@click="dialogStore.showDialog('addComponent')"
+				class="hide-if-mobile"
+				v-if="contentStore.currentDashboard.index !== 'favorites'"
+			>
+				加入您的第一個組件
+			</button>
 			<p v-else>點擊其他儀表板組件之愛心以新增至收藏組件</p>
 		</div>
 	</div>
@@ -103,7 +127,7 @@ const dialogStore = useDialogStore();
 			}
 
 			button {
-				color: var(--color-highlight)
+				color: var(--color-highlight);
 			}
 
 			div {

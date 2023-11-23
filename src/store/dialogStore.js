@@ -37,6 +37,7 @@ export const useDialogStore = defineStore("dialog", {
 		},
 		// Stores the content for more info dialogs
 		moreInfoContent: null,
+		moreDetailChartContent: null,
 	}),
 	getters: {},
 	actions: {
@@ -54,6 +55,7 @@ export const useDialogStore = defineStore("dialog", {
 				this.dialogs[keys[i]] = false;
 			}
 			this.moreInfoContent = null;
+			this.moreDetailChartContent = null;
 		},
 		// Show the notification bar and update the notification message
 		showNotification(status, message) {
@@ -78,6 +80,10 @@ export const useDialogStore = defineStore("dialog", {
 				id: id,
 				name: name,
 			};
+		},
+		showMoreDetailChart(content) {
+			this.showDialog("showChart");
+			this.moreDetailChartContent = content;
 		},
 	},
 });

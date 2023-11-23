@@ -286,6 +286,8 @@ export const useMapStore = defineStore("map", {
 		},
 
 		setMapLayerSource(mapLayerId) {
+			// console.log(mapLayerId, this.ifAnimate, this.map.getStyle().layers);
+
 			if (this.ifAnimate === "1-2") {
 				const authStore = useAuthStore();
 				const fieldName =

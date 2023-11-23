@@ -4,23 +4,17 @@
 <!-- For static applications, this component could be removed or modified to be a dashboard component overviewer -->
 
 <script setup>
-import { ref } from "vue";
-import { useDialogStore } from '../../store/dialogStore';
+import { computed } from "vue";
+import { useDialogStore } from "../../store/dialogStore";
 
-import DialogContainer from './DialogContainer.vue';
-
-const props = defineProps({
-	// The complete config (incl. chart data) of a dashboard component will be passed in
-	content: { type: Object },
-});
-
-// The default active chart is the first one in the list defined in the dashboard component
-const activeChart = ref(props.content.chart_config.types[0]);
-
-// console.log(props.content);
+import DialogContainer from "./DialogContainer.vue";
 
 const dialogStore = useDialogStore();
 
+// The default active chart is the first one in the list defined in the dashboard component
+const activeChart = computed(() => {
+	return dialogStore.moreDetailChartContent?.chart_config?.types[0];
+});
 
 function handleClose() {
 	dialogStore.hideAllDialogs();
@@ -31,21 +25,22 @@ function handleClose() {
 	<DialogContainer :dialog="`showChart`" @onClose="handleClose">
 		<div class="show-chart">
 			<div class="show-chart-header">
-				<h2 >
-					放大圖表
-				</h2>
+				<h2>放大圖表</h2>
 				<button @click="handleClose">取消</button>
 			</div>
 			<div class="show-chart-container">
 				<!-- The components referenced here can be edited in /components/charts -->
 				<component
-					v-for="item in props.content.chart_config.types"
+					v-for="item in dialogStore.moreDetailChartContent
+						.chart_config.types"
 					:activeChart="activeChart"
 					:is="item"
-					:chart_config="props.content.chart_config"
-					:series="props.content.chart_data"
-					:map_config="props.content.map_config"
-					:key="`${props.content.index}-${item}-chart`"
+					:chart_config="
+						dialogStore.moreDetailChartContent.chart_config
+					"
+					:series="dialogStore.moreDetailChartContent.chart_data"
+					:map_config="dialogStore.moreDetailChartContent.map_config"
+					:key="`${dialogStore.moreDetailChartContent.index}-${item}-chart`"
 					:isDialog="true"
 				>
 				</component>
@@ -57,13 +52,13 @@ function handleClose() {
 <style scoped lang="scss">
 .show-chart {
 	width: 1000px;
-	height: 800px;
+	height: 650px;
 	padding: 10px;
 
 	display: flex;
 	flex-direction: column;
 
-	&-header{
+	&-header {
 		display: flex;
 		justify-content: space-between;
 		h2 {
@@ -71,9 +66,9 @@ function handleClose() {
 		}
 	}
 
-	&-container{
-		width: 950px;
-		height: 750px;
+	&-container {
+		width: 900px;
+		height: 600px;
 		margin: 10px auto;
 	}
 }

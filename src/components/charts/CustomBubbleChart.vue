@@ -123,7 +123,7 @@ const yLabels = computed(() =>
 	determineScaleAndLabels(dataPoints.value, "y", layout)
 );
 
-console.log(xLabels);
+// console.log(xLabels);
 
 const maxZ = computed(() =>
 	Math.max(...dataPoints.value.map((point) => point.z))
@@ -184,7 +184,7 @@ function scaleX(value) {
 	}
 }
 
-console.log(currentDataPoints.value);
+// console.log(currentDataPoints.value);
 
 function scaleY(value) {
 	// 假設 SVG 高度為 400px，且留有 50px 邊界
@@ -332,7 +332,6 @@ const toggleBubble = (point) => {
 			startYear: point.year,
 		});
 	}
-	console.log("activeStatus", activeStatus._value);
 };
 
 // 更新 mouseOverBubble 和 mouseLeaveBubble 方法來使用 reactive 數據點

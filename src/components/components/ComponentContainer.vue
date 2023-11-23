@@ -9,7 +9,6 @@ import { useDialogStore } from "../../store/dialogStore";
 import { useContentStore } from "../../store/contentStore";
 
 import ComponentTag from "../utilities/ComponentTag.vue";
-import ShowChart from '../dialogs/ShowChart.vue';
 import { chartTypes } from "../../assets/configs/apexcharts/chartTypes";
 
 const dialogStore = useDialogStore();
@@ -130,14 +129,16 @@ function toggleFavorite() {
 					<span>delete</span>
 				</button>
 				<button
-					v-if="!isMapLayer"
-					@click="dialogStore.showDialog('showChart')"
+					v-if="
+						!isMapLayer &&
+						['RealTimeChart', 'CustomBubbleChartForKid'].includes(
+							props.content.chart_config.types[0]
+						)
+					"
+					@click="dialogStore.showMoreDetailChart(content)"
 					class="isShowChart"
 				>
-					<span>
-						visibility
-					</span>
-					<ShowChart :content="props.content"/>
+					<span> visibility </span>
 				</button>
 			</div>
 		</div>
@@ -227,21 +228,17 @@ function toggleFavorite() {
 					icon="play_circle"
 					text="動態資料"
 					@click="
-						dialogStore.showNotification(
-							'info',
-							'本組件有動態資料'
-						)
+						dialogStore.showNotification('info', '本組件有動態資料')
 					"
 				/>
 				<ComponentTag
-					v-if="content.chart_config.types.includes('CustomBubbleChart')"
+					v-if="
+						content.chart_config.types.includes('CustomBubbleChart')
+					"
 					icon="bubble_chart"
 					text="散佈資料"
 					@click="
-						dialogStore.showNotification(
-							'info',
-							'本組件有散佈資料'
-						)
+						dialogStore.showNotification('info', '本組件有散佈資料')
 					"
 				/>
 			</div>
