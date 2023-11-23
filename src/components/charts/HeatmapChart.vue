@@ -16,7 +16,7 @@ const mapStore = useMapStore();
 const allowMultipleDataPointsSelection = ref(
 	(props.chart_config.map_filter?.length === 3 &&
 		props.chart_config?.map_filter[2] &&
-		props.chart_config?.map_filter?.allowMultipleDataPointsSelection?.includes(
+		props.chart_config?.map_filter[2]?.allowMultipleDataPointsSelection?.includes(
 			"HeatmapChart"
 		)) ||
 		false

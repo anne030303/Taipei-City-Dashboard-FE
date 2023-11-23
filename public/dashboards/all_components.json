@@ -4407,8 +4407,8 @@
 					{
 						"map_filter": [
 							{
-								"key": "TOWNNAME_source",
-								"name": "TOWNNAME_source",
+								"key": "TOWNNAME_origin",
+								"name": "TOWNNAME_origin",
 								"data": [
 									"北投區",
 									"士林區",
@@ -4421,12 +4421,13 @@
 									"中正區",
 									"萬華區",
 									"大安區",
-									"文山區"
+									"文山區",
+									"非臺北市"
 								]
 							},
 							{
-								"key": "TOWNNAME_target",
-								"name": "TOWNNAME_target",
+								"key": "TOWNNAME_destination",
+								"name": "TOWNNAME_destination",
 								"data": [
 									"北投區",
 									"士林區",
