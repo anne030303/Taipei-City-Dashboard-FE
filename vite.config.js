@@ -25,7 +25,7 @@ export default defineConfig({
 		globals: true,
 		environment: "happy-dom",
 	},
-	base: "/dashboard-demo",
+	base: "/wee-win-dashboard",
 	server: {
 		host: "0.0.0.0",
 		port: 80,
