@@ -6,15 +6,15 @@
 const { VITE_APP_TITLE } = import.meta.env;
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { useAuthStore } from '../store/authStore';
-import { useDialogStore } from '../store/dialogStore';
+// import { useAuthStore } from '../store/authStore';
+// import { useDialogStore } from '../store/dialogStore';
 import { useFullscreen } from '@vueuse/core';
 
-import UserSettings from './dialogs/UserSettings.vue';
+// import UserSettings from './dialogs/UserSettings.vue';
 
 const route = useRoute();
-const authStore = useAuthStore();
-const dialogStore = useDialogStore();
+// const authStore = useAuthStore();
+// const dialogStore = useDialogStore();
 const { isFullscreen, toggle } = useFullscreen();
 
 const linkQuery = computed(() => {

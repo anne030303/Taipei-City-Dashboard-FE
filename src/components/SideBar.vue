@@ -3,14 +3,14 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useContentStore } from '../store/contentStore';
-import { useDialogStore } from '../store/dialogStore';
+// import { useDialogStore } from '../store/dialogStore';
 import { useMapStore } from '../store/mapStore';
 
-import AddDashboard from './dialogs/AddDashboard.vue';
+// import AddDashboard from './dialogs/AddDashboard.vue';
 import SideBarTab from './utilities/SideBarTab.vue';
 
 const contentStore = useContentStore();
-const dialogStore = useDialogStore();
+// const dialogStore = useDialogStore();
 const mapStore = useMapStore();
 
 // The expanded state is also stored in localstorage to retain the setting after refresh

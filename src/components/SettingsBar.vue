@@ -9,8 +9,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { useContentStore } from '../store/contentStore';
 import { useDialogStore } from '../store/dialogStore';
 
-import AddComponent from './dialogs/AddComponent.vue';
-import DashboardSettings from './dialogs/DashboardSettings.vue';
+// import AddComponent from './dialogs/AddComponent.vue';
+// import DashboardSettings from './dialogs/DashboardSettings.vue';
 import MobileNavigation from './dialogs/MobileNavigation.vue';
 
 const route = useRoute();

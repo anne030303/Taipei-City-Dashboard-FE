@@ -6,13 +6,13 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useDialogStore } from "../../store/dialogStore";
-import { useContentStore } from "../../store/contentStore";
+// import { useContentStore } from "../../store/contentStore";
 
 import ComponentTag from "../utilities/ComponentTag.vue";
 import { chartTypes } from "../../assets/configs/apexcharts/chartTypes";
 
 const dialogStore = useDialogStore();
-const contentStore = useContentStore();
+// const contentStore = useContentStore();
 
 const props = defineProps({
 	// The complete config (incl. chart data) of a dashboard component will be passed in
@@ -59,13 +59,13 @@ const updateFreq = computed(() => {
 function changeActiveChart(chartName) {
 	activeChart.value = chartName;
 }
-function toggleFavorite() {
-	if (contentStore.favorites.includes(`${props.content.id}`)) {
-		contentStore.unfavoriteComponent(props.content.id);
-	} else {
-		contentStore.favoriteComponent(props.content.id);
-	}
-}
+// function toggleFavorite() {
+// 	if (contentStore.favorites.includes(`${props.content.id}`)) {
+// 		contentStore.unfavoriteComponent(props.content.id);
+// 	} else {
+// 		contentStore.favoriteComponent(props.content.id);
+// 	}
+// }
 </script>
 
 <template>

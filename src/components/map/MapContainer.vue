@@ -12,13 +12,13 @@ const mapStore = useMapStore();
 const dialogStore = useDialogStore();
 const contentStore = useContentStore();
 
-const newSavedLocation = ref("");
+// const newSavedLocation = ref("");
 const ifAutoNavigate = ref(false);
 
-function handleSubmitNewLocation() {
-	mapStore.addNewSavedLocation(newSavedLocation.value);
-	newSavedLocation.value = "";
-}
+// function handleSubmitNewLocation() {
+// 	mapStore.addNewSavedLocation(newSavedLocation.value);
+// 	newSavedLocation.value = "";
+// }
 
 function handleToggle() {
 	mapStore.handleAutoNavigate(ifAutoNavigate.value);
