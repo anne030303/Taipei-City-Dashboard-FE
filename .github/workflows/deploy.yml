@@ -39,7 +39,7 @@ jobs:
               run: npm install
             - name: Build
               env:
-                  BASE_URL: ${{ secrets.VITE_BASENAME}}
+                  BASE_URL: ${{ secrets.BASE_URL}}
                   VITE_APP_TITLE: ${{ secrets.VITE_APP_TITLE}}
                   VITE_MAPBOXTOKEN: ${{ secrets.VITE_MAPBOXTOKEN}}
                   VITE_MAPBOXTILE: ${{ secrets.VITE_MAPBOXTILE}}
