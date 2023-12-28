@@ -25,7 +25,7 @@ export default defineConfig({
 		globals: true,
 		environment: "happy-dom",
 	},
-	base: "/wee-win-dashboard",
+	base: "/Taipei-City-Dashboard-FE/",
 	server: {
 		host: "0.0.0.0",
 		port: 80,
