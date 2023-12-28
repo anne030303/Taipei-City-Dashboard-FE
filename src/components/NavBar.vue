@@ -31,7 +31,7 @@ const linkQuery = computed(() => {
 			</div>
 			<div>
 				<h1>{{ VITE_APP_TITLE }}</h1>
-				<h2>Taipei City Dashboard Open Source</h2>
+				<h2>Taipei City Dashboard Wee Win</h2>
 			</div>
 		</div>
 		<div class="navbar-tabs hide-if-mobile">
@@ -43,7 +43,7 @@ const linkQuery = computed(() => {
 				rel="noreferrer"><button><span>help</span></button></a>
 			<button class="hide-if-mobile" @click="toggle"><span>{{ isFullscreen ? 'fullscreen_exit' : 'fullscreen'
 			}}</span></button>
-			<div class="navbar-user-user hide-if-mobile">
+			<!-- <div class="navbar-user-user hide-if-mobile">
 				<button>{{ authStore.user.name }}</button>
 				<ul>
 					<li><button @click="dialogStore.showDialog('userSettings')">用戶設定</button></li>
@@ -52,7 +52,7 @@ const linkQuery = computed(() => {
 				<teleport to="body">
 					<user-settings />
 				</teleport>
-			</div>
+			</div> -->
 		</div>
 	</div>
 </template>

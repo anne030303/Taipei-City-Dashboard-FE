@@ -82,10 +82,10 @@ export const useContentStore = defineStore("content", {
 						});
 					}
 					// Pick out the list of favorite components
-					const favorites = this.dashboards.find(
-						(item) => item.index === "favorites"
-					);
-					this.favorites = [...favorites.components];
+					// const favorites = this.dashboards.find(
+					// 	(item) => item.index === "favorites"
+					// );
+					// this.favorites = [...favorites.components];
 					// After getting dashboard info, call the setComponents (3.) method to get component info
 					this.setComponents();
 				})

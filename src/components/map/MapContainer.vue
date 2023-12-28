@@ -67,14 +67,14 @@ onMounted(() => {
 				<button @click="mapStore.easeToLocation(item)">
 					{{ item[4] }}
 				</button>
-				<div
+				<!-- <div
 					class="mapcontainer-controls-delete"
 					@click="mapStore.removeSavedLocation(index)"
 				>
 					<span>delete</span>
-				</div>
+				</div> -->
 			</div>
-			<input
+			<!-- <input
 				v-if="mapStore.savedLocations.length < 10"
 				type="text"
 				placeholder="新增後按Enter"
@@ -82,7 +82,7 @@ onMounted(() => {
 				maxlength="6"
 				@focusout="newSavedLocation = ''"
 				@keypress.enter="handleSubmitNewLocation"
-			/>
+			/> -->
 			<div class="mapcontainer-controls-toggle">
 				<!-- The class "toggleswitch" could be edited in /assets/styles/toggleswitch.css -->
 				<label class="toggleswitch">

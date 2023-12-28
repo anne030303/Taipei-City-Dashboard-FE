@@ -25,12 +25,6 @@
 			"icon": "family_restroom"
 		},
 		{
-			"name": "收藏組件",
-			"index": "favorites",
-			"components": [],
-			"icon": "favorite"
-		},
-		{
 			"name": "圖資資訊",
 			"index": "map-layers",
 			"components": [],
