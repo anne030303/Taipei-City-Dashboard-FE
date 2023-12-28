@@ -8,7 +8,7 @@
 
 /* Department of Information Technology, Taipei City Government */
 
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import { useContentStore } from "../store/contentStore";
 import { useMapStore } from "../store/mapStore";
 import DashboardView from "../views/DashboardView.vue";
@@ -37,8 +37,7 @@ const routes = [
 ];
 
 const router = createRouter({
-	mode: 'hash',
-	history: createWebHistory(import.meta.env.BASE_URL),
+	history: createWebHashHistory(import.meta.env.BASE_URL),
 	base: import.meta.env.BASE_URL,
 	routes,
 });
