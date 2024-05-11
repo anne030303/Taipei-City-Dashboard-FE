@@ -13,6 +13,14 @@ import mapboxGl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
 import { Threebox } from "threebox-plugin";
+import { MapboxOverlay } from "@deck.gl/mapbox";
+import {
+	ScatterplotLayer,
+	GeoJsonLayer,
+	ArcLayer,
+	IconLayer,
+} from "@deck.gl/layers";
+import { TripsLayer, MVTLayer } from "@deck.gl/geo-layers";
 
 // Other Stores
 import { useAuthStore } from "./authStore";
@@ -28,6 +36,7 @@ import {
 	TaipeiTown,
 	TaipeiVillage,
 	TaipeiBuilding,
+	TaipeiBuildingDeckGL,
 	TpDistrict,
 	TpVillage,
 	maplayerCommonPaint,
@@ -49,6 +58,12 @@ export const useMapStore = defineStore("map", {
 		mapConfigs: {},
 		// Stores the mapbox map instance
 		map: null,
+		// Store deck.gl layer overlay
+		overlay: null,
+
+		deckGlLayer: [],
+
+		step: 1,
 		// Stores popup information
 		popup: null,
 		// Stores saved locations
@@ -62,22 +77,30 @@ export const useMapStore = defineStore("map", {
 		// 1. Creates the mapbox instance and passes in initial configs
 		initializeMapBox() {
 			this.map = null;
+			this.overlay = null;
 			const MAPBOXTOKEN = import.meta.env.VITE_MAPBOXTOKEN;
 			mapboxGl.accessToken = MAPBOXTOKEN;
 			this.map = new mapboxGl.Map({
 				...MapObjectConfig,
 				style: mapStyle,
 			});
+
 			this.map.addControl(new mapboxGl.NavigationControl());
 			this.map.doubleClickZoom.disable();
 			this.map
 				.on("load", () => {
+					this.overlay = new MapboxOverlay({
+						interleaved: true,
+						layers: [],
+					});
+					this.map.addControl(this.overlay);
 					this.initializeBasicLayers();
 				})
 				.on("click", (event) => {
 					if (this.popup) {
 						this.popup = null;
 					}
+					console.log("click", event);
 					this.addPopup(event);
 				})
 				.on("idle", () => {
@@ -91,6 +114,12 @@ export const useMapStore = defineStore("map", {
 		initializeBasicLayers() {
 			const authStore = useAuthStore();
 			if (!this.map) return;
+
+			// this.addDeckGLLayer({
+			// 	layerId: `${TaipeiBuildingDeckGL.index}-${TaipeiBuildingDeckGL.type}`,
+			// 	...TaipeiBuildingDeckGL,
+			// });
+
 			// Taipei District Labels
 			fetch(`/mapData/taipei_town.geojson`)
 				.then((response) => response.json())
@@ -113,7 +142,7 @@ export const useMapStore = defineStore("map", {
 						})
 						.addLayer(TaipeiVillage);
 				});
-			// Taipei 3D Buildings
+			// // Taipei 3D Buildings
 			if (!authStore.isMobileDevice) {
 				this.map
 					.addSource("taipei_building_3d_source", {
@@ -198,12 +227,16 @@ export const useMapStore = defineStore("map", {
 		addToMapLayerList(map_config) {
 			map_config.forEach((element) => {
 				let mapLayerId = `${element.index}-${element.type}`;
+				// console.log(
+				// 	mapLayerId,
+				// 	this.currentLayers,
+				// 	this.currentVisibleLayers
+				// );
 				// 1-1. If the layer exists, simply turn on the visibility and add it to the visible layers list
 				if (
 					this.currentLayers.find((element) => element === mapLayerId)
 				) {
 					this.loadingLayers.push("rendering");
-					this.turnOnMapLayerVisibility(mapLayerId);
 					if (
 						!this.currentVisibleLayers.find(
 							(element) => element === mapLayerId
@@ -211,18 +244,267 @@ export const useMapStore = defineStore("map", {
 					) {
 						this.currentVisibleLayers.push(mapLayerId);
 					}
+					this.turnOnMapLayerVisibility(mapLayerId);
 					return;
 				}
 				let appendLayer = { ...element };
 				appendLayer.layerId = mapLayerId;
 				// 1-2. If the layer doesn't exist, call an API to get the layer data
 				this.loadingLayers.push(appendLayer.layerId);
-				if (element.source === "geojson") {
+				if (mapLayerId === "tp_bld_3d_attr-DeckGL-GeoJsonLayer") {
+					this.setCityColor(mapLayerId);
+				} else if (element.source === "geojson") {
 					this.fetchLocalGeoJson(appendLayer);
 				} else if (element.source === "raster") {
 					this.addRasterSource(appendLayer);
+				} else if (element.source === "deckgl") {
+					this.addDeckGLLayer(appendLayer);
 				}
 			});
+		},
+		animate() {
+			// 開始時間
+			let startTime = performance.now();
+			// 每個動畫步驟的持續時間（毫秒）
+			const duration = 3000; // 1秒
+			const _this = this;
+
+			const step = (timestamp) => {
+				// 計算已經過的時間
+				const elapsedTime = timestamp - startTime;
+				// 計算進度
+				const progress = (elapsedTime / duration) * 100;
+
+				// 如果時間已經超過一個步驟，則增加步驟數
+				if (progress >= (_this.step / 100) * 100) {
+					_this.step = _this.step + 1;
+					_this.renderDeckGLLayer();
+				}
+
+				// 如果動畫還未完成，繼續下一個動畫步驟
+				if (_this.step <= 100) {
+					requestAnimationFrame(step);
+				} else {
+					setTimeout(() => {
+						startTime = performance.now();
+						_this.step = 1;
+						requestAnimationFrame(step);
+					}, 1000);
+				}
+			};
+
+			// 啟動動畫
+			requestAnimationFrame(step);
+		},
+		renderDeckGLLayer() {
+			const layers = this.deckGlLayer.map((l) => {
+				console.log(l.config);
+				switch (l.config.deckType) {
+					case "GeoJsonLayer":
+						return new GeoJsonLayer(l.config);
+					case "ArcLayer":
+						return new ArcLayer(l.config);
+					case "TripsLayer":
+						return new TripsLayer({
+							...l.config,
+							currentTime: this.step,
+						});
+					case "MVTLayer":
+						return new MVTLayer(l.config);
+					case "IconLayer":
+						return new IconLayer(l.config);
+					default:
+						break;
+				}
+			});
+			console.log(layers);
+			this.overlay.setProps({
+				layers,
+			});
+			if (
+				this.currentVisibleLayers.some(
+					(l) => l.indexOf("TripsLayer") !== -1
+				)
+			)
+				this.animate();
+		},
+		addDeckGLLayer(map_config) {
+			this.loadingLayers.push("rendering");
+			this.currentVisibleLayers.push(map_config.layerId);
+			let layer = null;
+			switch (map_config.type) {
+				case "DeckGL-GeoJsonLayer":
+					// const layer = {
+					// 	deckType: "MVTLayer",
+					// 	id: map_config.index,
+					// 	data: [
+					// 		"https://4def-211-20-56-86.ngrok-free.appapi/v1/tiles/{z}/{x}/{y}",
+					// 	],
+					// 	minZoom: 0,
+					// 	maxZoom: 14,
+					// 	getFillColor: (f) => {
+					// 		switch (f.properties.layerName) {
+					// 			case "poi":
+					// 				return [255, 0, 0];
+					// 			case "water":
+					// 				return [120, 150, 180];
+					// 			case "building":
+					// 				return [218, 218, 218];
+					// 			default:
+					// 				return [240, 240, 240];
+					// 		}
+					// 	},
+					// 	getLineWidth: (f) => {
+					// 		switch (f.properties.class) {
+					// 			case "street":
+					// 				return 6;
+					// 			case "motorway":
+					// 				return 10;
+					// 			default:
+					// 				return 1;
+					// 		}
+					// 	},
+					// 	getLineColor: [192, 192, 192],
+					// 	getPointRadius: 2,
+					// 	pointRadiusUnits: "pixels",
+					// 	stroked: false,
+					// 	picking: true,
+					// };
+					layer = {
+						deckType: "GeoJsonLayer",
+						id: map_config.index,
+						data: `/mapData/${map_config.index}.geojson`,
+						visible: true,
+						...map_config.paint,
+						...(map_config.paint.elevation && {
+							getElevation: (f) =>
+								f.properties[map_config.paint.elevation],
+						}),
+					};
+					this.deckGlLayer.push({
+						layerId: map_config.layerId,
+						config: layer,
+					});
+					this.renderDeckGLLayer();
+					break;
+				case "DeckGL-IconLayer":
+					const ICON_MAPPING = {
+						marker: {
+							x: 0,
+							y: 0,
+							width: 80,
+							height: 80,
+							mask: false,
+						},
+					};
+					fetch(`/mapData/${map_config.index}.json`)
+						.then((response) => response.json())
+						.then((data) => {
+							return {
+								deckType: "IconLayer",
+								id: map_config.index,
+								data: data,
+								iconAtlas: `/images/map/${map_config.icon}.png`,
+								getSize: 40,
+								getColor: (d) => [255, 140, 0],
+								iconMapping: ICON_MAPPING,
+								getIcon: (d) => "marker",
+								getPosition: (d) => d.geometry,
+								pickable: true,
+								// ...map_config.paint,
+								// ...(map_config.paint.elevation && {
+								// 	getElevation: (f) =>
+								// 		f.properties[map_config.paint.elevation],
+								// }),
+							};
+						})
+						.then((layer) => {
+							this.deckGlLayer.push({
+								layerId: map_config.layerId,
+								config: layer,
+							});
+							this.renderDeckGLLayer();
+						});
+					break;
+				case "DeckGL-ArcLayer":
+				case "DeckGL-TripsLayer":
+					fetch(`/mapData/${map_config.index}.json`)
+						.then((response) => response.json())
+						.then((data) => {
+							if (map_config.type === "DeckGL-ArcLayer") {
+								return {
+									deckType: "ArcLayer",
+									id: map_config.index,
+									data: data,
+									...map_config.paint,
+									...(map_config.paint.getSourcePosition && {
+										getSourcePosition: (d) => [
+											d.data[
+												map_config.paint
+													.getSourcePosition[0]
+											],
+											d.data[
+												map_config.paint
+													.getSourcePosition[1]
+											],
+										],
+									}),
+									...(map_config.paint.getTargetPosition && {
+										getTargetPosition: (d) => [
+											d.data[
+												map_config.paint
+													.getTargetPosition[0]
+											],
+											d.data[
+												map_config.paint
+													.getTargetPosition[1]
+											],
+										],
+									}),
+									...(map_config.paint.getSourceColor && {
+										getSourceColor: (d) =>
+											map_config.paint.getSourceColor,
+									}),
+									...(map_config.paint.getTargetColor && {
+										getTargetColor: (d) =>
+											map_config.paint.getTargetColor,
+									}),
+								};
+							} else if (
+								map_config.type === "DeckGL-TripsLayer"
+							) {
+								return {
+									deckType: "TripsLayer",
+									id: map_config.index,
+									data: data,
+									...map_config.paint,
+									getPath: (d) => d,
+									getTimestamps: (d) =>
+										d.map(
+											(p, index) =>
+												(index * 100) / (d.length - 1)
+										),
+									getColor: [253, 128, 93],
+									currentTime: 0,
+								};
+							}
+						})
+						.then((layer) => {
+							this.deckGlLayer.push({
+								layerId: map_config.layerId,
+								config: layer,
+							});
+							this.renderDeckGLLayer();
+						});
+					break;
+				default:
+					break;
+			}
+			this.currentLayers.push(map_config.layerId);
+			this.mapConfigs[map_config.layerId] = map_config;
+			this.loadingLayers = this.loadingLayers.filter(
+				(el) => el !== map_config.layerId
+			);
 		},
 		// 2. Call an API to get the layer data
 		fetchLocalGeoJson(map_config) {
@@ -561,29 +843,105 @@ export const useMapStore = defineStore("map", {
 			let new_map_config = { ...map_config, type: "line" };
 			this.addMapLayer(new_map_config);
 		},
+		setCityColor(mapLayerId, isOpen = true) {
+			if (isOpen) {
+				this.map.setPaintProperty(
+					"taipei_building_3d",
+					"fill-extrusion-color",
+					[
+						"match",
+						["get", "都更機會"],
+						"高液化且大於20年",
+						"#A25FAD",
+						"大於30年",
+						"#E06666",
+						"已在都更範圍",
+						"#F49F36",
+						"沒有",
+						"#7D7D7D",
+						"#7D7D7D",
+					]
+				);
+				this.loadingLayers = this.loadingLayers.filter(
+					(el) => el !== mapLayerId
+				);
+				this.map.easeTo({
+					zoom: 15,
+					duration: 2000,
+				});
+			} else {
+				this.map.setPaintProperty(
+					"taipei_building_3d",
+					"fill-extrusion-color",
+					[
+						"interpolate",
+						["linear"],
+						["zoom"],
+						14.4,
+						"#121212",
+						14.5,
+						"#272727",
+					]
+				);
+			}
+		},
 		//  5. Turn on the visibility for a exisiting map layer
 		turnOnMapLayerVisibility(mapLayerId) {
-			this.map.setLayoutProperty(mapLayerId, "visibility", "visible");
+			if (mapLayerId === "tp_bld_3d_attr-DeckGL-GeoJsonLayer") {
+				this.setCityColor(mapLayerId);
+			} else if (mapLayerId.indexOf("DeckGL") !== -1) {
+				const layer = this.deckGlLayer.find(
+					(i) => i.layerId === mapLayerId
+				);
+
+				if (layer) {
+					layer.config = {
+						...layer.config,
+						visible: true,
+					};
+					this.renderDeckGLLayer();
+				}
+			} else {
+				this.map.setLayoutProperty(mapLayerId, "visibility", "visible");
+			}
 		},
 		// 6. Turn off the visibility of an exisiting map layer but don't remove it completely
 		turnOffMapLayerVisibility(map_config) {
 			map_config.forEach((element) => {
 				let mapLayerId = `${element.index}-${element.type}`;
-				this.loadingLayers = this.loadingLayers.filter(
-					(el) => el !== mapLayerId
-				);
-
-				if (this.map.getLayer(mapLayerId)) {
-					this.map.setFilter(mapLayerId, null);
-					this.map.setLayoutProperty(
-						mapLayerId,
-						"visibility",
-						"none"
+				if (mapLayerId === "tp_bld_3d_attr-DeckGL-GeoJsonLayer") {
+					this.setCityColor(mapLayerId, false);
+				} else {
+					this.loadingLayers = this.loadingLayers.filter(
+						(el) => el !== mapLayerId
 					);
+
+					if (this.map.getLayer(mapLayerId)) {
+						this.map.setFilter(mapLayerId, null);
+						this.map.setLayoutProperty(
+							mapLayerId,
+							"visibility",
+							"none"
+						);
+					} else if (element.source === "deckgl") {
+						const layer = this.deckGlLayer.find(
+							(i) => i.layerId === mapLayerId
+						);
+
+						if (layer) {
+							layer.config = {
+								...layer.config,
+								visible: false,
+							};
+							this.renderDeckGLLayer();
+						}
+					}
+					this.currentVisibleLayers =
+						this.currentVisibleLayers.filter(
+							(element) => element !== mapLayerId
+						);
+					this.renderDeckGLLayer();
 				}
-				this.currentVisibleLayers = this.currentVisibleLayers.filter(
-					(element) => element !== mapLayerId
-				);
 			});
 			this.removePopup();
 		},
@@ -811,6 +1169,11 @@ export const useMapStore = defineStore("map", {
 						"visibility",
 						"visible"
 					);
+					return;
+				} else if (
+					map_config &&
+					map_config.type.indexOf("DeckGL") !== -1
+				) {
 					return;
 				}
 				this.map.setFilter(mapLayerId, null);

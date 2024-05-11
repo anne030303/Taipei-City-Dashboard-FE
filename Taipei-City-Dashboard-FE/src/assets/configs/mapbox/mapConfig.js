@@ -87,19 +87,20 @@ export const TaipeiVillage = {
 export const TaipeiBuilding = {
 	id: "taipei_building_3d",
 	source: "taipei_building_3d_source",
-	"source-layer": "tp_building_height84-18p8j0",
+	"source-layer": "tp_building_height84-dl3c6u",
 	type: "fill-extrusion",
 	minzoom: 14,
 	paint: {
-		"fill-extrusion-height": [
-			"interpolate",
-			["linear"],
-			["get", "1_top_high"],
-			0,
-			0,
-			1044.14,
-			1044.14,
-		],
+		// "fill-extrusion-height": [
+		// 	"interpolate",
+		// 	["linear"],
+		// 	["get", "1_top_high"],
+		// 	0,
+		// 	0,
+		// 	1044.14,
+		// 	1044.14,
+		// ],
+		"fill-extrusion-height": 1,
 		"fill-extrusion-opacity": 0.8,
 		"fill-extrusion-color": [
 			"interpolate",
@@ -110,6 +111,21 @@ export const TaipeiBuilding = {
 			14.5,
 			"#272727",
 		],
+	},
+};
+
+export const TaipeiBuildingDeckGL = {
+	id: 1,
+	index: "tp_bld_3d_attr",
+	type: "DeckGL-GeoJsonLayer",
+	source: "deckgl",
+	paint: {
+		stroked: false,
+		filled: true,
+		pickable: true,
+		extruded: true,
+		elevation: "1_top_high",
+		getFillColor: [160, 160, 180, 200],
 	},
 };
 
