@@ -27,8 +27,7 @@ export default defineConfig({
 		port: 80,
 		proxy: {
 			"/api/dev": {
-				// target: "http://dashboard-be:8080",
-				target: "https://8cae-211-20-56-86.ngrok-free.app/",
+				target: "https://8cae-211-20-56-86.ngrok-free.app",
 				changeOrigin: true,
 				rewrite: (path) => path.replace("/dev", "/v1"),
 			},

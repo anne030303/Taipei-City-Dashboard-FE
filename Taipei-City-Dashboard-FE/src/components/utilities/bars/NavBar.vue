@@ -9,6 +9,7 @@ import { useRoute } from "vue-router";
 import { useFullscreen } from "@vueuse/core";
 import { useAuthStore } from "../../../store/authStore";
 import { useDialogStore } from "../../../store/dialogStore";
+import Info from "../../../../public/info--v1.svg"
 
 import UserSettings from "../../dialogs/UserSettings.vue";
 
@@ -70,6 +71,12 @@ const linkQuery = computed(() => {
       </router-link>
     </div>
     <div class="navbar-user">
+	  <button @click="dialogStore.showDialog('keplerEmbed')">
+		<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path d="M9.99996 1.66675C5.39746 1.66675 1.66663 5.39758 1.66663 10.0001C1.66663 14.6026 5.39746 18.3334 9.99996 18.3334C14.6025 18.3334 18.3333 14.6026 18.3333 10.0001C18.3333 5.39758 14.6025 1.66675 9.99996 1.66675ZM10.8333 14.1667H9.16663V9.16675H10.8333V14.1667ZM10.8333 7.50008H9.16663V5.83341H10.8333V7.50008Z" fill="white"/>
+		</svg>
+
+	  </button>
       <a
         href="https://tuic.gov.taipei/documentation"
         target="_blank"

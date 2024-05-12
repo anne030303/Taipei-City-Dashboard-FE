@@ -22,12 +22,15 @@ import NotificationBar from "./components/dialogs/NotificationBar.vue";
 import InitialWarning from "./components/dialogs/InitialWarning.vue";
 import ComponentSideBar from "./components/utilities/bars/ComponentSideBar.vue";
 import LogIn from "./components/dialogs/LogIn.vue";
+import KeplerEmbed from "./components/dialogs/KeplerEmbed.vue";
 
 const authStore = useAuthStore();
 const dialogStore = useDialogStore();
 const contentStore = useContentStore();
 
 const timeToUpdate = ref(600);
+
+
 
 const formattedTimeToUpdate = computed(() => {
 	const minutes = Math.floor(timeToUpdate.value / 60);
@@ -118,6 +121,7 @@ onBeforeUnmount(() => {
     </div>
     <InitialWarning />
     <LogIn />
+	<KeplerEmbed />
     <div
       v-if="
         ['dashboard', 'mapview'].includes(authStore.currentPath) &&
