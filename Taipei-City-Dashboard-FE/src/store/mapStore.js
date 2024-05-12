@@ -888,14 +888,14 @@ export const useMapStore = defineStore("map", {
 						"match",
 						["get", "都更機會"],
 						"高液化且大於20年",
-						"#A25FAD",
+						"#F8B195",
 						"大於30年",
-						"#E06666",
+						"#C86A7E",
 						"已在都更範圍",
-						"#F49F36",
+						"#68A0F7",
 						"沒有",
-						"#7D7D7D",
-						"#7D7D7D",
+						"#355C7D",
+						"#355C7D",
 					]
 				);
 				this.loadingLayers = this.loadingLayers.filter(
