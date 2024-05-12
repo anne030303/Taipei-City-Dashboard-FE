@@ -14,6 +14,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
 import { Threebox } from "threebox-plugin";
 import { MapboxOverlay } from "@deck.gl/mapbox";
+// import GL from "@luma.gl/constants";
 import {
 	ScatterplotLayer,
 	GeoJsonLayer,
@@ -47,6 +48,7 @@ import { calculateGradientSteps } from "../assets/configs/mapbox/arcGradient";
 import { voronoi } from "../assets/utilityFunctions/voronoi.js";
 import { interpolation } from "../assets/utilityFunctions/interpolation.js";
 import { marchingSquare } from "../assets/utilityFunctions/marchingSquare.js";
+import AnimatedArcLayer from "../assets/configs/mapbox/animateArcLayer.js";
 
 export const useMapStore = defineStore("map", {
 	state: () => ({
@@ -266,7 +268,7 @@ export const useMapStore = defineStore("map", {
 			// 開始時間
 			let startTime = performance.now();
 			// 每個動畫步驟的持續時間（毫秒）
-			const duration = 3000; // 1秒
+			const duration = 2500; // 1秒
 			const _this = this;
 
 			const step = (timestamp) => {
@@ -292,18 +294,24 @@ export const useMapStore = defineStore("map", {
 					}, 1000);
 				}
 			};
-
 			// 啟動動畫
 			requestAnimationFrame(step);
 		},
 		renderDeckGLLayer() {
 			const layers = this.deckGlLayer.map((l) => {
-				console.log(l.config);
+				// console.log(l.config);
 				switch (l.config.deckType) {
 					case "GeoJsonLayer":
 						return new GeoJsonLayer(l.config);
 					case "ArcLayer":
-						return new ArcLayer(l.config);
+						// return new ArcLayer(l.config);
+						return new AnimatedArcLayer({
+							coef: this.step / 100,
+							startState: true,
+							...l.config,
+						});
+					case "ScatterplotLayer":
+						return new ScatterplotLayer(l.config);
 					case "TripsLayer":
 						return new TripsLayer({
 							...l.config,
@@ -323,7 +331,9 @@ export const useMapStore = defineStore("map", {
 			});
 			if (
 				this.currentVisibleLayers.some(
-					(l) => l.indexOf("TripsLayer") !== -1
+					(l) =>
+						l.indexOf("TripsLayer") !== -1 ||
+						l.indexOf("ArcLayer") !== -1
 				)
 			)
 				this.animate();
@@ -388,26 +398,38 @@ export const useMapStore = defineStore("map", {
 					this.renderDeckGLLayer();
 					break;
 				case "DeckGL-IconLayer":
-					const ICON_MAPPING = {
-						marker: {
-							x: 0,
-							y: 0,
-							width: 80,
-							height: 80,
-							mask: false,
-						},
-					};
 					fetch(`/mapData/${map_config.index}.json`)
 						.then((response) => response.json())
 						.then((data) => {
 							return {
 								deckType: "IconLayer",
 								id: map_config.index,
-								data: data,
+								data: data.filter((i) => {
+									if (
+										map_config.icon === "error-yellow" &&
+										i.分類 === "黃區"
+									) {
+										return true;
+									} else if (
+										map_config.icon === "error-red" &&
+										i.分類 === "紅區"
+									) {
+										return true;
+									}
+									return false;
+								}),
 								iconAtlas: `/images/map/${map_config.icon}.png`,
 								getSize: 40,
 								getColor: (d) => [255, 140, 0],
-								iconMapping: ICON_MAPPING,
+								iconMapping: {
+									marker: {
+										x: 0,
+										y: 0,
+										width: 80,
+										height: 80,
+										mask: false,
+									},
+								},
 								getIcon: (d) => "marker",
 								getPosition: (d) => d.geometry,
 								pickable: true,
@@ -426,6 +448,7 @@ export const useMapStore = defineStore("map", {
 							this.renderDeckGLLayer();
 						});
 					break;
+				case "DeckGL-ScatterplotLayer":
 				case "DeckGL-ArcLayer":
 				case "DeckGL-TripsLayer":
 					fetch(`/mapData/${map_config.index}.json`)
@@ -438,28 +461,10 @@ export const useMapStore = defineStore("map", {
 									data: data,
 									...map_config.paint,
 									...(map_config.paint.getSourcePosition && {
-										getSourcePosition: (d) => [
-											d.data[
-												map_config.paint
-													.getSourcePosition[0]
-											],
-											d.data[
-												map_config.paint
-													.getSourcePosition[1]
-											],
-										],
+										getSourcePosition: (d) => d.geoline[0],
 									}),
 									...(map_config.paint.getTargetPosition && {
-										getTargetPosition: (d) => [
-											d.data[
-												map_config.paint
-													.getTargetPosition[0]
-											],
-											d.data[
-												map_config.paint
-													.getTargetPosition[1]
-											],
-										],
+										getTargetPosition: (d) => d.geoline[1],
 									}),
 									...(map_config.paint.getSourceColor && {
 										getSourceColor: (d) =>
@@ -486,6 +491,37 @@ export const useMapStore = defineStore("map", {
 										),
 									getColor: [253, 128, 93],
 									currentTime: 0,
+									parameters: {
+										[GL.DEPTH_TEST]: false,
+										[GL.BLEND]: true,
+										[GL.BLEND_EQUATION_RGB]: GL.FUNC_ADD,
+										[GL.BLEND_SRC_RGB]: GL.ONE,
+										[GL.BLEND_SRC_ALPHA]: GL.ZERO,
+										[GL.BLEND_DST_RGB]: GL.ONE,
+										[GL.BLEND_DST_ALPHA]: GL.ZERO,
+									},
+								};
+							} else if (
+								map_config.type === "DeckGL-ScatterplotLayer"
+							) {
+								return {
+									deckType: "ScatterplotLayer",
+									id: map_config.index,
+									data: data,
+									getPosition: (d) => [...d.geometry, 100],
+									...map_config.paint,
+									parameters: {
+										blendConstant: 1,
+									},
+									// parameters: {
+									// 	[GL.DEPTH_TEST]: false,
+									// 	[GL.BLEND]: true,
+									// 	[GL.BLEND_EQUATION_RGB]: GL.FUNC_ADD,
+									// 	[GL.BLEND_SRC_RGB]: GL.ONE,
+									// 	[GL.BLEND_SRC_ALPHA]: GL.ZERO,
+									// 	[GL.BLEND_DST_RGB]: GL.ONE,
+									// 	[GL.BLEND_DST_ALPHA]: GL.ZERO,
+									// },
 								};
 							}
 						})
