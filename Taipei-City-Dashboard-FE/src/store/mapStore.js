@@ -14,7 +14,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
 import { Threebox } from "threebox-plugin";
 import { MapboxOverlay } from "@deck.gl/mapbox";
-// import GL from "@luma.gl/constants";
+import { ScenegraphLayer } from "@deck.gl/mesh-layers";
 import {
 	ScatterplotLayer,
 	GeoJsonLayer,
@@ -94,6 +94,12 @@ export const useMapStore = defineStore("map", {
 					this.overlay = new MapboxOverlay({
 						interleaved: true,
 						layers: [],
+						getTooltip: (e) => {
+							// console.log("deck", e);
+							if (e?.object?.poi_name) {
+								return e.object.poi_name;
+							}
+						},
 					});
 					this.map.addControl(this.overlay);
 					this.initializeBasicLayers();
@@ -102,7 +108,7 @@ export const useMapStore = defineStore("map", {
 					if (this.popup) {
 						this.popup = null;
 					}
-					console.log("click", event);
+					// console.log("click", event);
 					this.addPopup(event);
 				})
 				.on("idle", () => {
@@ -321,6 +327,8 @@ export const useMapStore = defineStore("map", {
 						return new MVTLayer(l.config);
 					case "IconLayer":
 						return new IconLayer(l.config);
+					case "ScenegraphLayer":
+						return new ScenegraphLayer(l.config);
 					default:
 						break;
 				}
@@ -419,7 +427,7 @@ export const useMapStore = defineStore("map", {
 									return false;
 								}),
 								iconAtlas: `/images/map/${map_config.icon}.png`,
-								getSize: 40,
+								getSize: 20,
 								getColor: (d) => [255, 140, 0],
 								iconMapping: {
 									marker: {
@@ -431,7 +439,7 @@ export const useMapStore = defineStore("map", {
 									},
 								},
 								getIcon: (d) => "marker",
-								getPosition: (d) => d.geometry,
+								getPosition: (d) => [...d.geometry, 5],
 								pickable: true,
 								// ...map_config.paint,
 								// ...(map_config.paint.elevation && {
@@ -474,6 +482,13 @@ export const useMapStore = defineStore("map", {
 										getTargetColor: (d) =>
 											map_config.paint.getTargetColor,
 									}),
+									getWidth: (d) => {
+										if (d.distance > 1500) {
+											return 6;
+										} else {
+											return 1;
+										}
+									},
 								};
 							} else if (
 								map_config.type === "DeckGL-TripsLayer"
@@ -491,15 +506,6 @@ export const useMapStore = defineStore("map", {
 										),
 									getColor: [253, 128, 93],
 									currentTime: 0,
-									parameters: {
-										[GL.DEPTH_TEST]: false,
-										[GL.BLEND]: true,
-										[GL.BLEND_EQUATION_RGB]: GL.FUNC_ADD,
-										[GL.BLEND_SRC_RGB]: GL.ONE,
-										[GL.BLEND_SRC_ALPHA]: GL.ZERO,
-										[GL.BLEND_DST_RGB]: GL.ONE,
-										[GL.BLEND_DST_ALPHA]: GL.ZERO,
-									},
 								};
 							} else if (
 								map_config.type === "DeckGL-ScatterplotLayer"
@@ -508,20 +514,24 @@ export const useMapStore = defineStore("map", {
 									deckType: "ScatterplotLayer",
 									id: map_config.index,
 									data: data,
-									getPosition: (d) => [...d.geometry, 100],
+									getPosition: (d) => [...d.geometry, 5],
 									...map_config.paint,
 									parameters: {
 										blendConstant: 1,
 									},
-									// parameters: {
-									// 	[GL.DEPTH_TEST]: false,
-									// 	[GL.BLEND]: true,
-									// 	[GL.BLEND_EQUATION_RGB]: GL.FUNC_ADD,
-									// 	[GL.BLEND_SRC_RGB]: GL.ONE,
-									// 	[GL.BLEND_SRC_ALPHA]: GL.ZERO,
-									// 	[GL.BLEND_DST_RGB]: GL.ONE,
-									// 	[GL.BLEND_DST_ALPHA]: GL.ZERO,
-									// },
+									getRadius: (d) => {
+										if (d["容納人數"]) {
+											if (d["容納人數"] > 500)
+												return (
+													Math.log10(d["容納人數"]) *
+													5
+												);
+											return (
+												Math.log10(d["容納人數"]) * 3
+											);
+										}
+										return 5;
+									},
 								};
 							}
 						})

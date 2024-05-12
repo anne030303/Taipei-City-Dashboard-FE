@@ -16,6 +16,7 @@
 		"@deck.gl/geo-layers": "^9.0.14",
 		"@deck.gl/layers": "^9.0.9",
 		"@deck.gl/mapbox": "^9.0.14",
+		"@deck.gl/mesh-layers": "^9.0.14",
 		"@luma.gl/constants": "^9.0.14",
 		"@turf/turf": "^6.5.0",
 		"@vueuse/core": "^10.7.2",

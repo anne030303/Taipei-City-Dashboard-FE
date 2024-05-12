@@ -182,64 +182,6 @@ function shouldDisable(map_config) {
 						}
 					"
 				/>
-				<h2>基本圖層</h2>
-				<DashboardComponent
-					v-for="item in contentStore.mapLayers"
-					:key="`map-layer-${item.index}-${contentStore.currentDashboard.index}`"
-					:config="item"
-					mode="halfmap"
-					:info-btn="true"
-					:toggle-disable="shouldDisable(item.map_config)"
-					@info="
-						(item) => {
-							dialogStore.showMoreInfo(item);
-						}
-					"
-					@toggle="
-						(value, map_config) => {
-							handleToggle(value, map_config);
-						}
-					"
-					@filter-by-param="
-						(map_filter, map_config, x, y) => {
-							mapStore.filterByParam(
-								map_filter,
-								map_config,
-								x,
-								y
-							);
-						}
-					"
-					@filter-by-layer="
-						(map_config, layer) => {
-							mapStore.filterByLayer(map_config, layer);
-						}
-					"
-					@clear-by-param-filter="
-						(map_config) => {
-							mapStore.clearByParamFilter(map_config);
-						}
-					"
-					@clear-by-layer-filter="
-						(map_config) => {
-							mapStore.clearByLayerFilter(map_config);
-						}
-					"
-				/>
-				<h2 v-if="parseMapLayers.noMap?.length > 0">無空間資料組件</h2>
-				<DashboardComponent
-					v-for="item in parseMapLayers.noMap"
-					:key="`map-layer-${item.index}-${contentStore.currentDashboard.index}`"
-					:config="item"
-					mode="map"
-					:info-btn="true"
-					@info="
-						(item) => {
-							dialogStore.showMoreInfo(item);
-						}
-					"
-					@toggle="handleToggle"
-				/>
 			</div>
 			<!-- 3. If dashboard is still loading -->
 			<div
