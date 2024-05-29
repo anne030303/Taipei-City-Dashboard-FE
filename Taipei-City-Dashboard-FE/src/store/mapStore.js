@@ -352,42 +352,6 @@ export const useMapStore = defineStore("map", {
 			let layer = null;
 			switch (map_config.type) {
 				case "DeckGL-GeoJsonLayer":
-					// const layer = {
-					// 	deckType: "MVTLayer",
-					// 	id: map_config.index,
-					// 	data: [
-					// 		"https://4def-211-20-56-86.ngrok-free.appapi/v1/tiles/{z}/{x}/{y}",
-					// 	],
-					// 	minZoom: 0,
-					// 	maxZoom: 14,
-					// 	getFillColor: (f) => {
-					// 		switch (f.properties.layerName) {
-					// 			case "poi":
-					// 				return [255, 0, 0];
-					// 			case "water":
-					// 				return [120, 150, 180];
-					// 			case "building":
-					// 				return [218, 218, 218];
-					// 			default:
-					// 				return [240, 240, 240];
-					// 		}
-					// 	},
-					// 	getLineWidth: (f) => {
-					// 		switch (f.properties.class) {
-					// 			case "street":
-					// 				return 6;
-					// 			case "motorway":
-					// 				return 10;
-					// 			default:
-					// 				return 1;
-					// 		}
-					// 	},
-					// 	getLineColor: [192, 192, 192],
-					// 	getPointRadius: 2,
-					// 	pointRadiusUnits: "pixels",
-					// 	stroked: false,
-					// 	picking: true,
-					// };
 					layer = {
 						deckType: "GeoJsonLayer",
 						id: map_config.index,
@@ -410,7 +374,18 @@ export const useMapStore = defineStore("map", {
 						.then((response) => response.json())
 						.then((data) => {
 							return {
-								deckType: "IconLayer",
+								// deckType: "IconLayer",
+								deckType: "ScenegraphLayer",
+								scenegraph: `/images/map/${map_config.icon}.glb`,
+								getOrientation: (d) => [
+									0,
+									Math.random() * 180,
+									90,
+								],
+								sizeScale:
+									map_config.icon === "error-yellow"
+										? 200
+										: 200,
 								id: map_config.index,
 								data: data.filter((i) => {
 									if (
@@ -510,6 +485,21 @@ export const useMapStore = defineStore("map", {
 							} else if (
 								map_config.type === "DeckGL-ScatterplotLayer"
 							) {
+								if (map_config.index === "link_point_fire") {
+									return {
+										deckType: "ScenegraphLayer",
+										scenegraph: `/images/map/fire_truck.glb`,
+										data: data,
+										getOrientation: (d) => [
+											0,
+											Math.random() * 180,
+											90,
+										],
+										getPosition: (d) => [...d.geometry, 5],
+										sizeScale: 5,
+										id: map_config.index,
+									};
+								}
 								return {
 									deckType: "ScatterplotLayer",
 									id: map_config.index,
@@ -519,6 +509,8 @@ export const useMapStore = defineStore("map", {
 									parameters: {
 										blendConstant: 1,
 									},
+									autoHighlight: true,
+									highlightColor: [255, 0, 0],
 									getRadius: (d) => {
 										if (d["容納人數"]) {
 											if (d["容納人數"] > 500)
